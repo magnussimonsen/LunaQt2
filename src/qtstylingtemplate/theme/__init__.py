@@ -6,15 +6,15 @@ from .colors import (
     ButtonPalette,
     ButtonPalettes,
     MenuPalette,
-    Metrics,
     ModeAwareColor,
     StatusBarPalette,
     TextPalette,
     Theme,
-    ThemeMode,
     ViewportPalette,
     get_theme,
 )
+from .metrics import Metrics
+from .mode import ThemeMode
 
 __all__ = [
     "BackgroundPalette",
