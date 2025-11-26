@@ -6,7 +6,7 @@ import argparse
 import sys
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 # Ensure the local "src" directory is importable when running from the repo root.
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -14,7 +14,7 @@ SRC_DIR = PROJECT_ROOT / "src"
 if SRC_DIR.exists() and str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from ui import NotebookSidebarWidget, SettingsSidebarWidget
+from src.ui import NotebookSidebarWidget, SettingsSidebarWidget
 
 def _load_qt_widgets():  # pragma: no cover - import helper
     try:
@@ -83,6 +83,8 @@ def _load_constants():  # pragma: no cover - import helper
     QEvent,
     Qt,
 ) = _load_qt_widgets()
+QDockWidgetType = Any
+QPushButtonType = Any
 apply_global_style, ThemeMode = _load_style_package()
 constants_mod = _load_constants()
 DEFAULT_THEME_MODE = constants_mod.DEFAULT_THEME_MODE
@@ -188,13 +190,13 @@ class DemoWindow(QMainWindow):
         self._cell_rows: list[CellRow] = []
         self._notebooks_panel: NotebookSidebarWidget | None = None
         self._settings_panel: SettingsSidebarWidget | None = None
-        self._notebooks_dock: QDockWidget | None = None
-        self._settings_dock: QDockWidget | None = None
+        self._notebooks_dock: QDockWidgetType | None = None
+        self._settings_dock: QDockWidgetType | None = None
         self._notebook_entries: list[dict[str, str]] = []
         self._next_notebook_index = 1
         self._active_notebook_id: str | None = None
-        self._notebooks_button: QPushButton | None = None
-        self._settings_button: QPushButton | None = None
+        self._notebooks_button: QPushButtonType | None = None
+        self._settings_button: QPushButtonType | None = None
 
         self.setWindowTitle("Qt Styling Template Demo")
         self.resize(900, 600)
@@ -359,7 +361,7 @@ class DemoWindow(QMainWindow):
 
         self._refresh_notebook_sidebar()
 
-    def _create_sidebar_dock(self, object_name: str, title: str) -> QDockWidget:
+    def _create_sidebar_dock(self, object_name: str, title: str) -> QDockWidgetType:
         dock = QDockWidget(title, self)
         dock.setObjectName(object_name)
         dock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
@@ -374,7 +376,7 @@ class DemoWindow(QMainWindow):
             width = min(width, MAX_SIDEBAR_WIDTH)
         return width
 
-    def _apply_sidebar_width(self, dock: QDockWidget) -> None:
+    def _apply_sidebar_width(self, dock: QDockWidgetType) -> None:
         width = self._normalize_sidebar_width(DEFAULT_SIDEBAR_WIDTH)
         try:
             self.resizeDocks([dock], [width], Qt.Orientation.Horizontal)
