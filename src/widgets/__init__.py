@@ -1,6 +1,6 @@
 """Widget specific style modules."""
 
-from . import buttons, main_menubar, statusbar, cell_container, cell_gutter
+from . import buttons, cell_container, cell_gutter, main_menubar, sidebars, statusbar
 
 __all__ = [
     "buttons",
@@ -8,4 +8,5 @@ __all__ = [
     "statusbar",
     "cell_container",
     "cell_gutter",
+    "sidebars",
 ]

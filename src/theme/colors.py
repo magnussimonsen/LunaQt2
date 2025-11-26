@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from theme.metrics import Metrics
 from theme.mode import ThemeMode
 
-
 @dataclass(frozen=True)
 class ModeAwareColor:
     """Represents a color that supports both light and dark variants."""
@@ -24,16 +23,16 @@ class ModeAwareColor:
 
 # --- Mode-aware tokens ----------------------------------------------------
 
-
 class _BGTokens:
     app = ModeAwareColor(light="#f4f4f4", dark="#1e1e1e")
-    menubar = ModeAwareColor(light="#f0f0f0", dark="#2b2b2b")
+    menubar = ModeAwareColor(light="#c91919", dark="#2b2b2b")
     statusbar = ModeAwareColor(light="#f7f7f7", dark="#252525")
     dropdown = ModeAwareColor(light="#ffffff", dark="#333333")
     cell = ModeAwareColor(light="#ffffff", dark="#1f1f1f")
     cell_gutter = ModeAwareColor(light="#ededed", dark="#181818")
-    toolbar = ModeAwareColor(light="#707070", dark="#2a2a2a")
-    sidebar = ModeAwareColor(light="#707070", dark="#2a2a2a") # Sidebar is not implemented, yet, but it will be soon
+    toolbar = ModeAwareColor(light="#009B00", dark="#2a2a2a")
+    sidebar = ModeAwareColor(light="#EE0000", dark="#2a2a2a")
+    sidebar_toolbar = ModeAwareColor(light="#A70707", dark="#333333")
 
 
 class _BorderTokens:
@@ -44,20 +43,17 @@ class _BorderTokens:
     cell_gutter = ModeAwareColor(light="#d5d5d5", dark="#2a2a2a")
     cell_in_focus = ModeAwareColor(light="#4a90e2", dark="#5ea2ff")
 
-
 class _TextTokens:
     primary = ModeAwareColor(light="#111111", dark="#fafafa")
     secondary = ModeAwareColor(light="#333333", dark="#c0c0c0")
     muted = ModeAwareColor(light="#666666", dark="#8a8a8a")
     warning = ModeAwareColor(light="#b05a00", dark="#f5d17a")
 
-
 class _ViewportTokens:
     base = _BGTokens.cell
     alternate = ModeAwareColor(light="#f6f6f6", dark="#232323")
     selection = ModeAwareColor(light="#cfe1ff", dark="#2e4a70")
     selection_text = _TextTokens.primary
-
 
 @dataclass(frozen=True)
 class ButtonPaletteTokens:
@@ -110,13 +106,11 @@ class _ButtonTokens:
         focus=ModeAwareColor(light="#ff8800", dark="#ffa45c"),
     )
 
-
 class _MenuTokens:
     background = _BGTokens.menubar
     text = _TextTokens.primary
     item_hover = ModeAwareColor(light="#e0e0e0", dark="#3d3d3d")
     separator = _BorderTokens.subtle
-
 
 class _StatusBarTokens:
     background = _BGTokens.statusbar
@@ -126,8 +120,6 @@ class _StatusBarTokens:
 
 
 # --- Resolved palette structures -----------------------------------------
-
-
 @dataclass(frozen=True)
 class BackgroundPalette:
     app: str
@@ -137,7 +129,8 @@ class BackgroundPalette:
     cell: str
     cell_gutter: str
     toolbar: str
-
+    sidebar: str
+    sidebar_toolbar: str
 
 @dataclass(frozen=True)
 class BorderPalette:
@@ -148,7 +141,6 @@ class BorderPalette:
     cell_gutter: str
     cell_in_focus: str
 
-
 @dataclass(frozen=True)
 class TextPalette:
     primary: str
@@ -156,14 +148,12 @@ class TextPalette:
     muted: str
     warning: str
 
-
 @dataclass(frozen=True)
 class ViewportPalette:
     base: str
     alternate: str
     selection: str
     selection_text: str
-
 
 @dataclass(frozen=True)
 class ButtonPalette:
@@ -175,13 +165,11 @@ class ButtonPalette:
     text: str
     focus: str
 
-
 @dataclass(frozen=True)
 class ButtonPalettes:
     primary: ButtonPalette
     toolbar: ButtonPalette
     warning: ButtonPalette
-
 
 @dataclass(frozen=True)
 class MenuPalette:
@@ -190,14 +178,12 @@ class MenuPalette:
     item_hover: str
     separator: str
 
-
 @dataclass(frozen=True)
 class StatusBarPalette:
     background: str
     text: str
     border_top: str
     warning: str
-
 
 @dataclass(frozen=True)
 class Theme:
@@ -211,10 +197,7 @@ class Theme:
     statusbar: StatusBarPalette
     metrics: Metrics
 
-
 # --- Factory --------------------------------------------------------------
-
-
 def _resolve_bg(mode: ThemeMode) -> BackgroundPalette:
     tokens = _BGTokens
     return BackgroundPalette(
@@ -225,6 +208,8 @@ def _resolve_bg(mode: ThemeMode) -> BackgroundPalette:
         cell=tokens.cell.value_for(mode),
         cell_gutter=tokens.cell_gutter.value_for(mode),
         toolbar=tokens.toolbar.value_for(mode),
+        sidebar=tokens.sidebar.value_for(mode),
+        sidebar_toolbar=tokens.sidebar_toolbar.value_for(mode),
     )
 
 

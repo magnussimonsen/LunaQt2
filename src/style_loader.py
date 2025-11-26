@@ -6,13 +6,15 @@ from typing import Iterable, Protocol
 
 from theme import Theme, ThemeMode, get_theme
 from widgets import buttons, cell_container, cell_gutter, main_menubar, statusbar
+from widgets import sidebars
 
 STYLE_MODULES = (
     buttons,
-    main_menubar,
-    statusbar,
     cell_container,
     cell_gutter,
+    main_menubar,
+    sidebars,
+    statusbar,
 )
 
 

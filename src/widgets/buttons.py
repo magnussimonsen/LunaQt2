@@ -7,6 +7,18 @@ from textwrap import dedent
 from theme import Metrics, Theme, ThemeMode, get_theme
 
 
+def _with_alpha(hex_color: str, alpha: float) -> str:
+    """Return an rgba() string for the given hex color and alpha."""
+
+    value = hex_color.lstrip("#")
+    if len(value) != 6:
+        return hex_color
+    r = int(value[0:2], 16)
+    g = int(value[2:4], 16)
+    b = int(value[4:6], 16)
+    return f"rgba({r}, {g}, {b}, {alpha:.3f})"
+
+
 def _button_block(selector: str, palette, metrics: "Metrics") -> str:
     """Return a QSS block for a single button selector."""
 
@@ -37,7 +49,7 @@ def _button_block(selector: str, palette, metrics: "Metrics") -> str:
 
         {selector}:disabled {{
             background-color: {palette.disabled};
-            color: {palette.text}99;
+            color: {_with_alpha(palette.text, 0.6)};
             border-color: {palette.disabled};
         }}
 
