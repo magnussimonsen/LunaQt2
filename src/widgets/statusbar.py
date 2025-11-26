@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from qtstylingtemplate.theme import Theme, ThemeMode, get_theme
+from theme import Theme, ThemeMode, get_theme
 
 STATUSBAR_SELECTOR = 'QStatusBar#MainStatusBar'
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from qtstylingtemplate.theme import Metrics, Theme, ThemeMode, get_theme
+from theme import Metrics, Theme, ThemeMode, get_theme
 
 
 def _button_block(selector: str, palette, metrics: "Metrics") -> str:

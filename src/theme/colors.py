@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from qtstylingtemplate.theme.metrics import Metrics
-from qtstylingtemplate.theme.mode import ThemeMode
+from theme.metrics import Metrics
+from theme.mode import ThemeMode
 
 
 @dataclass(frozen=True)
@@ -33,6 +33,7 @@ class _BGTokens:
     cell = ModeAwareColor(light="#ffffff", dark="#1f1f1f")
     cell_gutter = ModeAwareColor(light="#ededed", dark="#181818")
     toolbar = ModeAwareColor(light="#707070", dark="#2a2a2a")
+    sidebar = ModeAwareColor(light="#707070", dark="#2a2a2a") # Sidebar is not implemented, yet, but it will be soon
 
 
 class _BorderTokens:

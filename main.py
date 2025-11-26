@@ -42,11 +42,11 @@ def _load_qt_widgets():  # pragma: no cover - import helper
 
 def _load_style_package():  # pragma: no cover - import helper
     try:
-        styling = import_module("qtstylingtemplate")
-        theme_mod = import_module("qtstylingtemplate.theme")
+        styling = import_module("style_loader")
+        theme_mod = import_module("theme")
     except ModuleNotFoundError as exc:
         raise SystemExit(
-            "Unable to import 'qtstylingtemplate'. Ensure the repo's 'src' directory is on PYTHONPATH."
+            "Unable to import 'style_loader' or 'theme'. Ensure the repo's 'src' directory is on PYTHONPATH."
         ) from exc
 
     return styling.apply_global_style, theme_mod.ThemeMode
@@ -54,10 +54,10 @@ def _load_style_package():  # pragma: no cover - import helper
 
 def _load_constants():  # pragma: no cover - import helper
     try:
-        constants = import_module("qtstylingtemplate.constants")
+        constants = import_module("constants")
     except ModuleNotFoundError as exc:
         raise SystemExit(
-            "Unable to import 'qtstylingtemplate.constants'. Ensure the repo's 'src' directory is on PYTHONPATH."
+            "Unable to import 'constants'. Ensure the repo's 'src' directory is on PYTHONPATH."
         ) from exc
 
     return constants.DEFAULT_THEME_MODE

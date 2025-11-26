@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Iterable, Protocol
 
-from qtstylingtemplate.theme import Theme, ThemeMode, get_theme
-from qtstylingtemplate.widgets import buttons, cell_container, cell_gutter, main_menubar, statusbar
+from theme import Theme, ThemeMode, get_theme
+from widgets import buttons, cell_container, cell_gutter, main_menubar, statusbar
 
 STYLE_MODULES = (
     buttons,

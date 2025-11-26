@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from qtstylingtemplate.theme import Theme, ThemeMode, get_theme
+from theme import Theme, ThemeMode, get_theme
 
 GUTTER_SELECTOR = 'QWidget[cellType="gutter"]'
 GUTTER_LABEL_SELECTOR = 'QLabel[cellRole="line-number"]'

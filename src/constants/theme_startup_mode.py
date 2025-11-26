@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from qtstylingtemplate.theme import ThemeMode
+from theme import ThemeMode
 
 # Default theme applied when the demo window launches before any user choice.
 DEFAULT_THEME_MODE: ThemeMode = ThemeMode.LIGHT
