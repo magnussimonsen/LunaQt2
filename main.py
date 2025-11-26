@@ -14,6 +14,8 @@ SRC_DIR = PROJECT_ROOT / "src"
 if SRC_DIR.exists() and str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
+from ui import NotebookSidebarWidget, SettingsSidebarWidget
+
 def _load_qt_widgets():  # pragma: no cover - import helper
     try:
         widgets = import_module("PySide6.QtWidgets")
@@ -26,6 +28,7 @@ def _load_qt_widgets():  # pragma: no cover - import helper
         gui.QAction,
         gui.QActionGroup,
         widgets.QApplication,
+        widgets.QDockWidget,
         widgets.QFrame,
         widgets.QHBoxLayout,
         widgets.QLabel,
@@ -60,12 +63,32 @@ def _load_constants():  # pragma: no cover - import helper
             "Unable to import 'constants'. Ensure the repo's 'src' directory is on PYTHONPATH."
         ) from exc
 
-    return constants.DEFAULT_THEME_MODE
+    return constants
 
 
-(QAction, QActionGroup, QApplication, QFrame, QHBoxLayout, QLabel, QMainWindow, QPushButton, QStatusBar, QToolBar, QVBoxLayout, QWidget, QEvent, Qt) = _load_qt_widgets()
+(
+    QAction,
+    QActionGroup,
+    QApplication,
+    QDockWidget,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QStatusBar,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+    QEvent,
+    Qt,
+) = _load_qt_widgets()
 apply_global_style, ThemeMode = _load_style_package()
-DEFAULT_THEME_MODE = _load_constants()
+constants_mod = _load_constants()
+DEFAULT_THEME_MODE = constants_mod.DEFAULT_THEME_MODE
+DEFAULT_SIDEBAR_WIDTH = constants_mod.DEFAULT_SIDEBAR_WIDTH
+MIN_SIDEBAR_WIDTH = constants_mod.MIN_SIDEBAR_WIDTH
+MAX_SIDEBAR_WIDTH = constants_mod.MAX_SIDEBAR_WIDTH
 
 
 class CellRow(QWidget):
@@ -163,6 +186,15 @@ class DemoWindow(QMainWindow):
         self._theme_group.setExclusive(True)
         self._theme_actions: dict[str, Any] = {}
         self._cell_rows: list[CellRow] = []
+        self._notebooks_panel: NotebookSidebarWidget | None = None
+        self._settings_panel: SettingsSidebarWidget | None = None
+        self._notebooks_dock: QDockWidget | None = None
+        self._settings_dock: QDockWidget | None = None
+        self._notebook_entries: list[dict[str, str]] = []
+        self._next_notebook_index = 1
+        self._active_notebook_id: str | None = None
+        self._notebooks_button: QPushButton | None = None
+        self._settings_button: QPushButton | None = None
 
         self.setWindowTitle("Qt Styling Template Demo")
         self.resize(900, 600)
@@ -171,6 +203,7 @@ class DemoWindow(QMainWindow):
         self._build_toolbar()
         self._build_central()
         self._build_statusbar()
+        self._build_sidebars()
 
     def _build_menubar(self) -> None:
         menu_bar = self.menuBar()
@@ -195,6 +228,32 @@ class DemoWindow(QMainWindow):
 
         # Ensure the action that matches the current theme is checked.
         self._theme_actions[self._mode.value].setChecked(True)
+
+        self._install_sidebar_corner_buttons(menu_bar)
+
+    def _install_sidebar_corner_buttons(self, menu_bar) -> None:
+        corner = QWidget(menu_bar)
+        layout = QHBoxLayout(corner)
+        layout.setContentsMargins(4, 0, 4, 0)
+        layout.setSpacing(6)
+
+        notebooks_button = QPushButton("Notebooks", corner)
+        notebooks_button.setCheckable(True)
+        notebooks_button.setProperty("btnType", "toolbar")
+        notebooks_button.toggled.connect(self._toggle_notebooks_sidebar)
+        layout.addWidget(notebooks_button)
+
+        settings_button = QPushButton("Settings", corner)
+        settings_button.setCheckable(True)
+        settings_button.setProperty("btnType", "toolbar")
+        settings_button.toggled.connect(self._toggle_settings_sidebar)
+        layout.addWidget(settings_button)
+
+        layout.addStretch(1)
+        menu_bar.setCornerWidget(corner, Qt.Corner.TopRightCorner)
+
+        self._notebooks_button = notebooks_button
+        self._settings_button = settings_button
 
     def _build_toolbar(self) -> None:
         toolbar = QToolBar("Main Toolbar")
@@ -270,6 +329,113 @@ class DemoWindow(QMainWindow):
         status.addPermanentWidget(warning_label)
 
         self.setStatusBar(status)
+
+    def _build_sidebars(self) -> None:
+        self._notebook_entries = [
+            {"notebook_id": "notebook-01", "title": "Physics Warmups"},
+            {"notebook_id": "notebook-02", "title": "Statistics Notes"},
+            {"notebook_id": "notebook-03", "title": "Blank Notebook"},
+        ]
+        self._next_notebook_index = len(self._notebook_entries) + 1
+        self._active_notebook_id = self._notebook_entries[0]["notebook_id"]
+
+        notebooks_dock = self._create_sidebar_dock("NotebooksDock", "Notebooks")
+        notebooks_panel = NotebookSidebarWidget(self)
+        notebooks_panel.add_notebook_clicked.connect(self._handle_sidebar_add_notebook)
+        notebooks_panel.notebook_selected.connect(self._handle_sidebar_select_notebook)
+        notebooks_panel.rename_notebook_requested.connect(self._handle_sidebar_rename_notebook)
+        notebooks_dock.setWidget(notebooks_panel)
+        notebooks_dock.hide()
+
+        settings_dock = self._create_sidebar_dock("SettingsDock", "Settings")
+        settings_panel = SettingsSidebarWidget(self)
+        settings_dock.setWidget(settings_panel)
+        settings_dock.hide()
+
+        self._notebooks_dock = notebooks_dock
+        self._settings_dock = settings_dock
+        self._notebooks_panel = notebooks_panel
+        self._settings_panel = settings_panel
+
+        self._refresh_notebook_sidebar()
+
+    def _create_sidebar_dock(self, object_name: str, title: str) -> QDockWidget:
+        dock = QDockWidget(title, self)
+        dock.setObjectName(object_name)
+        dock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
+        dock.setFeatures(QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
+        return dock
+
+    def _normalize_sidebar_width(self, desired: int | None) -> int:
+        width = desired or DEFAULT_SIDEBAR_WIDTH
+        width = max(width, MIN_SIDEBAR_WIDTH)
+        if MAX_SIDEBAR_WIDTH:
+            width = min(width, MAX_SIDEBAR_WIDTH)
+        return width
+
+    def _apply_sidebar_width(self, dock: QDockWidget) -> None:
+        width = self._normalize_sidebar_width(DEFAULT_SIDEBAR_WIDTH)
+        try:
+            self.resizeDocks([dock], [width], Qt.Orientation.Horizontal)
+        except Exception:
+            pass
+
+    def _toggle_notebooks_sidebar(self, checked: bool) -> None:
+        if not self._notebooks_dock:
+            return
+        if checked:
+            if self._settings_button:
+                self._settings_button.setChecked(False)
+            self._notebooks_dock.show()
+            self._apply_sidebar_width(self._notebooks_dock)
+        else:
+            self._notebooks_dock.hide()
+
+    def _toggle_settings_sidebar(self, checked: bool) -> None:
+        if not self._settings_dock:
+            return
+        if checked:
+            if self._notebooks_button:
+                self._notebooks_button.setChecked(False)
+            self._settings_dock.show()
+            self._apply_sidebar_width(self._settings_dock)
+        else:
+            self._settings_dock.hide()
+
+    def _handle_sidebar_add_notebook(self) -> None:
+        new_id = f"notebook-{self._next_notebook_index:02d}"
+        self._next_notebook_index += 1
+        entry = {"notebook_id": new_id, "title": f"Notebook {self._next_notebook_index - 1:02d}"}
+        self._notebook_entries.insert(0, entry)
+        self._active_notebook_id = new_id
+        self._refresh_notebook_sidebar()
+        self._show_status("Notebook added")
+
+    def _handle_sidebar_select_notebook(self, notebook_id: str) -> None:
+        self._active_notebook_id = notebook_id
+        if self._notebooks_panel:
+            self._notebooks_panel.set_active_notebook(notebook_id)
+        title = next((nb["title"] for nb in self._notebook_entries if nb["notebook_id"] == notebook_id), None)
+        if title:
+            self._show_status(f"Selected {title}")
+
+    def _handle_sidebar_rename_notebook(self, notebook_id: str, new_title: str) -> None:
+        for notebook in self._notebook_entries:
+            if notebook["notebook_id"] == notebook_id:
+                notebook["title"] = new_title
+                self._show_status("Notebook renamed")
+                break
+
+    def _refresh_notebook_sidebar(self) -> None:
+        if not self._notebooks_panel:
+            return
+        self._notebooks_panel.set_notebooks(list(self._notebook_entries), self._active_notebook_id)
+
+    def _show_status(self, message: str) -> None:
+        status = self.statusBar()
+        if status:
+            status.showMessage(message, 2500)
 
     def _switch_theme(self, mode) -> None:
         if mode == self._mode:
