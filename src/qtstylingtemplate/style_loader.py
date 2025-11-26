@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover - imported only for type checking
-    from PySide6.QtWidgets import QApplication
+from typing import Iterable, Protocol
 
 from qtstylingtemplate.theme import Theme, ThemeMode, get_theme
 from qtstylingtemplate.widgets import buttons, cell_container, cell_gutter, main_menubar, statusbar
@@ -56,7 +53,12 @@ def build_application_qss(
     return _collect_qss(STYLE_MODULES, theme)
 
 
-def apply_global_style(app: "QApplication", mode: ThemeMode = ThemeMode.DARK) -> None:
+class _HasStyleSheet(Protocol):
+    def setStyleSheet(self, style: str, /) -> None:  # pragma: no cover - runtime provided by Qt
+        ...
+
+
+def apply_global_style(app: _HasStyleSheet, mode: ThemeMode = ThemeMode.DARK) -> None:
     """Apply the assembled QSS onto the provided QApplication instance."""
 
     app.setStyleSheet(build_application_qss(mode=mode))

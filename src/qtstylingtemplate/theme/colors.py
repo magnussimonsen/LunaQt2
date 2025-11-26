@@ -72,7 +72,7 @@ class _BorderTokens:
     highlight = ModeAwareColor(light="#4a90e2", dark="#5a5a5a")
     cell = ModeAwareColor(light="#cfcfcf", dark="#3a3a3a")
     cell_gutter = ModeAwareColor(light="#d5d5d5", dark="#2a2a2a")
-    cell_in_focus = ModeAwareColor(light="#4a90e2", dark="#5a5a5a")
+    cell_in_focus = ModeAwareColor(light="#4a90e2", dark="#5ea2ff")
 
 
 class _TextTokens:

@@ -31,7 +31,8 @@ def get_qss(
             color: {text.muted};
         }}
 
-        {GUTTER_SELECTOR}[state="focused"] {{
+        {GUTTER_SELECTOR}[state="focused"],
+        {GUTTER_SELECTOR}[state="selected"] {{
             border-color: {border.cell_in_focus};
         }}
         """

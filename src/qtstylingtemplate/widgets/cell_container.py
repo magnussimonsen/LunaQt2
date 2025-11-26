@@ -6,8 +6,10 @@ from textwrap import dedent
 
 from qtstylingtemplate.theme import Theme, ThemeMode, get_theme
 
+CELL_LIST_SELECTOR = 'QWidget[cellType="list"]'
 CELL_SELECTOR = 'QFrame[cellType="container"]'
 CELL_HEADER_SELECTOR = 'QWidget[cellPart="header"]'
+CELL_BODY_SELECTOR = 'QWidget[cellPart="body"]'
 
 
 def get_qss(
@@ -23,6 +25,14 @@ def get_qss(
     text = theme.text
     viewport = theme.viewport
 
+    list_styling = dedent(
+        f"""
+        {CELL_LIST_SELECTOR} {{
+            background: transparent;
+        }}
+        """
+    ).strip()
+
     container = dedent(
         f"""
         {CELL_SELECTOR} {{
@@ -32,9 +42,9 @@ def get_qss(
             padding: {metrics.padding_md}px;
         }}
 
-        {CELL_SELECTOR}[state="focused"] {{
+        {CELL_SELECTOR}[state="focused"],
+        {CELL_SELECTOR}[state="selected"] {{
             border-color: {border.cell_in_focus};
-            box-shadow: 0 0 0 1px {border.cell_in_focus};
         }}
         """
     ).strip()
@@ -51,7 +61,16 @@ def get_qss(
         """
     ).strip()
 
-    viewport = dedent(
+    body = dedent(
+        f"""
+        {CELL_SELECTOR} > {CELL_BODY_SELECTOR} {{
+            color: {text.primary};
+            font-size: {metrics.font_size_md}pt;
+        }}
+        """
+    ).strip()
+
+    viewport_block = dedent(
         f"""
         {CELL_SELECTOR} QTextEdit,
         {CELL_SELECTOR} QTableView {{
@@ -65,7 +84,7 @@ def get_qss(
         """
     ).strip()
 
-    return "\n\n".join([container, header, viewport])
+    return "\n\n".join([list_styling, container, header, body, viewport_block])
 
 
 __all__ = ["get_qss"]

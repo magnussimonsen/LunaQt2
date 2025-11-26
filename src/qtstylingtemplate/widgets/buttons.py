@@ -44,7 +44,6 @@ def _button_block(selector: str, palette, metrics: "Metrics") -> str:
         {selector}:focus-visible {{
             outline: none;
             border-color: {palette.focus};
-            box-shadow: 0 0 0 1px {palette.focus};
         }}
         """
     ).strip()
@@ -79,9 +78,9 @@ def get_qss(
 
     focus_reset = dedent(
         """
-        QPushButton {{
+        QPushButton {
             outline: none;
-        }}
+        }
         """
     ).strip()
 
