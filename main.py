@@ -266,7 +266,8 @@ class DemoWindow(QMainWindow):
         toolbar = QToolBar("Main Toolbar")
         toolbar.setObjectName("PrimaryToolBar")
         toolbar.setMovable(False)
-
+        layout = QHBoxLayout(toolbar)
+        layout.setContentsMargins(0, 0, 0, 0)
         primary_btn = QPushButton("Primary")
         primary_btn.setProperty("btnType", "primary")
 

@@ -41,7 +41,7 @@ def button_tokens(metrics: Metrics) -> ButtonTokens:
         toolbar_padding_y=metrics.padding_extra_small,
         toolbar_min_height=metrics.min_toolbar_height,
         toolbar_radius=metrics.radius_small,
-        toolbar_border_width=metrics.border_width_small,
+        toolbar_border_width=metrics.border_width_zero,
         menubar_padding_x=metrics.padding_medium,
         menubar_padding_y=metrics.padding_small,
         menubar_min_height=metrics.min_menubar_height,

@@ -25,9 +25,9 @@ class Metrics:
     padding_extra_large: int = 12
 
     gutter_width: int = 12
-    min_toolbar_height: int = 10
-    min_menubar_height: int = 10
-    min_statusbar_height: int = 10
+    min_toolbar_height: int = 5
+    min_menubar_height: int = 5
+    min_statusbar_height: int = 32
 
     # Sidebar sizing
     sidebar_default_width: int = 320
