@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from theme import Theme, ThemeMode, get_theme
+from theme import Theme, ThemeMode, get_theme, sidebar_tokens
 
 SIDEBAR_DOCK_SELECTOR = "QDockWidget#NotebooksDock, QDockWidget#SettingsDock"
 SIDEBAR_ACTION_ROW_SELECTOR = 'QWidget[sidebarRole="action-row"]'
@@ -18,6 +18,7 @@ def get_qss(
 
     theme = theme or get_theme(mode)
     metrics = theme.metrics
+    spacing = sidebar_tokens(metrics)
     bg = theme.bg
     border = theme.border
     text = theme.text
@@ -27,7 +28,7 @@ def get_qss(
         {SIDEBAR_DOCK_SELECTOR} {{
             background-color: {bg.sidebar_content};
             color: {text.primary};
-            border-left: {metrics.border_width}px solid {border.strong};
+            border-left: {spacing.dock_border_width}px solid {border.strong};
         }}
 
         QDockWidget#NotebooksDock::title,
@@ -35,7 +36,7 @@ def get_qss(
             background-color: {bg.sidebar_header};
             color: {text.primary};
             text-align: left;
-            padding: {metrics.padding_small}px;
+            padding: {spacing.header_padding}px;
         }}
 
         {SIDEBAR_DOCK_SELECTOR} > QWidget {{
@@ -54,8 +55,8 @@ def get_qss(
         QWidget[sidebarRole="toolbar"] {{
             background-color: {bg.sidebar_toolbar};
             color: {text.primary};
-            padding: {metrics.padding_small}px;
-            border-bottom: {metrics.border_width}px solid {border.strong};
+            padding: {spacing.toolbar_padding}px;
+            border-bottom: {spacing.toolbar_border_width}px solid {border.strong};
         }}
 
         QWidget[sidebarRole="toolbar"] QLabel {{
@@ -69,8 +70,8 @@ def get_qss(
 
         {SIDEBAR_ACTION_ROW_SELECTOR} {{
             background-color: {bg.sidebar_toolbar};
-            border-radius: {metrics.radius_small}px;
-            padding: {metrics.padding_extra_small}px {metrics.padding_small}px;
+            border-radius: {spacing.action_row_radius}px;
+            padding: {spacing.action_row_padding_y}px {spacing.action_row_padding_x}px;
         }}
         """
     ).strip()
@@ -102,8 +103,8 @@ def get_qss(
         QDockWidget#NotebooksDock QSpinBox,
         QDockWidget#SettingsDock QSpinBox {{
             background-color: {bg.sidebar_content};
-            border: {metrics.border_width}px solid {border.subtle};
-            padding: {metrics.padding_small}px;
+            border: {spacing.input_border_width}px solid {border.subtle};
+            padding: {spacing.input_padding}px;
         }}
 
         QDockWidget#NotebooksDock QComboBox:hover,

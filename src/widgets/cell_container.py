@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from theme import Theme, ThemeMode, get_theme
+from theme import Theme, ThemeMode, cell_container_tokens, get_theme
 
 CELL_LIST_SELECTOR = 'QWidget[cellType="list"]'
 CELL_SELECTOR = 'QFrame[cellType="container"]'
@@ -20,6 +20,7 @@ def get_qss(
 
     theme = theme or get_theme(mode)
     metrics = theme.metrics
+    spacing = cell_container_tokens(metrics)
     bg = theme.bg
     border = theme.border
     text = theme.text
@@ -37,9 +38,9 @@ def get_qss(
         f"""
         {CELL_SELECTOR} {{
             background-color: {bg.cell};
-            border: {metrics.border_width}px solid {border.cell};
-            border-radius: {metrics.radius_medium}px;
-            padding: {metrics.padding_medium}px;
+            border: {spacing.border_width}px solid {border.cell};
+            border-radius: {spacing.border_radius}px;
+            padding: {spacing.padding}px;
         }}
 
         {CELL_SELECTOR}[state="focused"],
@@ -52,7 +53,8 @@ def get_qss(
     header = dedent(
         f"""
         {CELL_SELECTOR} > {CELL_HEADER_SELECTOR} {{
-            margin-bottom: {metrics.padding_small}px;
+            background-color: {bg.cell};
+            margin-bottom: {spacing.header_margin_bottom}px;
             color: {text.secondary};
             font-size: {metrics.font_size_small}pt;
             text-transform: uppercase;
@@ -64,6 +66,7 @@ def get_qss(
     body = dedent(
         f"""
         {CELL_SELECTOR} > {CELL_BODY_SELECTOR} {{
+            background-color: {bg.cell};
             color: {text.primary};
             font-size: {metrics.font_size_medium}pt;
         }}

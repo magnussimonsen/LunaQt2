@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-from theme import Theme, ThemeMode, get_theme
+from theme import Theme, ThemeMode, cell_gutter_tokens, get_theme
 
 GUTTER_SELECTOR = 'QWidget[cellType="gutter"]'
 GUTTER_LABEL_SELECTOR = 'QLabel[cellRole="line-number"]'
@@ -18,6 +18,7 @@ def get_qss(
 
     theme = theme or get_theme(mode)
     metrics = theme.metrics
+    spacing = cell_gutter_tokens(metrics)
     bg = theme.bg
     border = theme.border
     text = theme.text
@@ -26,8 +27,9 @@ def get_qss(
         f"""
         {GUTTER_SELECTOR} {{
             background-color: {bg.cell_gutter};
-            border-right: {metrics.border_width}px solid {border.cell_gutter};
-            padding: 0 {metrics.padding_small}px;
+            border-right: {spacing.border_width}px solid {bg.cell_gutter};
+            border-radius: {spacing.border_radius}px;
+            padding: 0 {spacing.padding_horizontal}px;
             color: {text.muted};
         }}
 
@@ -41,8 +43,9 @@ def get_qss(
     labels = dedent(
         f"""
         {GUTTER_SELECTOR} > {GUTTER_LABEL_SELECTOR} {{
+            background-color: {bg.cell_gutter};
             color: {text.secondary};
-            min-width: 32px;
+            min-width: {spacing.label_min_width}px;
             qproperty-alignment: 'AlignRight | AlignVCenter';
             font-family: {metrics.font_family};
             font-size: {metrics.font_size_small}pt;

@@ -39,6 +39,7 @@ def _load_qt_widgets():  # pragma: no cover - import helper
         widgets.QLabel,
         widgets.QMainWindow,
         widgets.QPushButton,
+        widgets.QSizePolicy,
         widgets.QStatusBar,
         widgets.QToolBar,
         widgets.QVBoxLayout,
@@ -81,6 +82,7 @@ def _load_constants():  # pragma: no cover - import helper
     QLabel,
     QMainWindow,
     QPushButton,
+    QSizePolicy,
     QStatusBar,
     QToolBar,
     QVBoxLayout,
@@ -115,13 +117,13 @@ class CellRow(QWidget):
         self._selected = False
 
         row_layout = QHBoxLayout(self)
-        row_layout.setContentsMargins(0, 0, 0, 12)
-        row_layout.setSpacing(8)
+        row_layout.setContentsMargins(0, 0, 0, 0) # Margin between cells Left Top Right Bottom
+        row_layout.setSpacing(5)
 
         self._gutter = QWidget()
         self._gutter.setProperty("cellType", "gutter")
         gutter_layout = QVBoxLayout(self._gutter)
-        gutter_layout.setContentsMargins(12, 12, 12, 12)
+        gutter_layout.setContentsMargins(5, 0, 5, 0)  # Gutter margins Left Top Right Bottom
         gutter_layout.setSpacing(0)
 
         gutter_label = QLabel(f"{index:02d}")
@@ -134,9 +136,9 @@ class CellRow(QWidget):
         self._cell_frame = QFrame()
         self._cell_frame.setProperty("cellType", "container")
         cell_layout = QVBoxLayout(self._cell_frame)
-        cell_layout.setContentsMargins(12, 12, 12, 12)
-        cell_layout.setSpacing(8)
-
+        cell_layout.setContentsMargins(0, 0, 0, 0) # Cell content margins Left Top Right Bottom
+        cell_layout.setSpacing(5)
+    
         header = QLabel(header_text)
         header.setProperty("cellPart", "header")
         header.setAttribute(Qt.WA_TransparentForMouseEvents, True)
@@ -235,21 +237,22 @@ class DemoWindow(QMainWindow):
 
         self._install_sidebar_corner_buttons(menu_bar)
 
-    def _install_sidebar_corner_buttons(self, menu_bar) -> None:
+    def _install_sidebar_corner_buttons(self, menu_bar) -> None: # The buttons Settings, Notebooks and so on
         corner = QWidget(menu_bar)
+        #corner.setFixedHeight(32)
         layout = QHBoxLayout(corner)
-        layout.setContentsMargins(4, 0, 4, 0)
-        layout.setSpacing(6)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
         notebooks_button = QPushButton("Notebooks", corner)
         notebooks_button.setCheckable(True)
-        notebooks_button.setProperty("btnType", "toolbar")
+        notebooks_button.setProperty("btnType", "menubar")
         notebooks_button.toggled.connect(self._toggle_notebooks_sidebar)
         layout.addWidget(notebooks_button)
 
         settings_button = QPushButton("Settings", corner)
         settings_button.setCheckable(True)
-        settings_button.setProperty("btnType", "toolbar")
+        settings_button.setProperty("btnType", "menubar")
         settings_button.toggled.connect(self._toggle_settings_sidebar)
         layout.addWidget(settings_button)
 
@@ -282,13 +285,13 @@ class DemoWindow(QMainWindow):
     def _build_central(self) -> None:
         central = QWidget()
         layout = QVBoxLayout(central)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(16)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
         cell_list = QWidget()
         cell_list.setProperty("cellType", "list")
         list_layout = QVBoxLayout(cell_list)
-        list_layout.setContentsMargins(0, 0, 0, 0)
+        list_layout.setContentsMargins(5, 5, 5, 5)
         list_layout.setSpacing(0)
 
         sample_cells = [

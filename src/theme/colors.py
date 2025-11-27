@@ -22,7 +22,7 @@ class ModeAwareColor:
 
 
 # --- Mode-aware tokens ----------------------------------------------------
-
+# THE COLOR VALUES HERE ARE ALL OVER THE PLACE SINCE WE ARE TESTING IF THIS STRUCTURE WORKS
 class _BGTokens:
     app = ModeAwareColor(light="#00950a", dark="#1e1e1e")
     menubar = ModeAwareColor(light="#b20e0e", dark="#2b2b2b")
@@ -36,7 +36,7 @@ class _BGTokens:
     sidebar_toolbar = ModeAwareColor(light="#A70707", dark="#333333") 
 
 class _BorderTokens:
-    subtle = ModeAwareColor(light="#dcdcdc", dark="#2d2d2d")
+    subtle = ModeAwareColor(light="#8a0d0d", dark="#2d2d2d")
     strong = ModeAwareColor(light="#bcbcbc", dark="#3a3a3a")
     highlight = ModeAwareColor(light="#4a90e2", dark="#5a5a5a")
     cell = ModeAwareColor(light="#cfcfcf", dark="#3a3a3a")
@@ -105,6 +105,15 @@ class _ButtonTokens:
         text=_TextTokens.primary,
         focus=ModeAwareColor(light="#ff8800", dark="#ffa45c"),
     )
+    menubar = ButtonPaletteTokens(
+        normal=ModeAwareColor(light="#f0f0f0", dark="#3a3a3a"),
+        hover=ModeAwareColor(light="#e2e2e2", dark="#4a4a4a"),
+        pressed=ModeAwareColor(light="#d0d0d0", dark="#2b2b2b"),
+        disabled=ModeAwareColor(light="#f8f8f8", dark="#1f1f1f"),
+        border=ModeAwareColor(light="#bcbcbc", dark="#5a5a5a"),
+        text=_TextTokens.primary,
+        focus=_BorderTokens.highlight,
+    )
 
 class _MenuTokens:
     background = _BGTokens.menubar
@@ -171,6 +180,7 @@ class ButtonPalette:
 class ButtonPalettes:
     primary: ButtonPalette
     toolbar: ButtonPalette
+    menubar: ButtonPalette
     warning: ButtonPalette
 
 @dataclass(frozen=True)
@@ -253,6 +263,7 @@ def _resolve_buttons(mode: ThemeMode) -> ButtonPalettes:
     return ButtonPalettes(
         primary=tokens.primary.resolve(mode),
         toolbar=tokens.toolbar.resolve(mode),
+        menubar=tokens.menubar.resolve(mode),
         warning=tokens.warning.resolve(mode),
     )
 
