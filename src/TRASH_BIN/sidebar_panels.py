@@ -1,4 +1,4 @@
-"""Reusable sidebar widgets for the demo UI."""
+"""Reusable sidebar widgets for the LunaQt2 UI."""
 
 from __future__ import annotations
 
@@ -139,7 +139,7 @@ class NotebookSidebarWidget(QWidget):
 
 
 class SettingsSidebarWidget(QWidget):
-    """Lightweight placeholder settings form for the demo window."""
+    """Lightweight placeholder settings form for the LunaQt2 window."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)

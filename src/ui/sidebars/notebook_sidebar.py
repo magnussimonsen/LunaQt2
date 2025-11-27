@@ -1,4 +1,4 @@
-"""Notebook sidebar widget used by the demo window."""
+"""Notebook sidebar widget used by the LunaQt2 window."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Lightweight UI helper widgets used by the demo window."""
+"""Lightweight UI helper widgets used by the LunaQt2 window."""
 
 from .sidebars import NotebookSidebarWidget, SettingsSidebarWidget
 

@@ -196,8 +196,8 @@ class CellRow(QWidget):
         widget.style().polish(widget)
 
 
-class DemoWindow(QMainWindow):
-    """Minimal window that lights up the different style modules."""
+class LunaQtWindow(QMainWindow):
+    """Main LunaQt2 window that lights up the different style modules."""
 
     def __init__(
         self,
@@ -335,7 +335,7 @@ class DemoWindow(QMainWindow):
             ),
             (
                 "Custom Content",
-                "Swap these labels for your own widgets; the demo just showcases layout and styling hooks.",
+                "Swap these labels for your own widgets; LunaQt2 just showcases layout and styling hooks.",
             ),
         ]
 
@@ -520,7 +520,7 @@ def main() -> None:
 
     apply_global_style(app, mode=mode, metrics=initial_metrics)
 
-    window = DemoWindow(
+    window = LunaQtWindow(
         app,
         mode,
         ui_font_choices=AVAILABLE_UI_FONT_FAMILIES,
