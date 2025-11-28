@@ -34,6 +34,7 @@ class Metrics:
     min_toolbar_height: int = 5
     min_menubar_height: int = 5
 
+    min_main_menubar_height: int = 5
     min_main_toolbar_height: int = 5 
     min_sidebar_toolbar_height: int = 5
 

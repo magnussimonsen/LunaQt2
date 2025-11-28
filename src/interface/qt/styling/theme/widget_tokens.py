@@ -9,38 +9,56 @@ from .metrics import Metrics
 
 @dataclass(frozen=True)
 class ButtonTokens:
-    border_width: int
-    radius: int
-    padding_y: int
-    padding_x: int
-    toolbar_padding_y: int
-    toolbar_padding_x: int
-    toolbar_min_height: int
-    toolbar_radius: int
-    toolbar_border_width: int
-    menubar_padding_y: int
-    menubar_padding_x: int
-    menubar_min_height: int
-    menubar_radius: int
-    menubar_border_width: int
+    main_menubar_border_width: int
+    main_menubar_padding_top: int
+    main_menubar_padding_bottom: int
+    main_menubar_padding_left: int
+    main_menubar_padding_right: int
+    main_menubar_min_height: int
+    main_menubar_radius: int
+
+    main_toolbar_border_width: int
+    main_toolbar_padding_top: int
+    main_toolbar_padding_bottom: int
+    main_toolbar_padding_left: int
+    main_toolbar_padding_right: int
+    main_toolbar_min_height: int
+    main_toolbar_radius: int
+
+    sidebar_toolbar_border_width: int
+    sidebar_toolbar_padding_top: int
+    sidebar_toolbar_padding_bottom: int
+    sidebar_toolbar_padding_left: int
+    sidebar_toolbar_padding_right: int
+    sidebar_toolbar_min_height: int
+    sidebar_toolbar_radius: int
 
 
 def button_tokens(metrics: Metrics) -> ButtonTokens:
     return ButtonTokens(
-        border_width=metrics.border_width_small,
-        radius=metrics.radius_medium,
-        padding_x=metrics.padding_medium,
-        padding_y=metrics.padding_small,
-        toolbar_padding_x=metrics.padding_small,
-        toolbar_padding_y=metrics.padding_extra_small,
-        toolbar_min_height=metrics.min_toolbar_height,
-        toolbar_radius=metrics.radius_small,
-        toolbar_border_width=metrics.border_width_zero,
-        menubar_padding_x=metrics.padding_medium,
-        menubar_padding_y=metrics.padding_small,
-        menubar_min_height=metrics.min_menubar_height,
-        menubar_radius=metrics.radius_zero,
-        menubar_border_width=metrics.border_width_small,
+        main_menubar_border_width=metrics.border_width_small,
+        main_menubar_padding_top=metrics.padding_small,
+        main_menubar_padding_bottom=metrics.padding_small,
+        main_menubar_padding_left=metrics.padding_medium,
+        main_menubar_padding_right=metrics.padding_medium,
+        main_menubar_min_height=metrics.min_main_menubar_height,
+        main_menubar_radius=metrics.radius_small,
+
+        main_toolbar_border_width=metrics.border_width_small,
+        main_toolbar_padding_top=metrics.padding_small,
+        main_toolbar_padding_bottom=metrics.padding_small,
+        main_toolbar_padding_left=metrics.padding_medium,
+        main_toolbar_padding_right=metrics.padding_medium,
+        main_toolbar_min_height=metrics.min_main_toolbar_height,
+        main_toolbar_radius=metrics.radius_small,
+
+        sidebar_toolbar_border_width=metrics.border_width_small,
+        sidebar_toolbar_padding_top=metrics.padding_small,
+        sidebar_toolbar_padding_bottom=metrics.padding_small,
+        sidebar_toolbar_padding_left=metrics.padding_medium,
+        sidebar_toolbar_padding_right=metrics.padding_medium,
+        sidebar_toolbar_min_height=metrics.min_sidebar_toolbar_height,
+        sidebar_toolbar_radius=metrics.radius_small,
     )
 
 
@@ -82,7 +100,14 @@ def cell_gutter_tokens(metrics: Metrics) -> CellGutterTokens:
 class MenuBarTokens:
     border_width: int
     spacing: int
-    padding_horizontal: int
+    padding_top: int
+    padding_bottom: int
+    padding_left: int
+    padding_right: int
+    margin_top: int
+    margin_bottom: int
+    margin_left: int
+    margin_right: int
     min_height: int
     item_padding_y: int
     item_padding_x: int
@@ -96,11 +121,26 @@ class MenuBarTokens:
 def menubar_tokens(metrics: Metrics) -> MenuBarTokens:
     return MenuBarTokens(
         border_width=metrics.border_width_zero,
+
         spacing=metrics.padding_small,
-        padding_horizontal=metrics.padding_zero,
+
+        padding_top=metrics.padding_medium,
+        padding_bottom=metrics.padding_large,
+        padding_left=metrics.padding_medium,
+        padding_right=metrics.padding_medium,
+
+        margin_top=metrics.padding_zero,
+        margin_bottom=metrics.padding_zero,
+        margin_left=metrics.padding_zero,
+        margin_right=metrics.padding_zero,
+
         min_height=metrics.min_menubar_height,
+
+        # Menubar item paddings (File, Edit, View, etc.)
         item_padding_x=metrics.padding_small,
         item_padding_y=metrics.padding_small,
+
+        # Dropdown menu and dropdown items paddings
         menu_padding_y=metrics.padding_medium,
         menu_item_padding_x=metrics.padding_large,
         menu_item_padding_y=metrics.padding_extra_small,
@@ -156,10 +196,14 @@ class MainToolbarTokens:
     border_width: int
     border_radius: int
     spacing: int
-    padding_horizontal: int
-    padding_vertical: int
-    margin_horizontal: int
-    margin_vertical: int
+    padding_top: int
+    padding_bottom: int
+    padding_left: int
+    padding_right: int
+    margin_top: int
+    margin_bottom: int
+    margin_left: int
+    margin_right: int
     min_height: int
 
 
@@ -167,14 +211,21 @@ def main_toolbar_tokens(metrics: Metrics) -> MainToolbarTokens:
     return MainToolbarTokens(
         border_width=metrics.border_width_zero,
         border_radius=metrics.radius_zero,
+        
         spacing=metrics.padding_small,
-        padding_horizontal=metrics.padding_zero,
-        padding_vertical=metrics.padding_large,
-        margin_horizontal=metrics.padding_zero,
-        margin_vertical=metrics.padding_zero,
+
+        padding_top=metrics.padding_small,
+        padding_bottom=metrics.padding_medium,
+        padding_left=metrics.padding_medium,
+        padding_right=metrics.padding_medium,
+
+        margin_top=metrics.padding_zero,
+        margin_bottom=metrics.padding_zero,
+        margin_left=metrics.padding_zero,
+        margin_right=metrics.padding_zero,
+
         min_height=metrics.min_main_toolbar_height,
     )
-
 
 @dataclass(frozen=True)
 class SidebarToolbarTokens:

@@ -171,14 +171,14 @@ QPushButton[btnType="warning"]:focus-visible {
 QPushButton[btnType="toolbar"] {
     border: none;
     border-radius: 2px;
-    padding: 2px 4px;
+    padding: 4px 6px 4px 6px;
     min-height: 5px;
 }
 
 QPushButton[btnType="menubar"] {
     border: none;
-    border-radius: 0px;
-    padding: 4px 6px;
+    border-radius: 2px;
+    padding: 4px 6px 4px 6px;
     margin-top: 0px;
     margin-bottom: 0px;
 }
@@ -259,8 +259,8 @@ QMenuBar#MainMenuBar {
     background-color: #aaaaaa;
     color: #111111;
     spacing: 4px;
-    padding: 0px 0px;
-    margin: 0px;
+    padding: 6px 6px 8px 6px;
+    margin: 0px 0px 0px 0px;
     border-bottom: 0px solid #dddddd;
     border-top: 0px solid #dddddd;
     min-height: 5px;
@@ -312,8 +312,8 @@ QToolBar#PrimaryToolBar {
     background-color: #aaaaaa;
     color: #111111;
     spacing: 4px;
-    padding: 8px 0px ;
-    margin: 0px 0px ;
+    padding: 4px 6px 6px 6px;
+    margin: 0px 0px 0px 0px;
     border-top: 0px solid #dddddd;
     border-bottom: 0px solid #dddddd;
     border-radius: 0px;

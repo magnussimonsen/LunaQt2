@@ -32,8 +32,8 @@ def get_qss(
             background-color: {bg.toolbar};
             color: {theme.text.primary};
             spacing: {tokens.spacing}px;
-            padding: {tokens.padding_vertical}px {tokens.padding_horizontal}px ;
-            margin: {tokens.margin_vertical}px {tokens.margin_horizontal}px ;
+            padding: {tokens.padding_top}px {tokens.padding_right}px {tokens.padding_bottom}px {tokens.padding_left}px;
+            margin: {tokens.margin_top}px {tokens.margin_right}px {tokens.margin_bottom}px {tokens.margin_left}px;
             border-top: {tokens.border_width}px solid {border.transparent};
             border-bottom: {tokens.border_width}px solid {border.transparent};
             border-radius: {tokens.border_radius}px;

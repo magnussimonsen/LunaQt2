@@ -14,7 +14,7 @@ from interface.qt.styling.theme import (
 from shared.utils.hex_to_rgba import hex_to_rgba
 
 
-def _button_block(selector: str, palette, metrics, button_tokens: ButtonTokens) -> str:
+def _button_block(selector: str, palette, metrics) -> str:
     """Return a QSS block for a single button selector."""
 
     return dedent(
@@ -22,9 +22,9 @@ def _button_block(selector: str, palette, metrics, button_tokens: ButtonTokens) 
         {selector} {{
             background-color: {palette.normal};
             color: {palette.text};
-            border: {button_tokens.border_width}px solid {palette.border};
-            border-radius: {button_tokens.radius}px;
-            padding: {button_tokens.padding_y}px {button_tokens.padding_x}px;
+            border: 1px solid {palette.border};
+            border-radius: 4px;
+            padding: 4px 6px;
             font-family: {metrics.font_family};
             font-size: {metrics.font_size_medium}pt;
         }}
@@ -68,19 +68,19 @@ def get_qss(
     palettes = theme.buttons
 
     sections = [
-        _button_block('QPushButton[btnType="primary"]', palettes.primary, metrics, button_tokens),
-        _button_block('QPushButton[btnType="menubar"]', palettes.menubar, metrics, button_tokens),
-        _button_block('QPushButton[btnType="toolbar"]', palettes.main_toolbar, metrics, button_tokens),
-        _button_block('QPushButton[btnType="warning"]', palettes.warning, metrics, button_tokens),
+        _button_block('QPushButton[btnType="primary"]', palettes.primary, metrics),
+        _button_block('QPushButton[btnType="menubar"]', palettes.menubar, metrics),
+        _button_block('QPushButton[btnType="toolbar"]', palettes.main_toolbar, metrics),
+        _button_block('QPushButton[btnType="warning"]', palettes.warning, metrics),
     ]
 
     toolbar_overrides = dedent(
         f"""
         QPushButton[btnType="toolbar"] {{
             border: none;
-            border-radius: {button_tokens.toolbar_radius}px;
-            padding: {button_tokens.toolbar_padding_y}px {button_tokens.toolbar_padding_x}px;
-            min-height: {button_tokens.toolbar_min_height}px;
+            border-radius: {button_tokens.main_toolbar_radius}px;
+            padding: {button_tokens.main_toolbar_padding_top}px {button_tokens.main_toolbar_padding_right}px {button_tokens.main_toolbar_padding_bottom}px {button_tokens.main_toolbar_padding_left}px;
+            min-height: {button_tokens.main_toolbar_min_height}px;
         }}
         """
     ).strip()
@@ -89,8 +89,8 @@ def get_qss(
         f"""
         QPushButton[btnType="menubar"] {{
             border: none;
-            border-radius: {button_tokens.menubar_radius}px;
-            padding: {button_tokens.menubar_padding_y}px {button_tokens.menubar_padding_x}px;
+            border-radius: {button_tokens.main_menubar_radius}px;
+            padding: {button_tokens.main_menubar_padding_top}px {button_tokens.main_menubar_padding_right}px {button_tokens.main_menubar_padding_bottom}px {button_tokens.main_menubar_padding_left}px;
             margin-top: 0px;
             margin-bottom: 0px;
         }}
