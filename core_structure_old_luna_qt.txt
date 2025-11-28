@@ -1,0 +1,56 @@
+LunaQt2 Core Implementation Plan
+================================
+
+Intent: capture the migration steps needed to port the working features from OLD_LUNA_QT into the new layered architecture so that other AI copilots (Claude, etc.) can review, challenge, or extend the sequence before we start coding.
+
+1. Foundation: Core Data Layer (Split into two sub-phases)
+   1a. Basic Port
+      - Port DataStore, CellManager, and NotebookManager into src/core/ with minimal changes (keep dict-based data for now).
+      - Ensure basic CRUD operations work and tests can validate round-trip persistence.
+   
+   1b. Typed Refactor
+      - Introduce explicit dataclasses (Notebook, Cell, NotebookState) to replace dicts.
+      - Add in-memory NotebookState cache plus change events so the UI can update without full reloads.
+      - Define event contracts (e.g., cell_moved(notebook_id, cell_id, new_index), notebook_deleted(notebook_id)).
+
+2. Baseline Notebook Lifecycle
+   - Wire the managers into an app/bootstrap service.
+   - Implement create/list/rename/delete notebook flows so the sidebar reflects real data again.
+   - Validate that the sidebar updates correctly when notebooks are added/removed/renamed.
+
+3. Execution Layer Stub
+   - Port NotebookExecutionManager basics (worker threads, result routing) into src/core/execution/.
+   - Ensure matplotlib theming and output capture work in isolation before wiring into cells.
+   - Create placeholder signals for cell_started/cell_finished/cell_failed.
+
+4. Cell Creation + Rendering
+   - Rebuild the notebook view to load cells via the managers and render them inside LunaQtWindow.
+   - Reintroduce "new Python cell" and wire it to the execution layer from step 2.5.
+   - Add stub for "new Markdown cell" (UI only, no rendering yet).
+
+5. Cell Ordering + Deletion
+   - Restore move up/down and delete operations using the persistence-first pattern.
+   - Emit granular events (cell_moved, cell_deleted) so the UI can update specific rows instead of full reloads.
+   - Add deleted_at timestamp field to support future undo without implementing the full undo stack now.
+
+6. Notebook Deletion + Cleanup
+   - Ensure deleting a notebook cascades through cached cells and orphaned cell files.
+   - Reselect a fallback notebook (existing or newly created) after deletion.
+   - Add confirmation dialogs and status updates mirroring the old UX.
+
+7. Markdown Finishing Touches
+   - Implement markdown rendering/preview so those cells are real, not placeholders.
+   - Add toolbar buttons and metadata persistence for markdown-specific settings.
+
+8. Execution Polish + Tests
+   - Stabilize the Python execution manager, add unit tests for managers/state transitions, and document the API for future languages or runtimes.
+   - Validate execution edge cases (long-running cells, errors, matplotlib outputs).
+
+Suggested Improvements For Review
+---------------------------------
+- Introduce explicit dataclasses (Notebook, Cell, NotebookState) so the core layer has typed contracts instead of anonymous dicts. This makes validation, migrations, and IDE support easier.
+- Keep an in-memory cache of notebooks plus incremental change events so the Qt UI can update a single row instead of rebuilding the entire list after every operation.
+- Consider batching persistence (e.g., storing notebook + cells together or using SQLite) to cut down on file churn once notebooks grow beyond a dozen cells.
+- Add schema-version tracking + migration helpers in the core layer so future fields (outputs, attachments) can be added without breaking older notebooks.
+- Support soft deletes or an undo ring buffer when removing cells/notebooks, allowing a future “undo” feature without rewriting history logic.
+- Emit domain events from managers (cell_added, notebook_deleted, etc.) so other services (execution, autosave, collaboration) can subscribe without tight coupling.
