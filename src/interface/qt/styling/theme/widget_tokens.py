@@ -71,7 +71,7 @@ class CellGutterTokens:
 
 def cell_gutter_tokens(metrics: Metrics) -> CellGutterTokens:
     return CellGutterTokens(
-        border_width=metrics.border_width,
+        border_width=metrics.border_width_small,
         border_radius=metrics.radius_small,
         padding_horizontal=metrics.padding_small,
         label_min_width=32,
@@ -151,6 +151,25 @@ def statusbar_tokens(metrics: Metrics) -> StatusBarTokens:
     )
 
 
+@dataclass(frozen=True)
+class ToolbarTokens:
+    border_width: int
+    border_radius: int
+    spacing: int
+    padding_horizontal: int
+    min_height: int
+
+
+def toolbar_tokens(metrics: Metrics) -> ToolbarTokens:
+    return ToolbarTokens(
+        border_width=metrics.border_width_large,
+        border_radius=metrics.radius_zero,
+        spacing=metrics.padding_small,
+        padding_horizontal=metrics.padding_small,
+        min_height=metrics.min_toolbar_height,
+    )
+
+
 __all__ = [
     "ButtonTokens",
     "CellContainerTokens",
@@ -158,10 +177,12 @@ __all__ = [
     "MenuBarTokens",
     "SidebarTokens",
     "StatusBarTokens",
+    "ToolbarTokens",
     "button_tokens",
     "cell_container_tokens",
     "cell_gutter_tokens",
     "menubar_tokens",
     "sidebar_tokens",
     "statusbar_tokens",
+    "toolbar_tokens",
 ]

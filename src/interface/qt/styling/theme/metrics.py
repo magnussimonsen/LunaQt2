@@ -26,6 +26,10 @@ class Metrics:
     gutter_width: int = 12
     min_toolbar_height: int = 5
     min_menubar_height: int = 5
+
+    min_main_toolbar_height: int = 5 
+    min_sidebar_toolbar_height: int = 5
+
     min_statusbar_height: int = 32
 
     sidebar_default_width: int = 320
@@ -43,7 +47,6 @@ class Metrics:
     border_width_small: int = 1
     border_width_medium: int = 2
     border_width_large: int = 4
-
 
 def build_metrics_for_ui_font(
     ui_point_size: int,

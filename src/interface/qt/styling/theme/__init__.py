@@ -23,12 +23,14 @@ from .widget_tokens import (
     MenuBarTokens,
     SidebarTokens,
     StatusBarTokens,
+    ToolbarTokens,
     button_tokens,
     cell_container_tokens,
     cell_gutter_tokens,
     menubar_tokens,
     sidebar_tokens,
     statusbar_tokens,
+    toolbar_tokens,
 )
 
 __all__ = [
@@ -52,10 +54,12 @@ __all__ = [
     "MenuBarTokens",
     "SidebarTokens",
     "StatusBarTokens",
+    "ToolbarTokens",
     "button_tokens",
     "cell_container_tokens",
     "cell_gutter_tokens",
     "menubar_tokens",
     "sidebar_tokens",
     "statusbar_tokens",
+    "toolbar_tokens",
 ]

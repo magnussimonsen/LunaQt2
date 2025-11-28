@@ -35,9 +35,7 @@ def get_qss(
             padding: 0px {menubar_tokens.padding_horizontal}px;
             margin: 0px;
             border-bottom: {menubar_tokens.border_width}px solid {theme.bg.app};
-            border-bottom: none;
             border-top: {menubar_tokens.border_width}px solid {theme.bg.app};
-            border-top: none;
             min-height: {menubar_tokens.min_height}px;
             font-family: {metrics.font_family};
             font-size: {metrics.font_size_medium}pt;

@@ -21,25 +21,49 @@ class ModeAwareColor:
     def __str__(self) -> str:  # pragma: no cover - convenience for debugging
         return self.dark
 
+# Define base color palettes
+l1 = "#dddddd"  # Main app bg - Light mode
+d1 = "#1e1e1e"  # Main app bg - Dark mode
+l2 = "#aaaaaa"  # Menu bar and status bar bg
+d2 = "#2c2c2c"
+l3 = "#bbbbbb"  # Toolbar bg
+d3 = "#e2e2e2"
+l4 = "#dddddd"  # Dropdown bg
+d4 = "#333333"
+l5 = "#70b3ff"  # Hover bg (blueish)
+d5 = "#232323"
+l6 = "#f0f0f0"  # Button bg color
+d6 = "#3a3a3a"
+l7 = "#3352FF"  # Selected items bg /Highlight
+d7 = "#264DE4"
+l8 = "#cccccc"  # Cell gutter bg
+d8 = "#181818"
+l9 = "#dddddd"  # Cell bg 
+d9 = "#b5b5b5"
+l10 = "#343434"  # Border color subtle light mode
+d10 = "#2B2B2B"  # Border color subtle dark mode
+l11 = "#ffcccc"  # Border color normal strong light mode
+d11 = "#663333"  # Border color normal strong dark mode
 
 class _BGTokens:
-    app = ModeAwareColor(light="#00950a", dark="#1e1e1e")
-    menubar = ModeAwareColor(light="#b20e0e", dark="#2b2b2b")
-    statusbar = ModeAwareColor(light="#002fff", dark="#252525")
-    dropdown = ModeAwareColor(light="#0138ff", dark="#333333")
-    cell = ModeAwareColor(light="#b5b5b5", dark="#1f1f1f")
-    cell_gutter = ModeAwareColor(light="#f700ff", dark="#181818")
-    toolbar = ModeAwareColor(light="#008E9B", dark="#2a2a2a")
+    app = ModeAwareColor(light=l1, dark=d1)
+    menubar = ModeAwareColor(light=l2, dark=d2)
+    statusbar = ModeAwareColor(light=l2, dark=d2)
+    toolbar = ModeAwareColor(light=l3, dark=d3) # Same for main and sidebar toolbars for consistency
+    dropdown = ModeAwareColor(light=l4, dark=d4)
+    cell = ModeAwareColor(light=l9, dark=d9)
+    cell_gutter = ModeAwareColor(light=l8, dark=d8)
     sidebar_header = ModeAwareColor(light="#C266FF", dark="#2a2a2a")
     sidebar_content = ModeAwareColor(light="#F5FF66", dark="#2a2a2a")
     sidebar_toolbar = ModeAwareColor(light="#A70707", dark="#333333")
 
 
 class _BorderTokens:
-    subtle = ModeAwareColor(light="#8a0d0d", dark="#2d2d2d")
-    strong = ModeAwareColor(light="#bcbcbc", dark="#3a3a3a")
-    highlight = ModeAwareColor(light="#4a90e2", dark="#5a5a5a")
-    cell = ModeAwareColor(light="#cfcfcf", dark="#3a3a3a")
+    transparent = ModeAwareColor(light=l1, dark=d1)
+    subtle = ModeAwareColor(light=l10, dark=d10)
+    strong = ModeAwareColor(light=l11, dark=d11)
+    highlight = ModeAwareColor(light=l7, dark=d7)
+    cell = ModeAwareColor(light=l10, dark=d10)
     cell_gutter = ModeAwareColor(light="#d5d5d5", dark="#2a2a2a")
     cell_in_focus = ModeAwareColor(light="#ff0000", dark="#5ea2ff")
 
@@ -83,22 +107,33 @@ class ButtonPaletteTokens:
 class _ButtonTokens:
     primary = ButtonPaletteTokens(
         normal=ModeAwareColor(light="#e0e0e0", dark="#404040"),
-        hover=ModeAwareColor(light="#d3d3d3", dark="#505050"),
+        hover=ModeAwareColor(light=l5, dark=d5),
         pressed=ModeAwareColor(light="#c0c0c0", dark="#303030"),
         disabled=ModeAwareColor(light="#f0f0f0", dark="#292929"),
         border=ModeAwareColor(light="#bcbcbc", dark="#707070"),
         text=_TextTokens.primary,
         focus=_BorderTokens.highlight,
     )
-    toolbar = ButtonPaletteTokens(
-        normal=ModeAwareColor(light="#f3f3f3", dark="#2d2d2d"),
-        hover=ModeAwareColor(light="#e9e9e9", dark="#3b3b3b"),
+    main_toolbar = ButtonPaletteTokens( # For now this mirrors sidebar toolbar
+        normal=ModeAwareColor(light=l6, dark=d6),
+        hover=ModeAwareColor(light=l5, dark=d5),
         pressed=ModeAwareColor(light="#dcdcdc", dark="#1f1f1f"),
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
         border=ModeAwareColor(light="#dadada", dark="#404040"),
         text=_TextTokens.secondary,
         focus=_BorderTokens.highlight,
     )
+
+    toolbar = ButtonPaletteTokens( #This must change to sidebar toolbar (but we must first implement main toolbar tokens in codebase)
+        normal=ModeAwareColor(light=l6, dark=d6),
+        hover=ModeAwareColor(light=l5, dark=d5),
+        pressed=ModeAwareColor(light="#dcdcdc", dark="#1f1f1f"),
+        disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
+        border=ModeAwareColor(light="#dadada", dark="#404040"),
+        text=_TextTokens.secondary,
+        focus=_BorderTokens.highlight,
+    )
+
     warning = ButtonPaletteTokens(
         normal=ModeAwareColor(light="#fbe2c5", dark="#6a381f"),
         hover=ModeAwareColor(light="#f8d4a3", dark="#7c4225"),
@@ -109,8 +144,8 @@ class _ButtonTokens:
         focus=ModeAwareColor(light="#ff8800", dark="#ffa45c"),
     )
     menubar = ButtonPaletteTokens(
-        normal=ModeAwareColor(light="#f0f0f0", dark="#3a3a3a"),
-        hover=ModeAwareColor(light="#e2e2e2", dark="#4a4a4a"),
+        normal=ModeAwareColor(light=l6, dark=d6),
+        hover=ModeAwareColor(light=l5, dark=d5),
         pressed=ModeAwareColor(light="#4a90e2", dark="#5a9fff"),
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1f1f1f"),
         border=ModeAwareColor(light="#bcbcbc", dark="#5a5a5a"),
@@ -122,7 +157,7 @@ class _ButtonTokens:
 class _MenuTokens:
     background = _BGTokens.menubar
     text = _TextTokens.primary
-    item_hover = ModeAwareColor(light="#e0e0e0", dark="#3d3d3d")
+    item_hover = ModeAwareColor(light=l5, dark=d5)
     separator = _BorderTokens.subtle
 
 
@@ -149,6 +184,7 @@ class BackgroundPalette:
 
 @dataclass(frozen=True)
 class BorderPalette:
+    transparent: str
     subtle: str
     strong: str
     highlight: str
@@ -240,6 +276,7 @@ def _resolve_bg(mode: ThemeMode) -> BackgroundPalette:
 def _resolve_border(mode: ThemeMode) -> BorderPalette:
     tokens = _BorderTokens
     return BorderPalette(
+        transparent=tokens.transparent.value_for(mode),
         subtle=tokens.subtle.value_for(mode),
         strong=tokens.strong.value_for(mode),
         highlight=tokens.highlight.value_for(mode),

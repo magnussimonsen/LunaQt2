@@ -10,6 +10,7 @@ from interface.qt.styling.widget_styles import (
     cell_container,
     cell_gutter,
     main_menubar,
+    main_toolbar,
     sidebars,
     statusbar,
 )
@@ -19,6 +20,7 @@ STYLE_MODULES = (
     cell_container,
     cell_gutter,
     main_menubar,
+    main_toolbar,
     sidebars,
     statusbar,
 )
