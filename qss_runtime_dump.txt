@@ -173,8 +173,6 @@ QPushButton[btnType="toolbar"] {
     border-radius: 2px;
     padding: 2px 4px;
     min-height: 5px;
-     /*font-size: PLACEHOLDER FOR REACTIVE FONTSIZE */
-    /*font-family: PLACEHOLDER FOR REACTIVE FONTFAMILY */
 }
 
 QPushButton[btnType="menubar"] {
@@ -183,8 +181,6 @@ QPushButton[btnType="menubar"] {
     padding: 4px 6px;
     margin-top: 0px;
     margin-bottom: 0px;
-    /*font-size: PLACEHOLDER FOR REACTIVE FONTSIZE */
-    /*font-family: PLACEHOLDER FOR REACTIVE FONTFAMILY */
 }
 
 QPushButton[btnType="menubar"]:checked {
@@ -268,10 +264,10 @@ QMenuBar#MainMenuBar {
     border-bottom: 0px solid #00950a;
     border-bottom: none;
     border-top: 0px solid #00950a;
-    border-top: none; 
+    border-top: none;
     min-height: 5px;
-    font-family: Inter; /* THIS SHALL NOT COME FROM METRICS */
-    font-size: 12pt; /* THIS SHALL NOT COME FROM METRICS */
+    font-family: Inter;
+    font-size: 12pt;
 }
 
 QMenuBar#MainMenuBar::item {
@@ -292,7 +288,7 @@ QWidget[widgetRole="menubar-corner"] {
     background-color: #b20e0e;
 }
 
-QMenu[menuRole="primary"] {   
+QMenu[menuRole="primary"] {
     background-color: #0138ff;
     border: 0px solid #8a0d0d;
     padding: 6px 0px;

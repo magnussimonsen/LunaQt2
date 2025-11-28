@@ -1,8 +1,5 @@
-"""LunaQt2 package helpers for styling."""
+"""Convenience exports for styling helpers."""
 
-from style_loader import build_application_qss, apply_global_style
+from interface.qt.styling import apply_global_style, build_application_qss
 
-__all__ = [
-    "build_application_qss",
-    "apply_global_style",
-]
+__all__ = ["build_application_qss", "apply_global_style"]
