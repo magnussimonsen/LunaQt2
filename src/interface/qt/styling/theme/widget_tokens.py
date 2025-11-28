@@ -152,7 +152,30 @@ def statusbar_tokens(metrics: Metrics) -> StatusBarTokens:
 
 
 @dataclass(frozen=True)
-class ToolbarTokens:
+class MainToolbarTokens:
+    border_width: int
+    border_radius: int
+    spacing: int
+    padding_horizontal: int
+    padding_vertical: int
+    min_height: int
+
+
+def main_toolbar_tokens(metrics: Metrics) -> MainToolbarTokens:
+    return MainToolbarTokens(
+        border_width=metrics.border_width_large,
+        border_radius=metrics.radius_zero,
+        spacing=metrics.padding_small,
+        padding_horizontal=metrics.padding_large,
+        padding_vertical=metrics.padding_large,
+        margin_horizontal=metrics.margin_medium,
+        margin_vertical=metrics.margin_medium,
+        min_height=metrics.min_main_toolbar_height,
+    )
+
+
+@dataclass(frozen=True)
+class SidebarToolbarTokens:
     border_width: int
     border_radius: int
     spacing: int
@@ -160,13 +183,13 @@ class ToolbarTokens:
     min_height: int
 
 
-def toolbar_tokens(metrics: Metrics) -> ToolbarTokens:
-    return ToolbarTokens(
-        border_width=metrics.border_width_large,
+def sidebar_toolbar_tokens(metrics: Metrics) -> SidebarToolbarTokens:
+    return SidebarToolbarTokens(
+        border_width=metrics.border_width,
         border_radius=metrics.radius_zero,
         spacing=metrics.padding_small,
-        padding_horizontal=metrics.padding_small,
-        min_height=metrics.min_toolbar_height,
+        padding_horizontal=metrics.padding_medium,
+        min_height=metrics.min_sidebar_toolbar_height,
     )
 
 
@@ -177,12 +200,14 @@ __all__ = [
     "MenuBarTokens",
     "SidebarTokens",
     "StatusBarTokens",
-    "ToolbarTokens",
+    "MainToolbarTokens",
+    "SidebarToolbarTokens",
     "button_tokens",
     "cell_container_tokens",
     "cell_gutter_tokens",
     "menubar_tokens",
     "sidebar_tokens",
     "statusbar_tokens",
-    "toolbar_tokens",
+    "main_toolbar_tokens",
+    "sidebar_toolbar_tokens",
 ]

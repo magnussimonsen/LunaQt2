@@ -20,8 +20,15 @@ class Metrics:
     padding_extra_small: int = 2
     padding_small: int = 4
     padding_medium: int = 6
-    padding_large: int = 8
+    padding_large: int = 80
     padding_extra_large: int = 12
+
+    margin_zero: int = 0
+    margin_extra_small: int = 2
+    margin_small: int = 4
+    margin_medium: int = 6
+    margin_large: int = 80
+    margin_extra_large: int = 12
 
     gutter_width: int = 12
     min_toolbar_height: int = 5

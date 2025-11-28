@@ -293,7 +293,7 @@ QMenu[menuRole="primary"] {
 }
 
 QMenu[menuRole="primary"]::item {
-    padding: 2px 8px;
+    padding: 2px 80px;
     background: transparent;
 }
 
@@ -304,7 +304,7 @@ QMenu[menuRole="primary"]::item:selected {
 
 QMenu[menuRole="primary"]::separator {
     height: 1px;
-    margin: 2px 8px;
+    margin: 2px 80px;
     background: #343434;
 }
 
@@ -312,7 +312,7 @@ QToolBar#PrimaryToolBar {
     background-color: #bbbbbb;
     color: #111111;
     spacing: 4px;
-    padding: 0px 4px;
+    padding: 80px 80px ;
     margin: 0px;
     border-top: 4px solid #dddddd;
     border-bottom: 4px solid #dddddd;

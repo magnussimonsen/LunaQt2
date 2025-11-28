@@ -70,7 +70,7 @@ def get_qss(
     sections = [
         _button_block('QPushButton[btnType="primary"]', palettes.primary, metrics, button_tokens),
         _button_block('QPushButton[btnType="menubar"]', palettes.menubar, metrics, button_tokens),
-        _button_block('QPushButton[btnType="toolbar"]', palettes.toolbar, metrics, button_tokens),
+        _button_block('QPushButton[btnType="toolbar"]', palettes.main_toolbar, metrics, button_tokens),
         _button_block('QPushButton[btnType="warning"]', palettes.warning, metrics, button_tokens),
     ]
 

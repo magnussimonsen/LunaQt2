@@ -114,7 +114,7 @@ class _ButtonTokens:
         text=_TextTokens.primary,
         focus=_BorderTokens.highlight,
     )
-    main_toolbar = ButtonPaletteTokens( # For now this mirrors sidebar toolbar
+    main_toolbar = ButtonPaletteTokens( 
         normal=ModeAwareColor(light=l6, dark=d6),
         hover=ModeAwareColor(light=l5, dark=d5),
         pressed=ModeAwareColor(light="#dcdcdc", dark="#1f1f1f"),
@@ -124,7 +124,7 @@ class _ButtonTokens:
         focus=_BorderTokens.highlight,
     )
 
-    toolbar = ButtonPaletteTokens( #This must change to sidebar toolbar (but we must first implement main toolbar tokens in codebase)
+    sidebar_toolbar = ButtonPaletteTokens( 
         normal=ModeAwareColor(light=l6, dark=d6),
         hover=ModeAwareColor(light=l5, dark=d5),
         pressed=ModeAwareColor(light="#dcdcdc", dark="#1f1f1f"),
@@ -223,7 +223,8 @@ class ButtonPalette:
 @dataclass(frozen=True)
 class ButtonPalettes:
     primary: ButtonPalette
-    toolbar: ButtonPalette
+    main_toolbar: ButtonPalette
+    sidebar_toolbar: ButtonPalette
     menubar: ButtonPalette
     warning: ButtonPalette
 
@@ -310,7 +311,8 @@ def _resolve_buttons(mode: ThemeMode) -> ButtonPalettes:
     tokens = _ButtonTokens
     return ButtonPalettes(
         primary=tokens.primary.resolve(mode),
-        toolbar=tokens.toolbar.resolve(mode),
+        main_toolbar=tokens.main_toolbar.resolve(mode),
+        sidebar_toolbar=tokens.sidebar_toolbar.resolve(mode),
         menubar=tokens.menubar.resolve(mode),
         warning=tokens.warning.resolve(mode),
     )
