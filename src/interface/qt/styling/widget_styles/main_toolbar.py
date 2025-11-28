@@ -32,10 +32,22 @@ def get_qss(
             background-color: {bg.toolbar};
             color: {theme.text.primary};
             spacing: {tokens.spacing}px;
-            padding: {tokens.padding_top}px {tokens.padding_right}px {tokens.padding_bottom}px {tokens.padding_left}px;
-            margin: {tokens.margin_top}px {tokens.margin_right}px {tokens.margin_bottom}px {tokens.margin_left}px;
+
+            padding-top: {tokens.padding_top}px;
+            padding-bottom: {tokens.padding_bottom}px;
+            padding-left: {tokens.padding_left}px;
+            padding-right: {tokens.padding_right}px;
+            
+            margin-top: {tokens.margin_top}px;
+            margin-bottom: {tokens.margin_bottom}px;
+            margin-left: {tokens.margin_left}px;
+            margin-right: {tokens.margin_right}px;
+
             border-top: {tokens.border_width}px solid {border.transparent};
             border-bottom: {tokens.border_width}px solid {border.transparent};
+            border-left: {tokens.border_width}px solid {border.transparent};
+            border-right: {tokens.border_width}px solid {border.transparent};
+            
             border-radius: {tokens.border_radius}px;
             min-height: {tokens.min_height}px;
             font-family: {metrics.font_family};

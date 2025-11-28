@@ -29,7 +29,8 @@ def get_qss(
             background-color: {bg.cell_gutter};
             border-right: {spacing.border_width}px solid {bg.cell_gutter};
             border-radius: {spacing.border_radius}px;
-            padding: 0 {spacing.padding_horizontal}px;
+            padding: {spacing.padding_top}px {spacing.padding_right}px {spacing.padding_bottom}px {spacing.padding_left}px;
+            margin: {spacing.margin_top}px {spacing.margin_right}px {spacing.margin_bottom}px {spacing.margin_left}px;
             color: {text.muted};
         }}
 

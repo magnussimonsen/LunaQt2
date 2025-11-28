@@ -39,24 +39,24 @@ def button_tokens(metrics: Metrics) -> ButtonTokens:
         main_menubar_border_width=metrics.border_width_small,
         main_menubar_padding_top=metrics.padding_small,
         main_menubar_padding_bottom=metrics.padding_small,
-        main_menubar_padding_left=metrics.padding_medium,
-        main_menubar_padding_right=metrics.padding_medium,
+        main_menubar_padding_left=metrics.padding_small,
+        main_menubar_padding_right=metrics.padding_small,
         main_menubar_min_height=metrics.min_main_menubar_height,
         main_menubar_radius=metrics.radius_small,
 
         main_toolbar_border_width=metrics.border_width_small,
         main_toolbar_padding_top=metrics.padding_small,
         main_toolbar_padding_bottom=metrics.padding_small,
-        main_toolbar_padding_left=metrics.padding_medium,
-        main_toolbar_padding_right=metrics.padding_medium,
+        main_toolbar_padding_left=metrics.padding_small,
+        main_toolbar_padding_right=metrics.padding_small,
         main_toolbar_min_height=metrics.min_main_toolbar_height,
         main_toolbar_radius=metrics.radius_small,
 
         sidebar_toolbar_border_width=metrics.border_width_small,
         sidebar_toolbar_padding_top=metrics.padding_small,
         sidebar_toolbar_padding_bottom=metrics.padding_small,
-        sidebar_toolbar_padding_left=metrics.padding_medium,
-        sidebar_toolbar_padding_right=metrics.padding_medium,
+        sidebar_toolbar_padding_left=metrics.padding_small,
+        sidebar_toolbar_padding_right=metrics.padding_small,
         sidebar_toolbar_min_height=metrics.min_sidebar_toolbar_height,
         sidebar_toolbar_radius=metrics.radius_small,
     )
@@ -83,15 +83,42 @@ def cell_container_tokens(metrics: Metrics) -> CellContainerTokens:
 class CellGutterTokens:
     border_width: int
     border_radius: int
-    padding_horizontal: int
+    border_width_top: int
+    border_width_bottom: int
+    border_width_left: int
+    border_width_right: int
+    padding_top: int
+    padding_bottom: int
+    padding_left: int
+    padding_right: int
+    margin_top: int
+    margin_bottom: int
+    margin_left: int
+    margin_right: int
     label_min_width: int
 
 
 def cell_gutter_tokens(metrics: Metrics) -> CellGutterTokens:
     return CellGutterTokens(
-        border_width=metrics.border_width_small,
+        border_width=metrics.border_width_small, 
+
         border_radius=metrics.radius_small,
-        padding_horizontal=metrics.padding_small,
+
+        border_width_top=metrics.border_width_small, # Specific per-side border widths for overrides
+        border_width_bottom=metrics.border_width_small,
+        border_width_left=metrics.border_width_small,
+        border_width_right=metrics.border_width_small,
+
+        padding_top=metrics.padding_small,
+        padding_bottom=metrics.padding_small,
+        padding_left=metrics.padding_medium,
+        padding_right=metrics.padding_medium,
+
+        margin_top=metrics.padding_zero,
+        margin_bottom=metrics.padding_zero,
+        margin_left=metrics.padding_zero,
+        margin_right=metrics.padding_zero,
+
         label_min_width=32,
     )
 
@@ -124,10 +151,10 @@ def menubar_tokens(metrics: Metrics) -> MenuBarTokens:
 
         spacing=metrics.padding_small,
 
-        padding_top=metrics.padding_medium,
-        padding_bottom=metrics.padding_large,
-        padding_left=metrics.padding_medium,
-        padding_right=metrics.padding_medium,
+        padding_top=metrics.padding_small,
+        padding_bottom=metrics.padding_small,
+        padding_left=metrics.padding_small,
+        padding_right=metrics.padding_small,
 
         margin_top=metrics.padding_zero,
         margin_bottom=metrics.padding_zero,
@@ -214,11 +241,11 @@ def main_toolbar_tokens(metrics: Metrics) -> MainToolbarTokens:
         
         spacing=metrics.padding_small,
 
-        padding_top=metrics.padding_small,
-        padding_bottom=metrics.padding_medium,
-        padding_left=metrics.padding_medium,
-        padding_right=metrics.padding_medium,
-
+        padding_top=metrics.padding_zero,
+        padding_bottom=metrics.padding_small,
+        padding_left=metrics.padding_small,
+        padding_right=metrics.padding_small,
+        
         margin_top=metrics.padding_zero,
         margin_bottom=metrics.padding_zero,
         margin_left=metrics.padding_zero,
