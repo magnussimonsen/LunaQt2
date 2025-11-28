@@ -43,12 +43,18 @@ def get_qss(
 
         {MENUBAR_SELECTOR}::item {{
             background: transparent;
-            padding: {menubar_tokens.item_padding_y}px {menubar_tokens.item_padding_x}px;
+            padding-top: {menubar_tokens.item_padding_top}px;
+            padding-bottom: {menubar_tokens.item_padding_bottom}px;
+            padding-left: {menubar_tokens.item_padding_left}px;
+            padding-right: {menubar_tokens.item_padding_right}px;
         }}
 
         {MENUBAR_SELECTOR}::item:selected {{
             background: {menu_palette.item_hover};
-            padding: {menubar_tokens.item_padding_y}px {menubar_tokens.item_padding_x}px;
+            padding-top: {menubar_tokens.item_padding_top}px;
+            padding-bottom: {menubar_tokens.item_padding_bottom}px;
+            padding-left: {menubar_tokens.item_padding_left}px;
+            padding-right: {menubar_tokens.item_padding_right}px;
         }}
 
         {MENUBAR_SELECTOR}:focus {{
@@ -66,11 +72,17 @@ def get_qss(
         {MENU_SELECTOR} {{
             background-color: {theme.bg.dropdown};
             border: {menubar_tokens.border_width}px solid {menu_palette.separator};
-            padding: {menubar_tokens.menu_padding_y}px 0px;
+            padding-top: {menubar_tokens.dropdown_menu_padding_top}px;
+            padding-bottom: {menubar_tokens.dropdown_menu_padding_bottom}px;
+            padding-left: {menubar_tokens.dropdown_menu_padding_left}px;
+            padding-right: {menubar_tokens.dropdown_menu_padding_right}px;
         }}
 
         {MENU_SELECTOR}::item {{
-            padding: {menubar_tokens.menu_item_padding_y}px {menubar_tokens.menu_item_padding_x}px;
+            padding-top: {menubar_tokens.item_padding_top}px;
+            padding-bottom: {menubar_tokens.item_padding_bottom}px;
+            padding-left: {menubar_tokens.item_padding_left}px;
+            padding-right: {menubar_tokens.item_padding_right}px;
             background: transparent;
         }}
 
@@ -81,7 +93,10 @@ def get_qss(
 
         {MENU_SELECTOR}::separator {{
             height: 1px;
-            margin: {menubar_tokens.separator_margin_y}px {menubar_tokens.separator_margin_x}px;
+            margin-top: {menubar_tokens.dropdown_separator_margin_y}px;
+            margin-bottom: {menubar_tokens.dropdown_separator_margin_y}px;
+            margin-left: {menubar_tokens.dropdown_separator_margin_x}px;
+            margin-right: {menubar_tokens.dropdown_separator_margin_x}px;
             background: {menu_palette.separator};
         }}
         """

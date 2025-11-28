@@ -222,9 +222,21 @@ QWidget[cellType="list"] {
 
 QFrame[cellType="container"] {
     background-color: #dddddd;
-    border: 1px solid #343434;
+    border-top: 1px solid #343434;
+    border-bottom: 1px solid #343434;
+    border-left: 1px solid #343434;
+    border-right: 1px solid #343434;
     border-radius: 4px;
-    padding: 4px;
+
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
 }
 
 QFrame[cellType="container"][state="focused"],
@@ -262,7 +274,7 @@ QWidget[cellType="gutter"] {
     border-right: 1px solid #cccccc;
     border-radius: 2px;
     padding: 4px 6px 4px 6px;
-    margin: 0px 0px 0px 0px;
+    margin: 4px 0px 4px 0px;
     color: #666666;
 }
 
@@ -295,12 +307,18 @@ QMenuBar#MainMenuBar {
 
 QMenuBar#MainMenuBar::item {
     background: transparent;
-    padding: 4px 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 QMenuBar#MainMenuBar::item:selected {
     background: #70b3ff;
-    padding: 4px 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 QMenuBar#MainMenuBar:focus {
@@ -314,11 +332,17 @@ QWidget[widgetRole="menubar-corner"] {
 QMenu[menuRole="primary"] {
     background-color: #dddddd;
     border: 0px solid #343434;
-    padding: 6px 0px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 QMenu[menuRole="primary"]::item {
-    padding: 2px 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
     background: transparent;
 }
 
@@ -329,7 +353,10 @@ QMenu[menuRole="primary"]::item:selected {
 
 QMenu[menuRole="primary"]::separator {
     height: 1px;
-    margin: 2px 8px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 8px;
+    margin-right: 8px;
     background: #343434;
 }
 

@@ -20,7 +20,7 @@ def get_qss(
 
     theme = theme or get_theme(mode)
     metrics = theme.metrics
-    spacing = cell_container_tokens(metrics)
+    tokens = cell_container_tokens(metrics)
     bg = theme.bg
     border = theme.border
     text = theme.text
@@ -38,9 +38,21 @@ def get_qss(
         f"""
         {CELL_SELECTOR} {{
             background-color: {bg.cell};
-            border: {spacing.border_width}px solid {border.cell};
-            border-radius: {spacing.border_radius}px;
-            padding: {spacing.padding}px;
+            border-top: {tokens.border_width_top}px solid {border.cell};
+            border-bottom: {tokens.border_width_bottom}px solid {border.cell};
+            border-left: {tokens.border_width_left}px solid {border.cell};
+            border-right: {tokens.border_width_right}px solid {border.cell};
+            border-radius: {tokens.border_radius}px;
+
+            padding-top: {tokens.padding_top}px;
+            padding-bottom: {tokens.padding_bottom}px;
+            padding-left: {tokens.padding_left}px;
+            padding-right: {tokens.padding_right}px;
+
+            margin-top: {tokens.margin_top}px;
+            margin-bottom: {tokens.margin_bottom}px;
+            margin-left: {tokens.margin_left}px;
+            margin-right: {tokens.margin_right}px;
         }}
 
         {CELL_SELECTOR}[state="focused"],
@@ -54,7 +66,7 @@ def get_qss(
         f"""
         {CELL_SELECTOR} > {CELL_HEADER_SELECTOR} {{
             background-color: {bg.cell};
-            margin-bottom: {spacing.header_margin_bottom}px;
+            margin-bottom: {tokens.header_margin_bottom}px;
             color: {text.secondary};
             font-size: {metrics.font_size_small}pt;
             text-transform: uppercase;

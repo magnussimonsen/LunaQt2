@@ -64,18 +64,44 @@ def button_tokens(metrics: Metrics) -> ButtonTokens:
 
 @dataclass(frozen=True)
 class CellContainerTokens:
-    border_width: int
     border_radius: int
-    padding: int
+    border_width: int
+    border_width_top: int
+    border_width_bottom: int
+    border_width_left: int
+    border_width_right: int
+    padding_top: int
+    padding_bottom: int
+    padding_left: int
+    padding_right: int
+    margin_top: int
+    margin_bottom: int
+    margin_left: int
+    margin_right: int
     header_margin_bottom: int
 
 
 def cell_container_tokens(metrics: Metrics) -> CellContainerTokens:
     return CellContainerTokens(
-        border_width=metrics.border_width,
         border_radius=metrics.radius_medium,
-        padding=metrics.padding_small,
-        header_margin_bottom=metrics.padding_small,
+        border_width=metrics.border_width,
+        
+        border_width_top=metrics.border_width_small, # Specific per-side border widths for overrides
+        border_width_bottom=metrics.border_width_small,
+        border_width_left=metrics.border_width_small,
+        border_width_right=metrics.border_width_small,
+
+        padding_top=metrics.padding_small,
+        padding_bottom=metrics.padding_small,
+        padding_left=metrics.padding_medium,
+        padding_right=metrics.padding_medium,
+
+        margin_top=metrics.margin_small,
+        margin_bottom=metrics.margin_small,
+        margin_left=metrics.margin_small,
+        margin_right=metrics.margin_small,
+
+        header_margin_bottom=metrics.padding_small, # Heder is only for development
     )
 
 
@@ -114,8 +140,8 @@ def cell_gutter_tokens(metrics: Metrics) -> CellGutterTokens:
         padding_left=metrics.padding_medium,
         padding_right=metrics.padding_medium,
 
-        margin_top=metrics.padding_zero,
-        margin_bottom=metrics.padding_zero,
+        margin_top=metrics.padding_small,
+        margin_bottom=metrics.padding_small,
         margin_left=metrics.padding_zero,
         margin_right=metrics.padding_zero,
 
@@ -136,13 +162,16 @@ class MenuBarTokens:
     margin_left: int
     margin_right: int
     min_height: int
-    item_padding_y: int
-    item_padding_x: int
-    menu_padding_y: int
-    menu_item_padding_y: int
-    menu_item_padding_x: int
-    separator_margin_y: int
-    separator_margin_x: int
+    item_padding_top: int
+    item_padding_bottom: int
+    item_padding_left: int
+    item_padding_right: int
+    dropdown_menu_padding_top: int
+    dropdown_menu_padding_bottom: int
+    dropdown_menu_padding_left: int
+    dropdown_menu_padding_right: int
+    dropdown_separator_margin_x: int
+    dropdown_separator_margin_y: int
 
 
 def menubar_tokens(metrics: Metrics) -> MenuBarTokens:
@@ -164,15 +193,19 @@ def menubar_tokens(metrics: Metrics) -> MenuBarTokens:
         min_height=metrics.min_menubar_height,
 
         # Menubar item paddings (File, Edit, View, etc.)
-        item_padding_x=metrics.padding_small,
-        item_padding_y=metrics.padding_small,
+        item_padding_top=metrics.padding_small,
+        item_padding_bottom=metrics.padding_small,
+        item_padding_right=metrics.padding_medium,
+        item_padding_left=metrics.padding_medium,
 
         # Dropdown menu and dropdown items paddings
-        menu_padding_y=metrics.padding_medium,
-        menu_item_padding_x=metrics.padding_large,
-        menu_item_padding_y=metrics.padding_extra_small,
-        separator_margin_x=metrics.padding_large,
-        separator_margin_y=metrics.padding_extra_small,
+        dropdown_menu_padding_top=metrics.padding_medium,
+        dropdown_menu_padding_bottom=metrics.padding_medium,
+        dropdown_menu_padding_left=metrics.padding_medium,
+        dropdown_menu_padding_right=metrics.padding_medium,
+
+        dropdown_separator_margin_x=metrics.padding_large,
+        dropdown_separator_margin_y=metrics.padding_extra_small,
     )
 
 
