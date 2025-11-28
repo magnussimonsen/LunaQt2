@@ -158,18 +158,20 @@ class MainToolbarTokens:
     spacing: int
     padding_horizontal: int
     padding_vertical: int
+    margin_horizontal: int
+    margin_vertical: int
     min_height: int
 
 
 def main_toolbar_tokens(metrics: Metrics) -> MainToolbarTokens:
     return MainToolbarTokens(
-        border_width=metrics.border_width_large,
+        border_width=metrics.border_width_zero,
         border_radius=metrics.radius_zero,
         spacing=metrics.padding_small,
-        padding_horizontal=metrics.padding_large,
+        padding_horizontal=metrics.padding_zero,
         padding_vertical=metrics.padding_large,
-        margin_horizontal=metrics.margin_medium,
-        margin_vertical=metrics.margin_medium,
+        margin_horizontal=metrics.padding_zero,
+        margin_vertical=metrics.padding_zero,
         min_height=metrics.min_main_toolbar_height,
     )
 

@@ -27,7 +27,7 @@ QWidget {
     }
 
     QToolBar {
-        background-color: #bbbbbb;
+        background-color: #aaaaaa;
         spacing: 4px;
         padding: 0 4px;
     }
@@ -293,7 +293,7 @@ QMenu[menuRole="primary"] {
 }
 
 QMenu[menuRole="primary"]::item {
-    padding: 2px 80px;
+    padding: 2px 8px;
     background: transparent;
 }
 
@@ -304,18 +304,18 @@ QMenu[menuRole="primary"]::item:selected {
 
 QMenu[menuRole="primary"]::separator {
     height: 1px;
-    margin: 2px 80px;
+    margin: 2px 8px;
     background: #343434;
 }
 
 QToolBar#PrimaryToolBar {
-    background-color: #bbbbbb;
+    background-color: #aaaaaa;
     color: #111111;
     spacing: 4px;
-    padding: 80px 80px ;
-    margin: 0px;
-    border-top: 4px solid #dddddd;
-    border-bottom: 4px solid #dddddd;
+    padding: 8px 0px ;
+    margin: 0px 0px ;
+    border-top: 0px solid #dddddd;
+    border-bottom: 0px solid #dddddd;
     border-radius: 0px;
     min-height: 5px;
     font-family: Inter;

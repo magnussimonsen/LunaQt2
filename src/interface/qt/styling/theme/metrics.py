@@ -20,7 +20,7 @@ class Metrics:
     padding_extra_small: int = 2
     padding_small: int = 4
     padding_medium: int = 6
-    padding_large: int = 80
+    padding_large: int = 8
     padding_extra_large: int = 12
 
     margin_zero: int = 0
