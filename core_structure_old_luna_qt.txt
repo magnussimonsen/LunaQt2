@@ -38,7 +38,7 @@ Intent: capture the migration steps needed to port the working features from OLD
    - Reselect a fallback notebook (existing or newly created) after deletion.
    - Add confirmation dialogs and status updates mirroring the old UX.
 
-7. Markdown Finishing Touches
+7. Markdown Finishing Touches (We will not do this now. This is moved to the next phase)
    - Implement markdown rendering/preview so those cells are real, not placeholders.
    - Add toolbar buttons and metadata persistence for markdown-specific settings.
 
