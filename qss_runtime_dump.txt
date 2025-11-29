@@ -386,49 +386,52 @@ QToolBar#PrimaryToolBar {
     font-size: 12pt;
 }
 
+/* FALLBACK DEAFULT STYLES FOR DOCK WIDGETS? */
 QDockWidget#NotebooksDock, QDockWidget#SettingsDock {
-    background-color: #F5FF66;
-    color: #111111;
-    border-left: 1px solid #ffcccc;
-}
+    background-color: red;  /* HAS NO EFFECT */
+    color: #111111; /* HAS NO EFFECT */
+    border-left: 1px solid #ffcccc; /* HAS NO EFFECT */
+    margin: 100px; /*HAS NO EFFECT*/
+ }
 
 QDockWidget#NotebooksDock::title,
 QDockWidget#SettingsDock::title {
-    background-color: #C266FF;
-    color: #111111;
-    text-align: left;
-    padding: 6px;
+    background-color: #C266FF; /*HAS EFFECT*/
+    color: #111111; /*HAS EFFECT*/
+    text-align: left; /*HAS EFFECT*/
+    padding: 6px; /*HAS EFFECT*/
 }
 
 QDockWidget#NotebooksDock, QDockWidget#SettingsDock > QWidget {
-    background-color: #F5FF66;
+    background-color: blue; /* HAS NO EFFECT */
 }
 
 QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
 QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {
-    background-color: #F5FF66;
+    background-color: blue;  /* HAS NO EFFECT */
+    padding: 100px; /* HAS NO EFFECT */
 }
 
+/* Common styling for sidebar toolbars */
 QWidget[sidebarRole="toolbar"] {
-    background-color: #A70707;
-    color: #111111;
-    padding: 6px;
-    border-bottom: 1px solid #ffcccc;
+    background-color: blue; /* HAS NO EFFECT */
+    color: red; /* HAS NO EFFECT */
+    padding: 100px; /* HAS NO EFFECT */
+    border-bottom: 10px solid blue; /* HAS EFFECT!!! */
 }
-
 QWidget[sidebarRole="toolbar"] QLabel {
-    color: #111111;
+    color: green; /* HAS NO EFFECT */
 }
-
+/* Common styling for sidebar content area */
 QWidget[sidebarRole="content"] {
-    background-color: #F5FF66;
-    color: #111111;
+    background-color: blue; /* HAS EFFECT!!! */
+    color: white; /* HAS NO EFFECT */
 }
 
 QWidget[sidebarRole="action-row"] {
-    background-color: #A70707;
-    border-radius: 2px;
-    padding: 2px 4px;
+    background-color: green; /* HAS NO EFFECT */
+    border-radius: 100px; /* HAS NO EFFECT */
+    padding: 50px solid red; /* HAS NO EFFECT */
 }
 
 QDockWidget#NotebooksDock QListWidget,

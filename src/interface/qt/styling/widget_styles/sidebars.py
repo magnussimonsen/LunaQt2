@@ -25,57 +25,60 @@ def get_qss(
 
     dock_block = dedent(
         f"""
+        /* FALLBACK DEAFULT STYLES FOR DOCK WIDGETS? */
         {SIDEBAR_DOCK_SELECTOR} {{
-            background-color: {bg.sidebar_content};
-            color: {text.primary};
-            border-left: {spacing.dock_border_width}px solid {border.strong};
-        }}
+            background-color: red;  /* HAS NO EFFECT */
+            color: {text.primary}; /* HAS NO EFFECT */
+            border-left: {spacing.dock_border_width}px solid {border.strong}; /* HAS NO EFFECT */
+            margin: 100px; /*HAS NO EFFECT*/
+         }}
 
         QDockWidget#NotebooksDock::title,
         QDockWidget#SettingsDock::title {{
-            background-color: {bg.sidebar_header};
-            color: {text.primary};
-            text-align: left;
-            padding: {spacing.header_padding}px;
+            background-color: {bg.sidebar_header}; /*HAS EFFECT*/
+            color: {text.primary}; /*HAS EFFECT*/
+            text-align: left; /*HAS EFFECT*/
+            padding: {spacing.header_padding}px; /*HAS EFFECT*/
         }}
 
         {SIDEBAR_DOCK_SELECTOR} > QWidget {{
-            background-color: {bg.sidebar_content};
+            background-color: blue; /* HAS NO EFFECT */
         }}
 
         QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
         QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {{
-            background-color: {bg.sidebar_content};
+            background-color: blue;  /* HAS NO EFFECT */
+            padding: 100px; /* HAS NO EFFECT */
         }}
         """
     ).strip()
 
     toolbar_block = dedent(
         f"""
+         /* Common styling for sidebar toolbars */
         QWidget[sidebarRole="toolbar"] {{
-            background-color: {bg.sidebar_toolbar};
-            color: {text.primary};
-            padding: {spacing.toolbar_padding}px;
-            border-bottom: {spacing.toolbar_border_width}px solid {border.strong};
+            background-color: blue; /* HAS NO EFFECT */
+            color: red; /* HAS NO EFFECT */
+            padding: 100px; /* HAS NO EFFECT */
+            border-bottom: 10px solid blue; /* HAS EFFECT!!! */
         }}
-
         QWidget[sidebarRole="toolbar"] QLabel {{
-            color: {text.primary};
+            color: green; /* HAS NO EFFECT */
         }}
-
+        /* Common styling for sidebar content area */
         QWidget[sidebarRole="content"] {{
-            background-color: {bg.sidebar_content};
-            color: {text.primary};
+            background-color: blue; /* HAS EFFECT!!! */
+            color: white; /* HAS NO EFFECT */
         }}
 
         {SIDEBAR_ACTION_ROW_SELECTOR} {{
-            background-color: {bg.sidebar_toolbar};
-            border-radius: {spacing.action_row_radius}px;
-            padding: {spacing.action_row_padding_y}px {spacing.action_row_padding_x}px;
-        }}
+            background-color: green; /* HAS NO EFFECT */
+            border-radius: 100px; /* HAS NO EFFECT */
+            padding: 50px solid red; /* HAS NO EFFECT */
+        }} 
         """
     ).strip()
-
+    # ALL BELLOW HAS EFFECT
     child_widgets_block = dedent(
         f"""
         QDockWidget#NotebooksDock QListWidget,
