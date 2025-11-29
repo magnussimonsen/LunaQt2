@@ -11,13 +11,13 @@ QWidget {
     QDockWidget#SettingsDock > QWidget,
     QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
     QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {
-        background-color: #F5FF66;
+        background-color: #dddddd;
         color: #111111;
     }
 
     QDockWidget#NotebooksDock QWidget[sidebarRole="toolbar"],
     QDockWidget#SettingsDock QWidget[sidebarRole="toolbar"] {
-        background-color: #A70707;
+        background-color: #aaaaaa;
         color: #111111;
     }
 
@@ -386,54 +386,34 @@ QToolBar#PrimaryToolBar {
     font-size: 12pt;
 }
 
-/* FALLBACK DEAFULT STYLES FOR DOCK WIDGETS? */
-QDockWidget#NotebooksDock, QDockWidget#SettingsDock {
-    background-color: red;  /* HAS NO EFFECT */
-    color: #111111; /* HAS NO EFFECT */
-    border-left: 1px solid #ffcccc; /* HAS NO EFFECT */
-    margin: 100px; /*HAS NO EFFECT*/
- }
-
+/* Dock widget title bar styling (header area) */
 QDockWidget#NotebooksDock::title,
 QDockWidget#SettingsDock::title {
-    background-color: #C266FF; /*HAS EFFECT*/
-    color: #111111; /*HAS EFFECT*/
-    text-align: left; /*HAS EFFECT*/
-    padding: 6px; /*HAS EFFECT*/
+    background-color: #aaaaaa;
+    color: #111111;
+    text-align: left;
+    padding: 6px;
 }
 
-QDockWidget#NotebooksDock, QDockWidget#SettingsDock > QWidget {
-    background-color: blue; /* HAS NO EFFECT */
+/* Main sidebar panel containers */
+QWidget#NotebookSidebarPanel,
+QWidget#SettingsSidebarPanel {
+    background-color: #dddddd;
 }
 
-QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
-QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {
-    background-color: blue;  /* HAS NO EFFECT */
-    padding: 100px; /* HAS NO EFFECT */
-}
-
-/* Common styling for sidebar toolbars */
+/* Toolbar section at top of sidebar */
 QWidget[sidebarRole="toolbar"] {
-    background-color: blue; /* HAS NO EFFECT */
-    color: red; /* HAS NO EFFECT */
-    padding: 100px; /* HAS NO EFFECT */
-    border-bottom: 10px solid blue; /* HAS EFFECT!!! */
+    background-color: #aaaaaa;
+    border-bottom: 1px solid #343434;
+    min-height: 5px;
 }
-QWidget[sidebarRole="toolbar"] QLabel {
-    color: green; /* HAS NO EFFECT */
-}
-/* Common styling for sidebar content area */
+
+/* Content section below toolbar */
 QWidget[sidebarRole="content"] {
-    background-color: blue; /* HAS EFFECT!!! */
-    color: white; /* HAS NO EFFECT */
+    background-color: #dddddd;
 }
 
-QWidget[sidebarRole="action-row"] {
-    background-color: green; /* HAS NO EFFECT */
-    border-radius: 100px; /* HAS NO EFFECT */
-    padding: 50px solid red; /* HAS NO EFFECT */
-}
-
+/* List widgets */
 QDockWidget#NotebooksDock QListWidget,
 QDockWidget#SettingsDock QListWidget {
     background-color: transparent;
@@ -449,15 +429,16 @@ QDockWidget#SettingsDock QListWidget::item {
 
 QDockWidget#NotebooksDock QListWidget::item:selected,
 QDockWidget#SettingsDock QListWidget::item:selected {
-    background-color: #A70707;
+    background-color: #aaaaaa;
     color: #111111;
 }
 
+/* Input widgets (ComboBox, SpinBox) */
 QDockWidget#NotebooksDock QComboBox,
 QDockWidget#SettingsDock QComboBox,
 QDockWidget#NotebooksDock QSpinBox,
 QDockWidget#SettingsDock QSpinBox {
-    background-color: #F5FF66;
+    background-color: #dddddd;
     border: 1px solid #343434;
     padding: 4px;
     border-radius: 2px;
@@ -470,6 +451,7 @@ QDockWidget#SettingsDock QSpinBox:hover {
     border-color: #ffcccc;
 }
 
+/* SpinBox buttons */
 QDockWidget#NotebooksDock QSpinBox::up-button,
 QDockWidget#SettingsDock QSpinBox::up-button,
 QDockWidget#NotebooksDock QSpinBox::down-button,
@@ -487,6 +469,7 @@ QDockWidget#SettingsDock QSpinBox::down-button:hover {
     background-color: #ffcccc;
 }
 
+/* SpinBox arrows */
 QDockWidget#NotebooksDock QSpinBox::up-arrow,
 QDockWidget#SettingsDock QSpinBox::up-arrow {
     width: 0;
@@ -507,6 +490,7 @@ QDockWidget#SettingsDock QSpinBox::down-arrow {
     margin: 0px;
 }
 
+/* Labels */
 QDockWidget#NotebooksDock QLabel,
 QDockWidget#SettingsDock QLabel {
     background-color: transparent;

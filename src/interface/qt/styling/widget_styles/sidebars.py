@@ -6,9 +6,6 @@ from textwrap import dedent
 
 from interface.qt.styling.theme import Theme, ThemeMode, get_theme, sidebar_tokens
 
-SIDEBAR_DOCK_SELECTOR = "QDockWidget#NotebooksDock, QDockWidget#SettingsDock"
-SIDEBAR_ACTION_ROW_SELECTOR = 'QWidget[sidebarRole="action-row"]'
-
 
 def get_qss(
     mode: ThemeMode = ThemeMode.DARK,
@@ -23,64 +20,64 @@ def get_qss(
     border = theme.border
     text = theme.text
 
-    dock_block = dedent(
+    # =========================================================================
+    # DOCK WIDGET TITLE BAR
+    # QDockWidget QSS can only style the title bar, NOT the content widget
+    # =========================================================================
+    title_block = dedent(
         f"""
-        /* FALLBACK DEAFULT STYLES FOR DOCK WIDGETS? */
-        {SIDEBAR_DOCK_SELECTOR} {{
-            background-color: red;  /* HAS NO EFFECT */
-            color: {text.primary}; /* HAS NO EFFECT */
-            border-left: {spacing.dock_border_width}px solid {border.strong}; /* HAS NO EFFECT */
-            margin: 100px; /*HAS NO EFFECT*/
-         }}
-
+        /* Dock widget title bar styling (header area) */
         QDockWidget#NotebooksDock::title,
         QDockWidget#SettingsDock::title {{
-            background-color: {bg.sidebar_header}; /*HAS EFFECT*/
-            color: {text.primary}; /*HAS EFFECT*/
-            text-align: left; /*HAS EFFECT*/
-            padding: {spacing.header_padding}px; /*HAS EFFECT*/
-        }}
-
-        {SIDEBAR_DOCK_SELECTOR} > QWidget {{
-            background-color: blue; /* HAS NO EFFECT */
-        }}
-
-        QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
-        QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {{
-            background-color: blue;  /* HAS NO EFFECT */
-            padding: 100px; /* HAS NO EFFECT */
+            background-color: {bg.sidebar_header};
+            color: {text.primary};
+            text-align: left;
+            padding: {spacing.header_padding}px;
         }}
         """
     ).strip()
 
-    toolbar_block = dedent(
+    # =========================================================================
+    # MAIN SIDEBAR PANEL CONTAINER
+    # Style the top-level widget that QDockWidget.setWidget() receives
+    # =========================================================================
+    panel_block = dedent(
         f"""
-         /* Common styling for sidebar toolbars */
-        QWidget[sidebarRole="toolbar"] {{
-            background-color: blue; /* HAS NO EFFECT */
-            color: red; /* HAS NO EFFECT */
-            padding: 100px; /* HAS NO EFFECT */
-            border-bottom: 10px solid blue; /* HAS EFFECT!!! */
+        /* Main sidebar panel containers */
+        QWidget#NotebookSidebarPanel,
+        QWidget#SettingsSidebarPanel {{
+            background-color: {bg.sidebar_content};
         }}
-        QWidget[sidebarRole="toolbar"] QLabel {{
-            color: green; /* HAS NO EFFECT */
-        }}
-        /* Common styling for sidebar content area */
-        QWidget[sidebarRole="content"] {{
-            background-color: blue; /* HAS EFFECT!!! */
-            color: white; /* HAS NO EFFECT */
-        }}
-
-        {SIDEBAR_ACTION_ROW_SELECTOR} {{
-            background-color: green; /* HAS NO EFFECT */
-            border-radius: 100px; /* HAS NO EFFECT */
-            padding: 50px solid red; /* HAS NO EFFECT */
-        }} 
         """
     ).strip()
-    # ALL BELLOW HAS EFFECT
+
+    # =========================================================================
+    # SIDEBAR SECTIONS (Toolbar and Content areas)
+    # Target widgets by their sidebarRole property
+    # =========================================================================
+    sections_block = dedent(
+        f"""
+        /* Toolbar section at top of sidebar */
+        QWidget[sidebarRole="toolbar"] {{
+            background-color: {bg.sidebar_toolbar};
+            border-bottom: {spacing.toolbar_border_width}px solid {border.subtle};
+            min-height: {metrics.min_sidebar_toolbar_height}px;
+        }}
+
+        /* Content section below toolbar */
+        QWidget[sidebarRole="content"] {{
+            background-color: {bg.sidebar_content};
+        }}
+        """
+    ).strip()
+
+    # =========================================================================
+    # CHILD WIDGETS (Lists, Inputs, Labels)
+    # Style specific widget types within sidebars
+    # =========================================================================
     child_widgets_block = dedent(
         f"""
+        /* List widgets */
         QDockWidget#NotebooksDock QListWidget,
         QDockWidget#SettingsDock QListWidget {{
             background-color: transparent;
@@ -100,6 +97,7 @@ def get_qss(
             color: {text.primary};
         }}
 
+        /* Input widgets (ComboBox, SpinBox) */
         QDockWidget#NotebooksDock QComboBox,
         QDockWidget#SettingsDock QComboBox,
         QDockWidget#NotebooksDock QSpinBox,
@@ -117,6 +115,7 @@ def get_qss(
             border-color: {border.strong};
         }}
 
+        /* SpinBox buttons */
         QDockWidget#NotebooksDock QSpinBox::up-button,
         QDockWidget#SettingsDock QSpinBox::up-button,
         QDockWidget#NotebooksDock QSpinBox::down-button,
@@ -134,6 +133,7 @@ def get_qss(
             background-color: {border.strong};
         }}
 
+        /* SpinBox arrows */
         QDockWidget#NotebooksDock QSpinBox::up-arrow,
         QDockWidget#SettingsDock QSpinBox::up-arrow {{
             width: 0;
@@ -154,6 +154,7 @@ def get_qss(
             margin: 0px;
         }}
 
+        /* Labels */
         QDockWidget#NotebooksDock QLabel,
         QDockWidget#SettingsDock QLabel {{
             background-color: transparent;
@@ -162,7 +163,7 @@ def get_qss(
         """
     ).strip()
 
-    return f"{dock_block}\n\n{toolbar_block}\n\n{child_widgets_block}"
+    return f"{title_block}\n\n{panel_block}\n\n{sections_block}\n\n{child_widgets_block}"
 
 
 __all__ = ["get_qss"]

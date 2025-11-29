@@ -30,39 +30,64 @@ class NotebookSidebarWidget(QWidget):
         self._build_ui()
 
     def _build_ui(self) -> None:
+        """Build the 3-row sidebar layout: Header (via dock title) | Toolbar | Content."""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        toolbar = QWidget(self)
-        toolbar.setProperty("sidebarRole", "toolbar")
-        toolbar_layout = QHBoxLayout(toolbar)
-        toolbar_layout.setContentsMargins(8, 8, 8, 8)
-        toolbar_layout.setSpacing(8)
-        toolbar_layout.addWidget(QLabel("Toolbar", toolbar))
-        toolbar_layout.addStretch()
+        # Row 2: Toolbar with action buttons
+        toolbar = self._build_toolbar()
         layout.addWidget(toolbar)
 
+        # Row 3: Content area with notebook list
+        content = self._build_content()
+        layout.addWidget(content)
+
+    def _build_toolbar(self) -> QWidget:
+        """Build toolbar with Add Notebook button."""
+        toolbar = QWidget(self)
+        toolbar.setProperty("sidebarRole", "toolbar")
+        toolbar.setAutoFillBackground(True)
+        
+        toolbar_layout = QHBoxLayout(toolbar)
+        toolbar_layout.setContentsMargins(8, 6, 8, 6)
+        toolbar_layout.setSpacing(8)
+        
+        self._add_button = QPushButton("Add Notebook", toolbar)
+        self._add_button.clicked.connect(self.add_notebook_clicked)
+        toolbar_layout.addWidget(self._add_button)
+        toolbar_layout.addStretch()
+        
+        return toolbar
+
+    def _build_content(self) -> QWidget:
+        """Build content area with notebook list."""
         content = QWidget(self)
         content.setProperty("sidebarRole", "content")
+        content.setAutoFillBackground(True)
+        
         content_layout = QVBoxLayout(content)
         content_layout.setContentsMargins(8, 8, 8, 8)
         content_layout.setSpacing(8)
-
-        placeholder = QLabel("Content Area", content)
-        placeholder.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        content_layout.addWidget(placeholder)
-        content_layout.addStretch()
-
-        layout.addWidget(content)
-
+        
+        # Notebook list
         self._list = QListWidget(content)
-        self._list.setSelectionMode(QListWidget.SingleSelection)
-        self._list.setProperty("sidebarRole", "content")
-        content_layout.insertWidget(1, self._list)
+        self._list.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
+        self._list.itemSelectionChanged.connect(self._on_selection_changed)
+        content_layout.addWidget(self._list)
+        
+        # Placeholder items for testing
+        self._list.addItem("Notebook 1")
+        self._list.addItem("Notebook 2")
+        self._list.addItem("Notebook 3")
+        
+        return content
 
-        self._add_button = QPushButton("Add Notebook", toolbar)
-        toolbar_layout.insertWidget(1, self._add_button)
+    def _on_selection_changed(self) -> None:
+        """Handle notebook selection changes."""
+        selected = self._list.currentItem()
+        if selected:
+            self.notebook_selected.emit(selected.text())
 
 
 __all__ = ["NotebookSidebarWidget"]

@@ -16,7 +16,7 @@ class SidebarToolbar(QWidget):
         self.setProperty("sidebarRole", "toolbar")
         self.setAutoFillBackground(True)
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setContentsMargins(8, 6, 8, 6)
         layout.setSpacing(8)
         self._layout = layout
 

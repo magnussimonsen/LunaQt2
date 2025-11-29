@@ -53,9 +53,9 @@ class _BGTokens:
     dropdown = ModeAwareColor(light=l4, dark=d4)
     cell = ModeAwareColor(light=l9, dark=d9)
     cell_gutter = ModeAwareColor(light=l8, dark=d8)
-    sidebar_header = ModeAwareColor(light="#C266FF", dark="#2a2a2a")
-    sidebar_content = ModeAwareColor(light="#F5FF66", dark="#2a2a2a")
-    sidebar_toolbar = ModeAwareColor(light="#A70707", dark="#333333")
+    sidebar_header = ModeAwareColor(light=l2, dark=d2)  # Same as menubar for consistency
+    sidebar_content = ModeAwareColor(light=l1, dark=d1)  # Same as main app bg
+    sidebar_toolbar = ModeAwareColor(light=l2, dark=d2)  # Same as menubar/header
 
 
 class _BorderTokens:
