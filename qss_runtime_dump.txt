@@ -392,25 +392,58 @@ QDockWidget#SettingsDock::title {
     background-color: #aaaaaa;
     color: #111111;
     text-align: left;
-    padding: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-top: 1px solid #343434;
+    border-bottom: 1px solid #343434;
+    border-left: 1px solid #343434;
+    border-right: 1px solid #343434;
 }
 
 /* Main sidebar panel containers */
 QWidget#NotebookSidebarPanel,
 QWidget#SettingsSidebarPanel {
     background-color: #dddddd;
+    border-radius: 0px;
+    border-top: 0px solid #343434;
+    border-bottom: 0px solid #343434;
+    border-left: 0px solid #343434;
+    border-right: 0px solid #343434;
 }
 
 /* Toolbar section at top of sidebar */
 QWidget[sidebarRole="toolbar"] {
     background-color: #aaaaaa;
+    border-radius: 0px;
+    border-top: 1px solid #343434;
     border-bottom: 1px solid #343434;
+    border-left: 1px solid #343434;
+    border-right: 1px solid #343434;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
     min-height: 5px;
 }
 
 /* Content section below toolbar */
 QWidget[sidebarRole="content"] {
     background-color: #dddddd;
+    border-radius: 0px;
+    border-top: 0px solid #343434;
+    border-bottom: 0px solid #343434;
+    border-left: 0px solid #343434;
+    border-right: 0px solid #343434;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
 }
 
 /* List widgets */

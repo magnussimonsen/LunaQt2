@@ -15,13 +15,13 @@ def get_qss(
 
     theme = theme or get_theme(mode)
     metrics = theme.metrics
-    spacing = sidebar_tokens(metrics)
+    spacing = sidebar_tokens(metrics)  # sidebar_tokens = get_sidebar_tokens(metrics)We
     bg = theme.bg
     border = theme.border
     text = theme.text
 
     # =========================================================================
-    # DOCK WIDGET TITLE BAR
+    # DOCK (SIDEBAR CONTAINER) WIDGET TITLE BAR
     # QDockWidget QSS can only style the title bar, NOT the content widget
     # =========================================================================
     title_block = dedent(
@@ -32,7 +32,14 @@ def get_qss(
             background-color: {bg.sidebar_header};
             color: {text.primary};
             text-align: left;
-            padding: {spacing.header_padding}px;
+            padding-top: {spacing.sidebar_header_padding_top}px;
+            padding-bottom: {spacing.sidebar_header_padding_bottom}px;
+            padding-left: {spacing.sidebar_header_padding_left}px;
+            padding-right: {spacing.sidebar_header_padding_right}px;
+            border-top: {spacing.sidebar_header_border_top_width}px solid {border.subtle};
+            border-bottom: {spacing.sidebar_header_border_bottom_width}px solid {border.subtle};
+            border-left: {spacing.sidebar_header_border_left_width}px solid {border.subtle};
+            border-right: {spacing.sidebar_header_border_right_width}px solid {border.subtle};
         }}
         """
     ).strip()
@@ -47,6 +54,11 @@ def get_qss(
         QWidget#NotebookSidebarPanel,
         QWidget#SettingsSidebarPanel {{
             background-color: {bg.sidebar_content};
+            border-radius: {spacing.sidebar_container_border_radius}px;
+            border-top: {spacing.sidebar_container_border_width_top}px solid {border.subtle};
+            border-bottom: {spacing.sidebar_container_border_width_bottom}px solid {border.subtle};
+            border-left: {spacing.sidebar_container_border_width_left}px solid {border.subtle};
+            border-right: {spacing.sidebar_container_border_width_right}px solid {border.subtle};
         }}
         """
     ).strip()
@@ -60,13 +72,34 @@ def get_qss(
         /* Toolbar section at top of sidebar */
         QWidget[sidebarRole="toolbar"] {{
             background-color: {bg.sidebar_toolbar};
-            border-bottom: {spacing.toolbar_border_width}px solid {border.subtle};
+            border-radius: {spacing.sidebar_toolbar_border_radius}px;
+            border-top: {spacing.sidebar_toolbar_border_top_width}px solid {border.subtle};
+            border-bottom: {spacing.sidebar_toolbar_border_bottom_width}px solid {border.subtle};
+            border-left: {spacing.sidebar_toolbar_border_left_width}px solid {border.subtle};
+            border-right: {spacing.sidebar_toolbar_border_right_width}px solid {border.subtle};
+            padding-top: {spacing.sidebar_toolbar_padding_top}px;
+            padding-bottom: {spacing.sidebar_toolbar_padding_bottom}px;
+            padding-left: {spacing.sidebar_toolbar_padding_left}px;
+            padding-right: {spacing.sidebar_toolbar_padding_right}px;
+            margin-top: {spacing.sidebar_toolbar_margin_top}px;
+            margin-bottom: {spacing.sidebar_toolbar_margin_bottom}px;
+            margin-left: {spacing.sidebar_toolbar_margin_left}px;
+            margin-right: {spacing.sidebar_toolbar_margin_right}px;
             min-height: {metrics.min_sidebar_toolbar_height}px;
         }}
 
         /* Content section below toolbar */
         QWidget[sidebarRole="content"] {{
             background-color: {bg.sidebar_content};
+            border-radius: {spacing.sidebar_content_border_radius}px;
+            border-top: {spacing.sidebar_content_border_top_width}px solid {border.subtle};
+            border-bottom: {spacing.sidebar_content_border_bottom_width}px solid {border.subtle};
+            border-left: {spacing.sidebar_content_border_left_width}px solid {border.subtle};
+            border-right: {spacing.sidebar_content_border_right_width}px solid {border.subtle};
+            margin-top: {spacing.sidebar_content_margin_top}px;
+            margin-bottom: {spacing.sidebar_content_margin_bottom}px;
+            margin-left: {spacing.sidebar_content_margin_left}px;
+            margin-right: {spacing.sidebar_content_margin_right}px;
         }}
         """
     ).strip()

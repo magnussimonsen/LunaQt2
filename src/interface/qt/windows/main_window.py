@@ -357,6 +357,8 @@ class LunaQtWindow(QMainWindow):
         dock.setObjectName(object_name)
         dock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
         dock.setFeatures(QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+        # Hide the title bar by setting it to an empty widget
+        dock.setTitleBarWidget(QWidget())
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
         return dock
 

@@ -24,7 +24,6 @@ from .widget_tokens import (
     SidebarTokens,
     StatusBarTokens,
     MainToolbarTokens,
-    SidebarToolbarTokens,
     button_tokens,
     cell_container_tokens,
     cell_gutter_tokens,
@@ -32,7 +31,6 @@ from .widget_tokens import (
     sidebar_tokens,
     statusbar_tokens,
     main_toolbar_tokens,
-    sidebar_toolbar_tokens,
 )
 
 __all__ = [
@@ -57,7 +55,6 @@ __all__ = [
     "SidebarTokens",
     "StatusBarTokens",
     "MainToolbarTokens",
-    "SidebarToolbarTokens",
     "button_tokens",
     "cell_container_tokens",
     "cell_gutter_tokens",
@@ -65,5 +62,4 @@ __all__ = [
     "sidebar_tokens",
     "statusbar_tokens",
     "main_toolbar_tokens",
-    "sidebar_toolbar_tokens",
 ]

@@ -16,6 +16,7 @@ class Metrics:
     radius_medium: int = 4
     radius_large: int = 6
 
+   # Padding (also used for internal widget spacing)
     padding_zero: int = 0
     padding_extra_small: int = 2
     padding_small: int = 4
@@ -27,12 +28,12 @@ class Metrics:
     margin_extra_small: int = 2
     margin_small: int = 4
     margin_medium: int = 6
-    margin_large: int = 80
+    margin_large: int = 8
     margin_extra_large: int = 12
 
     gutter_width: int = 12
-    min_toolbar_height: int = 5
-    min_menubar_height: int = 5
+    # min_toolbar_height: int = 5 (Deprecated)
+    # min_menubar_height: int = 5 (Deprecated)
 
     min_main_menubar_height: int = 5
     min_main_toolbar_height: int = 5 

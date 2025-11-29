@@ -44,28 +44,33 @@ l10 = "#343434"  # Border color subtle light mode
 d10 = "#2B2B2B"  # Border color subtle dark mode
 l11 = "#ffcccc"  # Border color normal strong light mode
 d11 = "#663333"  # Border color normal strong dark mode
+l12 = "#888888" # Sidepanel bg color light mode
+d12 = "#000000"  # Pure black
 
 class _BGTokens:
-    app = ModeAwareColor(light=l1, dark=d1)
-    menubar = ModeAwareColor(light=l2, dark=d2)
-    statusbar = ModeAwareColor(light=l2, dark=d2)
-    toolbar = ModeAwareColor(light=l3, dark=d3) # Same for main and sidebar toolbars for consistency
-    dropdown = ModeAwareColor(light=l4, dark=d4)
-    cell = ModeAwareColor(light=l9, dark=d9)
-    cell_gutter = ModeAwareColor(light=l8, dark=d8)
-    sidebar_header = ModeAwareColor(light=l2, dark=d2)  # Same as menubar for consistency
-    sidebar_content = ModeAwareColor(light=l1, dark=d1)  # Same as main app bg
-    sidebar_toolbar = ModeAwareColor(light=l2, dark=d2)  # Same as menubar/header
+    app_bg = ModeAwareColor(light=l1, dark=d1)
+    menubar_bg = ModeAwareColor(light=l2, dark=d2)
+    dropdown_bg = ModeAwareColor(light=l4, dark=d4)
+    statusbar_bg = ModeAwareColor(light=l2, dark=d2)
+    toolbar_bg = ModeAwareColor(light=l3, dark=d3) # Same for main and sidebar toolbars for consistency
+    sidebar_bg = ModeAwareColor(light=l12, dark=d12)
+    
+    cell_bg = ModeAwareColor(light=l9, dark=d9)
+    cell_gutter_bg = ModeAwareColor(light=l8, dark=d8)
+   
+    sidebar_header_bg = ModeAwareColor(light=l2, dark=d2)  # Same as menubar for consistency
+    sidebar_toolbar_bg = ModeAwareColor(light=l3, dark=d3)  # Same as menubar/header
+    sidebar_content_bg = ModeAwareColor(light=l1, dark=d1)  # Same as main app bg
 
 
 class _BorderTokens:
-    transparent = ModeAwareColor(light=l1, dark=d1)
-    subtle = ModeAwareColor(light=l10, dark=d10)
-    strong = ModeAwareColor(light=l11, dark=d11)
-    highlight = ModeAwareColor(light=l7, dark=d7)
-    cell = ModeAwareColor(light=l10, dark=d10)
-    cell_gutter = ModeAwareColor(light="#d5d5d5", dark="#2a2a2a")
-    cell_in_focus = ModeAwareColor(light="#ff0000", dark="#5ea2ff")
+    transparent_border = ModeAwareColor(light=l1, dark=d1)
+    subtle_border = ModeAwareColor(light=l10, dark=d10)
+    strong_border = ModeAwareColor(light=l11, dark=d11)
+    highlight_border = ModeAwareColor(light=l7, dark=d7)
+    cell_border = ModeAwareColor(light=l10, dark=d10)
+    cell_gutter_border = ModeAwareColor(light="#d5d5d5", dark="#2a2a2a")
+    cell_in_focus_border = ModeAwareColor(light="#ff0000", dark="#5ea2ff")
 
 
 class _TextTokens:
@@ -76,7 +81,7 @@ class _TextTokens:
 
 
 class _ViewportTokens:
-    base = _BGTokens.cell
+    base = _BGTokens.cell_bg
     alternate = ModeAwareColor(light="#f6f6f6", dark="#232323")
     selection = ModeAwareColor(light="#cfe1ff", dark="#2e4a70")
     selection_text = _TextTokens.primary
@@ -112,7 +117,7 @@ class _ButtonTokens:
         disabled=ModeAwareColor(light="#f0f0f0", dark="#292929"),
         border=ModeAwareColor(light="#bcbcbc", dark="#707070"),
         text=_TextTokens.primary,
-        focus=_BorderTokens.highlight,
+        focus=_BorderTokens.highlight_border,
     )
     main_toolbar = ButtonPaletteTokens( 
         normal=ModeAwareColor(light=l6, dark=d6),
@@ -121,7 +126,7 @@ class _ButtonTokens:
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
         border=ModeAwareColor(light="#dadada", dark="#404040"),
         text=_TextTokens.secondary,
-        focus=_BorderTokens.highlight,
+        focus=_BorderTokens.highlight_border,
     )
 
     sidebar_toolbar = ButtonPaletteTokens( 
@@ -131,7 +136,7 @@ class _ButtonTokens:
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
         border=ModeAwareColor(light="#dadada", dark="#404040"),
         text=_TextTokens.secondary,
-        focus=_BorderTokens.highlight,
+        focus=_BorderTokens.highlight_border,
     )
 
     warning = ButtonPaletteTokens(
@@ -150,21 +155,21 @@ class _ButtonTokens:
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1f1f1f"),
         border=ModeAwareColor(light="#bcbcbc", dark="#5a5a5a"),
         text=_TextTokens.primary,
-        focus=_BorderTokens.highlight,
+        focus=_BorderTokens.highlight_border,
     )
 
 
 class _MenuTokens:
-    background = _BGTokens.menubar
+    background = _BGTokens.menubar_bg
     text = _TextTokens.primary
     item_hover = ModeAwareColor(light=l5, dark=d5)
-    separator = _BorderTokens.subtle
+    separator = _BorderTokens.subtle_border
 
 
 class _StatusBarTokens:
-    background = _BGTokens.statusbar
+    background = _BGTokens.statusbar_bg
     text = _TextTokens.secondary
-    border_top = _BorderTokens.subtle
+    border_top = _BorderTokens.subtle_border
     warning = _TextTokens.warning
 
 
@@ -261,29 +266,29 @@ class Theme:
 def _resolve_bg(mode: ThemeMode) -> BackgroundPalette:
     tokens = _BGTokens
     return BackgroundPalette(
-        app=tokens.app.value_for(mode),
-        menubar=tokens.menubar.value_for(mode),
-        statusbar=tokens.statusbar.value_for(mode),
-        dropdown=tokens.dropdown.value_for(mode),
-        cell=tokens.cell.value_for(mode),
-        cell_gutter=tokens.cell_gutter.value_for(mode),
-        toolbar=tokens.toolbar.value_for(mode),
-        sidebar_header=tokens.sidebar_header.value_for(mode),
-        sidebar_content=tokens.sidebar_content.value_for(mode),
-        sidebar_toolbar=tokens.sidebar_toolbar.value_for(mode),
+        app=tokens.app_bg.value_for(mode),
+        menubar=tokens.menubar_bg.value_for(mode),
+        statusbar=tokens.statusbar_bg.value_for(mode),
+        dropdown=tokens.dropdown_bg.value_for(mode),
+        cell=tokens.cell_bg.value_for(mode),
+        cell_gutter=tokens.cell_gutter_bg.value_for(mode),
+        toolbar=tokens.toolbar_bg.value_for(mode),
+        sidebar_header=tokens.sidebar_header_bg.value_for(mode),
+        sidebar_content=tokens.sidebar_content_bg.value_for(mode),
+        sidebar_toolbar=tokens.sidebar_toolbar_bg.value_for(mode),
     )
 
 
 def _resolve_border(mode: ThemeMode) -> BorderPalette:
     tokens = _BorderTokens
     return BorderPalette(
-        transparent=tokens.transparent.value_for(mode),
-        subtle=tokens.subtle.value_for(mode),
-        strong=tokens.strong.value_for(mode),
-        highlight=tokens.highlight.value_for(mode),
-        cell=tokens.cell.value_for(mode),
-        cell_gutter=tokens.cell_gutter.value_for(mode),
-        cell_in_focus=tokens.cell_in_focus.value_for(mode),
+        transparent=tokens.transparent_border.value_for(mode),
+        subtle=tokens.subtle_border.value_for(mode),
+        strong=tokens.strong_border.value_for(mode),
+        highlight=tokens.highlight_border.value_for(mode),
+        cell=tokens.cell_border.value_for(mode),
+        cell_gutter=tokens.cell_gutter_border.value_for(mode),
+        cell_in_focus=tokens.cell_in_focus_border.value_for(mode),
     )
 
 

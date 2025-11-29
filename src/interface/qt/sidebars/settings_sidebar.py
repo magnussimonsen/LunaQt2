@@ -50,9 +50,9 @@ class SettingsSidebarWidget(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         
-        # Row 2: Toolbar (placeholder for future settings actions)
-        toolbar = self._build_toolbar()
-        main_layout.addWidget(toolbar)
+        # Row 2: Toolbar (not used in settings)
+        #toolbar = self._build_toolbar()
+        #main_layout.addWidget(toolbar)
         
         # Row 3: Content area with settings form
         content = self._build_content_container()
@@ -83,20 +83,21 @@ class SettingsSidebarWidget(QWidget):
         self._ui_font_combo.setEnabled(bool(self._font_choices))
         self._ui_font_combo.currentTextChanged.connect(self.ui_font_family_changed)
 
-    def _build_toolbar(self) -> QWidget:
+    #def _build_toolbar(self) -> QWidget:
+        # In the settings we do not need a toolbar. WE keep the code if it is used in future.
         """Build toolbar section (placeholder for future settings actions)."""
-        toolbar = QWidget(self)
-        toolbar.setProperty("sidebarRole", "toolbar")
-        toolbar.setAutoFillBackground(True)
+        #toolbar = QWidget(self)
+        #toolbar.setProperty("sidebarRole", "toolbar")
+        #toolbar.setAutoFillBackground(True)
         
-        toolbar_layout = QHBoxLayout(toolbar)
-        toolbar_layout.setContentsMargins(8, 6, 8, 6)
-        toolbar_layout.setSpacing(8)
+        #toolbar_layout = QHBoxLayout(toolbar)
+        #toolbar_layout.setContentsMargins(8, 6, 8, 6)
+        #toolbar_layout.setSpacing(8)
         
         # Future: Add reset button, export/import settings, etc.
-        toolbar_layout.addStretch()
+        #toolbar_layout.addStretch()
         
-        return toolbar
+        #return toolbar
 
     def _build_content_container(self) -> QWidget:
         container = QWidget(self)
@@ -106,9 +107,9 @@ class SettingsSidebarWidget(QWidget):
         content_layout.setContentsMargins(8, 8, 8, 8)
         content_layout.setSpacing(12)
 
-        typography_label = QLabel("Typography", container)
-        typography_label.setProperty("sidebarSection", "typography")
-        content_layout.addWidget(typography_label)
+        #typography_label = QLabel("Typography", container)
+        #typography_label.setProperty("sidebarSection", "typography")
+        #content_layout.addWidget(typography_label)
 
         form_layout = QFormLayout()
         form_layout.setContentsMargins(0, 0, 0, 0)
