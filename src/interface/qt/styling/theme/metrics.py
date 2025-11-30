@@ -51,7 +51,7 @@ class Metrics:
     font_size_large: int = 14
     cell_body_font_size: int = 12
 
-    border_width: int = 1
+    border_width: int = 1  # DEPRECATED
     border_width_zero: int = 0
     border_width_small: int = 1
     border_width_medium: int = 2

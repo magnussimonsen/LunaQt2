@@ -4,6 +4,7 @@ from __future__ import annotations
 
 try:  # pragma: no cover - only imported when Qt is available
     from PySide6.QtCore import Qt, Signal
+    from PySide6.QtGui import QColor, QPalette
     from PySide6.QtWidgets import (
         QHBoxLayout,
         QLabel,

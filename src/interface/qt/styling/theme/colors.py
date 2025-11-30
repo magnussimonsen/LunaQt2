@@ -22,55 +22,135 @@ class ModeAwareColor:
         return self.dark
 
 # Define base color palettes
-l1 = "#dddddd"  # Main app bg - Light mode
-d1 = "#1e1e1e"  # Main app bg - Dark mode
-l2 = "#aaaaaa"  # Menu bar and status bar bg
-d2 = "#2c2c2c"
-l3 = "#aaaaaa"  # Toolbar bg
-d3 = "#e2e2e2"
-l4 = "#dddddd"  # Dropdown bg
-d4 = "#333333"
-l5 = "#70b3ff"  # Hover bg (blueish)
-d5 = "#232323"
-l6 = "#f0f0f0"  # Button bg color
-d6 = "#3a3a3a"
-l7 = "#3352FF"  # Selected items bg /Highlight
-d7 = "#264DE4"
-l8 = "#cccccc"  # Cell gutter bg
-d8 = "#181818"
-l9 = "#dddddd"  # Cell bg 
-d9 = "#b5b5b5"
-l10 = "#343434"  # Border color subtle light mode
-d10 = "#2B2B2B"  # Border color subtle dark mode
-l11 = "#ffcccc"  # Border color normal strong light mode
-d11 = "#663333"  # Border color normal strong dark mode
-l12 = "#888888" # Sidepanel bg color light mode
-d12 = "#000000"  # Pure black
+# Main application bg colors (not cells and cell gutters)
+app_bg_light = "#dddddd"
+app_bg_dark = "#1e1e1e"
+
+main_menubar_bg_light = "#aaaaaa"
+main_menubar_bg_dark = "#2c2c2c"
+
+main_toolbar_bg_light = "#aaaaaa"
+main_toolbar_bg_dark = "#2c2c2c"
+
+main_dropdown_bg_light = "#dddddd"
+main_dropdown_bg_dark = "#333333"
+
+sidebar_header_bg_light = "#aaaaaa"
+sidebar_header_bg_dark = "#2c2c2c"
+
+sidebar_toolbar_bg_light = "#aaaaaa"
+sidebar_toolbar_bg_dark = "#2c2c2c"
+
+sidebar_content_bg_light = "#aaaaaa"
+sidebar_content_bg_dark = "#2c2c2c"
+
+cell_bg_light = "#dddddd"
+cell_bg_dark = "#2c2c2c"
+
+cell_selected_bg_light = "#e6e6e6"
+cell_selected_bg_dark = "#2a2a2a"
+
+cell_gutter_bg_light = "#cccccc"
+cell_gutter_bg_dark = "#2c2c2c"
+
+# Button colors
+button_bg_light = "#f0f0f0"
+button_bg_dark = "#3a3a3a"
+
+# Hover/Selected/pressed item colors
+hover_item_bg_light = "#a3c4e0" # OBS: Do not change bg on hover for cells (border only)
+hover_item_bg_dark = "#4a4a4a" # OBS: Do not change bg on hover for cells (border only)
+
+hover_item_border_light = "#a3c4e0"
+hover_item_border_dark = "#4a4a4a" 
+
+item_pressed_bg_light = "#6da9d9"  # OBS: Do not change bg on pressed for cells (border only)
+item_pressed_bg_dark = "#232323"   # OBS: Do not change bg on pressed for cells (border only)
+
+item_pressed_border_light = "#6da9d9"
+item_pressed_border_dark = "#6da9d9"
+
+selected_item_bg_light = "#3294d6" # OBS: Do not change bg on selected for cells (border only)
+selected_item_bg_dark = "#264DE4" # OBS: Do not change bg on selected for cells (border only)
+
+selected_item_border_light = "#3294d6"
+selected_item_border_dark = "#264DE4"
+
+# Cell- and gutter-specific border and bg colors (cells don't change background on hover/pressed/selected, but gutters do cnahge bg on selected)
+cell_bg_light = "#dddddd"
+cell_bg_dark = "#2c2c2c"
+
+cell_gutter_bg_light = "#cccccc"
+cell_gutter_bg_dark = "#2c2c2c"
+
+hover_cell_border_light = "#a3c4e0"
+hover_cell_border_dark = "#4a4a4a" 
+
+hover_gutter_border_light = "#a3c4e0"
+hover_gutter_border_dark = "#4a4a4a" 
+
+cell_pressed_border_light = "#6da9d9"
+cell_pressed_border_dark = "#6da9d9"
+
+gutter_pressed_border_light = "#6da9d9"
+gutter_pressed_border_dark = "#6da9d9"
+
+cell_selected_bg_light = cell_bg_light
+cell_selected_bg_dark = cell_bg_dark
+
+selected_cell_border_light = "#3294d6"
+selected_cell_border_dark = "#264DE4"
+
+selected_gutter_border_light = "#3294d6"
+selected_gutter_border_dark = "#264DE4"
+
+selected_gutter_bg_light = "#3294d6"  # OBS: Gutter changes bg on selected
+selected_gutter_bg_dark = "#264DE4"   # OBS: Gutter changes bg on selected
+
+# General UI border colors
+subtle_border_light = "#343434"
+subtle_border_dark = "#2B2B2B"
+
+normal_border_light = "#ffcccc"
+normal_border_dark = "#663333"
+
+button_border_light = "#bcbcbc"
+button_border_dark = "#707070"
 
 class _BGTokens:
-    app_bg = ModeAwareColor(light=l1, dark=d1)
-    menubar_bg = ModeAwareColor(light=l2, dark=d2)
-    dropdown_bg = ModeAwareColor(light=l4, dark=d4)
-    statusbar_bg = ModeAwareColor(light=l2, dark=d2)
-    toolbar_bg = ModeAwareColor(light=l3, dark=d3) # Same for main and sidebar toolbars for consistency
-    sidebar_bg = ModeAwareColor(light=l12, dark=d12)
+    app_bg = ModeAwareColor(light=app_bg_light, dark=app_bg_dark)
+    menubar_bg = ModeAwareColor(light=main_menubar_bg_light, dark=main_menubar_bg_dark)
+    dropdown_bg = ModeAwareColor(light=main_dropdown_bg_light, dark=main_dropdown_bg_dark)
+    statusbar_bg = ModeAwareColor(light=main_menubar_bg_light, dark=main_menubar_bg_dark)
+    toolbar_bg = ModeAwareColor(light=main_toolbar_bg_light, dark=main_toolbar_bg_dark)
+    sidebar_bg = ModeAwareColor(light=sidebar_content_bg_light, dark=sidebar_content_bg_dark)
     
-    cell_bg = ModeAwareColor(light=l9, dark=d9)
-    cell_gutter_bg = ModeAwareColor(light=l8, dark=d8)
+    cell_bg = ModeAwareColor(light=cell_bg_light, dark=cell_bg_dark)
+    cell_selected_bg = ModeAwareColor(light=cell_selected_bg_light, dark=cell_selected_bg_dark)
+    cell_gutter_bg = ModeAwareColor(light=cell_gutter_bg_light, dark=cell_gutter_bg_dark)
+    selected_gutter_bg = ModeAwareColor(light=selected_gutter_bg_light, dark=selected_gutter_bg_dark)
    
-    sidebar_header_bg = ModeAwareColor(light=l2, dark=d2)  # Same as menubar for consistency
-    sidebar_toolbar_bg = ModeAwareColor(light=l3, dark=d3)  # Same as menubar/header
-    sidebar_content_bg = ModeAwareColor(light=l1, dark=d1)  # Same as main app bg
+    sidebar_header_bg = ModeAwareColor(light=sidebar_header_bg_light, dark=sidebar_header_bg_dark)
+    sidebar_toolbar_bg = ModeAwareColor(light=sidebar_toolbar_bg_light, dark=sidebar_toolbar_bg_dark)
+    sidebar_content_bg = ModeAwareColor(light=sidebar_content_bg_light, dark=sidebar_content_bg_dark)
+    hover_bg = ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark)
 
 
 class _BorderTokens:
-    transparent_border = ModeAwareColor(light=l1, dark=d1)
-    subtle_border = ModeAwareColor(light=l10, dark=d10)
-    strong_border = ModeAwareColor(light=l11, dark=d11)
-    highlight_border = ModeAwareColor(light=l7, dark=d7)
-    cell_border = ModeAwareColor(light=l10, dark=d10)
+    transparent_border = ModeAwareColor(light=app_bg_light, dark=app_bg_dark)
+    subtle_border = ModeAwareColor(light=subtle_border_light, dark=subtle_border_dark)
+    normal_border = ModeAwareColor(light=normal_border_light, dark=normal_border_dark)
+    hover_border = ModeAwareColor(light=hover_item_border_light, dark=hover_item_border_dark)
+    pressed_border = ModeAwareColor(light=item_pressed_border_light, dark=item_pressed_border_dark)
+    selected_border = ModeAwareColor(light=selected_item_border_light, dark=selected_item_border_dark)
+    cell_border = ModeAwareColor(light=subtle_border_light, dark=subtle_border_dark)
+    cell_hover_border = ModeAwareColor(light=hover_cell_border_light, dark=hover_cell_border_dark)
+    cell_pressed_border = ModeAwareColor(light=cell_pressed_border_light, dark=cell_pressed_border_dark)
+    cell_in_focus_border = ModeAwareColor(light=selected_cell_border_light, dark=selected_cell_border_dark)
     cell_gutter_border = ModeAwareColor(light="#d5d5d5", dark="#2a2a2a")
-    cell_in_focus_border = ModeAwareColor(light="#ff0000", dark="#5ea2ff")
+    gutter_hover_border = ModeAwareColor(light=hover_gutter_border_light, dark=hover_gutter_border_dark)
+    gutter_pressed_border = ModeAwareColor(light=gutter_pressed_border_light, dark=gutter_pressed_border_dark)
+    gutter_in_focus_border = ModeAwareColor(light=selected_gutter_border_light, dark=selected_gutter_border_dark)
 
 
 class _TextTokens:
@@ -112,31 +192,31 @@ class ButtonPaletteTokens:
 class _ButtonTokens:
     primary = ButtonPaletteTokens(
         normal=ModeAwareColor(light="#e0e0e0", dark="#404040"),
-        hover=ModeAwareColor(light=l5, dark=d5),
+        hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
         pressed=ModeAwareColor(light="#c0c0c0", dark="#303030"),
         disabled=ModeAwareColor(light="#f0f0f0", dark="#292929"),
-        border=ModeAwareColor(light="#bcbcbc", dark="#707070"),
+        border=ModeAwareColor(light=button_border_light, dark=button_border_dark),
         text=_TextTokens.primary,
-        focus=_BorderTokens.highlight_border,
+        focus=_BorderTokens.selected_border,
     )
     main_toolbar = ButtonPaletteTokens( 
-        normal=ModeAwareColor(light=l6, dark=d6),
-        hover=ModeAwareColor(light=l5, dark=d5),
-        pressed=ModeAwareColor(light="#dcdcdc", dark="#1f1f1f"),
+        normal=ModeAwareColor(light=button_bg_light, dark=button_bg_dark),
+        hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
+        pressed=ModeAwareColor(light=item_pressed_bg_light, dark=item_pressed_bg_dark),
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
         border=ModeAwareColor(light="#dadada", dark="#404040"),
         text=_TextTokens.secondary,
-        focus=_BorderTokens.highlight_border,
+        focus=_BorderTokens.selected_border,
     )
 
     sidebar_toolbar = ButtonPaletteTokens( 
-        normal=ModeAwareColor(light=l6, dark=d6),
-        hover=ModeAwareColor(light=l5, dark=d5),
-        pressed=ModeAwareColor(light="#dcdcdc", dark="#1f1f1f"),
+        normal=ModeAwareColor(light=button_bg_light, dark=button_bg_dark),
+        hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
+        pressed=ModeAwareColor(light=item_pressed_bg_light, dark=item_pressed_bg_dark),
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
         border=ModeAwareColor(light="#dadada", dark="#404040"),
         text=_TextTokens.secondary,
-        focus=_BorderTokens.highlight_border,
+        focus=_BorderTokens.selected_border,
     )
 
     warning = ButtonPaletteTokens(
@@ -149,20 +229,20 @@ class _ButtonTokens:
         focus=ModeAwareColor(light="#ff8800", dark="#ffa45c"),
     )
     menubar = ButtonPaletteTokens(
-        normal=ModeAwareColor(light=l6, dark=d6),
-        hover=ModeAwareColor(light=l5, dark=d5),
-        pressed=ModeAwareColor(light="#4a90e2", dark="#5a9fff"),
+        normal=ModeAwareColor(light=button_bg_light, dark=button_bg_dark),
+        hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
+        pressed=ModeAwareColor(light=selected_item_bg_light, dark=selected_item_bg_dark),
         disabled=ModeAwareColor(light="#f8f8f8", dark="#1f1f1f"),
-        border=ModeAwareColor(light="#bcbcbc", dark="#5a5a5a"),
+        border=ModeAwareColor(light=button_border_light, dark="#5a5a5a"),
         text=_TextTokens.primary,
-        focus=_BorderTokens.highlight_border,
+        focus=_BorderTokens.selected_border,
     )
 
 
 class _MenuTokens:
     background = _BGTokens.menubar_bg
     text = _TextTokens.primary
-    item_hover = ModeAwareColor(light=l5, dark=d5)
+    item_hover = ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark)
     separator = _BorderTokens.subtle_border
 
 
@@ -180,11 +260,15 @@ class BackgroundPalette:
     statusbar: str
     dropdown: str
     cell: str
+    cell_selected: str
     cell_gutter: str
+    selected_gutter: str
     toolbar: str
+    sidebar_bg: str
     sidebar_header: str
     sidebar_toolbar: str
     sidebar_content: str
+    hover: str
 
 
 @dataclass(frozen=True)
@@ -192,10 +276,17 @@ class BorderPalette:
     transparent: str
     subtle: str
     strong: str
-    highlight: str
+    hover: str
+    pressed: str
+    selected: str
     cell: str
-    cell_gutter: str
+    cell_hover: str
+    cell_pressed: str
     cell_in_focus: str
+    cell_gutter: str
+    gutter_hover: str
+    gutter_pressed: str
+    gutter_in_focus: str
 
 
 @dataclass(frozen=True)
@@ -271,11 +362,15 @@ def _resolve_bg(mode: ThemeMode) -> BackgroundPalette:
         statusbar=tokens.statusbar_bg.value_for(mode),
         dropdown=tokens.dropdown_bg.value_for(mode),
         cell=tokens.cell_bg.value_for(mode),
+        cell_selected=tokens.cell_selected_bg.value_for(mode),
         cell_gutter=tokens.cell_gutter_bg.value_for(mode),
+        selected_gutter=tokens.selected_gutter_bg.value_for(mode),
         toolbar=tokens.toolbar_bg.value_for(mode),
+        sidebar_bg=tokens.sidebar_bg.value_for(mode),
         sidebar_header=tokens.sidebar_header_bg.value_for(mode),
         sidebar_content=tokens.sidebar_content_bg.value_for(mode),
         sidebar_toolbar=tokens.sidebar_toolbar_bg.value_for(mode),
+        hover=tokens.hover_bg.value_for(mode),
     )
 
 
@@ -284,11 +379,18 @@ def _resolve_border(mode: ThemeMode) -> BorderPalette:
     return BorderPalette(
         transparent=tokens.transparent_border.value_for(mode),
         subtle=tokens.subtle_border.value_for(mode),
-        strong=tokens.strong_border.value_for(mode),
-        highlight=tokens.highlight_border.value_for(mode),
+        strong=tokens.normal_border.value_for(mode),
+        hover=tokens.hover_border.value_for(mode),
+        pressed=tokens.pressed_border.value_for(mode),
+        selected=tokens.selected_border.value_for(mode),
         cell=tokens.cell_border.value_for(mode),
-        cell_gutter=tokens.cell_gutter_border.value_for(mode),
+        cell_hover=tokens.cell_hover_border.value_for(mode),
+        cell_pressed=tokens.cell_pressed_border.value_for(mode),
         cell_in_focus=tokens.cell_in_focus_border.value_for(mode),
+        cell_gutter=tokens.cell_gutter_border.value_for(mode),
+        gutter_hover=tokens.gutter_hover_border.value_for(mode),
+        gutter_pressed=tokens.gutter_pressed_border.value_for(mode),
+        gutter_in_focus=tokens.gutter_in_focus_border.value_for(mode),
     )
 
 

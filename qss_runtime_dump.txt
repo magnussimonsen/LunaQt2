@@ -11,7 +11,7 @@ QWidget {
     QDockWidget#SettingsDock > QWidget,
     QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
     QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {
-        background-color: #dddddd;
+        background-color: #aaaaaa;
         color: #111111;
     }
 
@@ -43,7 +43,7 @@ QPushButton[btnType="primary"] {
 }
 
 QPushButton[btnType="primary"]:hover {
-    background-color: #70b3ff;
+    background-color: #a3c4e0;
 }
 
 QPushButton[btnType="primary"]:pressed {
@@ -52,7 +52,7 @@ QPushButton[btnType="primary"]:pressed {
 
 QPushButton[btnType="primary"]:checked {
     background-color: #c0c0c0;
-    border-color: #3352FF;
+    border-color: #3294d6;
 }
 
 QPushButton[btnType="primary"]:disabled {
@@ -63,7 +63,7 @@ QPushButton[btnType="primary"]:disabled {
 
 QPushButton[btnType="primary"]:focus-visible {
     outline: none;
-    border-color: #3352FF;
+    border-color: #3294d6;
 }
 
 QPushButton[btnType="warning"] {
@@ -116,15 +116,15 @@ QPushButton[btnType="menubar"] {
 }
 
 QPushButton[btnType="menubar"]:hover {
-    background-color: #70b3ff;
+    background-color: #a3c4e0;
 }
 
 QPushButton[btnType="menubar"]:pressed {
-    background-color: #4a90e2;
+    background-color: #3294d6;
 }
 
 QPushButton[btnType="menubar"]:checked {
-    background-color: #4a90e2;
+    background-color: #3294d6;
     color: #111111;
 }
 
@@ -135,7 +135,7 @@ QPushButton[btnType="menubar"]:disabled {
 
 QPushButton[btnType="menubar"]:focus-visible {
     outline: none;
-    border-color: #3352FF;
+    border-color: #3294d6;
 }
 
 QPushButton[btnType="toolbar"] {
@@ -153,16 +153,16 @@ QPushButton[btnType="toolbar"] {
 }
 
 QPushButton[btnType="toolbar"]:hover {
-    background-color: #70b3ff;
+    background-color: #a3c4e0;
 }
 
 QPushButton[btnType="toolbar"]:pressed {
-    background-color: #dcdcdc;
+    background-color: #6da9d9;
 }
 
 QPushButton[btnType="toolbar"]:checked {
-    background-color: #dcdcdc;
-    border-color: #3352FF;
+    background-color: #6da9d9;
+    border-color: #3294d6;
 }
 
 QPushButton[btnType="toolbar"]:disabled {
@@ -172,7 +172,7 @@ QPushButton[btnType="toolbar"]:disabled {
 
 QPushButton[btnType="toolbar"]:focus-visible {
     outline: none;
-    border-color: #3352FF;
+    border-color: #3294d6;
 }
 
 QPushButton[btnType="sidebar-toolbar"] {
@@ -190,16 +190,16 @@ QPushButton[btnType="sidebar-toolbar"] {
 }
 
 QPushButton[btnType="sidebar-toolbar"]:hover {
-    background-color: #70b3ff;
+    background-color: #a3c4e0;
 }
 
 QPushButton[btnType="sidebar-toolbar"]:pressed {
-    background-color: #dcdcdc;
+    background-color: #6da9d9;
 }
 
 QPushButton[btnType="sidebar-toolbar"]:checked {
-    background-color: #dcdcdc;
-    border-color: #3352FF;
+    background-color: #6da9d9;
+    border-color: #3294d6;
 }
 
 QPushButton[btnType="sidebar-toolbar"]:disabled {
@@ -209,7 +209,7 @@ QPushButton[btnType="sidebar-toolbar"]:disabled {
 
 QPushButton[btnType="sidebar-toolbar"]:focus-visible {
     outline: none;
-    border-color: #3352FF;
+    border-color: #3294d6;
 }
 
 QPushButton {
@@ -239,9 +239,13 @@ QFrame[cellType="container"] {
     margin-right: 4px;
 }
 
+QFrame[cellType="container"]:hover {
+    border-color: #a3c4e0;
+}
+
 QFrame[cellType="container"][state="focused"],
 QFrame[cellType="container"][state="selected"] {
-    border-color: #ff0000;
+    border-color: #3294d6;
 }
 
 QFrame[cellType="container"] > QWidget[cellPart="header"] {
@@ -253,11 +257,15 @@ QFrame[cellType="container"] > QWidget[cellPart="header"] {
     letter-spacing: 0.08em;
 }
 
+/* Header inherits border from parent cell container */
+
 QFrame[cellType="container"] > QWidget[cellPart="body"] {
     background-color: #dddddd;
     color: #111111;
     font-size: 12pt;
 }
+
+/* Body inherits border from parent cell container */
 
 QFrame[cellType="container"] QTextEdit,
 QFrame[cellType="container"] QTableView {
@@ -278,19 +286,26 @@ QWidget[cellType="gutter"] {
     color: #666666;
 }
 
+QWidget[cellType="gutter"]:hover {
+    border-color: #a3c4e0;
+}
+
 QWidget[cellType="gutter"][state="focused"],
 QWidget[cellType="gutter"][state="selected"] {
-    border-color: #ff0000;
+    background-color: #3294d6;
+    border-color: #3294d6;
 }
 
 QWidget[cellType="gutter"] > QLabel[cellRole="line-number"] {
-    background-color: #cccccc;
+    background-color: transparent;
     color: #333333;
     min-width: 32px;
     qproperty-alignment: 'AlignRight | AlignVCenter';
     font-family: Inter;
     font-size: 10pt;
 }
+
+/* Labels inherit background from parent gutter */
 
 QMenuBar#MainMenuBar {
     background-color: #aaaaaa;
@@ -314,7 +329,7 @@ QMenuBar#MainMenuBar::item {
 }
 
 QMenuBar#MainMenuBar::item:selected {
-    background: #70b3ff;
+    background: #a3c4e0;
     padding-top: 4px;
     padding-bottom: 4px;
     padding-left: 6px;
@@ -347,7 +362,7 @@ QMenu[menuRole="primary"]::item {
 }
 
 QMenu[menuRole="primary"]::item:selected {
-    background: #70b3ff;
+    background: #a3c4e0;
     color: #111111;
 }
 
@@ -405,7 +420,7 @@ QDockWidget#SettingsDock::title {
 /* Main sidebar panel containers */
 QWidget#NotebookSidebarPanel,
 QWidget#SettingsSidebarPanel {
-    background-color: #dddddd;
+    background-color: red; /* This has no effect. It uses app bg for some reason */
     border-radius: 0px;
     border-top: 0px solid #343434;
     border-bottom: 0px solid #343434;
@@ -417,33 +432,33 @@ QWidget#SettingsSidebarPanel {
 QWidget[sidebarRole="toolbar"] {
     background-color: #aaaaaa;
     border-radius: 0px;
-    border-top: 1px solid #343434;
-    border-bottom: 1px solid #343434;
-    border-left: 1px solid #343434;
-    border-right: 1px solid #343434;
+    border-top: 0px solid #343434;
+    border-bottom: 0px solid #343434;
+    border-left: 0px solid #343434;
+    border-right: 0px solid #343434;
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 6px;
     padding-right: 6px;
-    margin-top: 6px;
-    margin-bottom: 6px;
-    margin-left: 6px;
-    margin-right: 6px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
     min-height: 5px;
 }
 
 /* Content section below toolbar */
 QWidget[sidebarRole="content"] {
-    background-color: #dddddd;
+    background-color: #aaaaaa;
     border-radius: 0px;
     border-top: 0px solid #343434;
     border-bottom: 0px solid #343434;
     border-left: 0px solid #343434;
     border-right: 0px solid #343434;
-    margin-top: 6px;
-    margin-bottom: 6px;
-    margin-left: 6px;
-    margin-right: 6px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 /* List widgets */
@@ -471,7 +486,7 @@ QDockWidget#NotebooksDock QComboBox,
 QDockWidget#SettingsDock QComboBox,
 QDockWidget#NotebooksDock QSpinBox,
 QDockWidget#SettingsDock QSpinBox {
-    background-color: #dddddd;
+    background-color: #aaaaaa;
     border: 1px solid #343434;
     padding: 4px;
     border-radius: 2px;
@@ -481,7 +496,7 @@ QDockWidget#NotebooksDock QComboBox:hover,
 QDockWidget#SettingsDock QComboBox:hover,
 QDockWidget#NotebooksDock QSpinBox:hover,
 QDockWidget#SettingsDock QSpinBox:hover {
-    border-color: #ffcccc;
+    border-color: #a3c4e0;
 }
 
 /* SpinBox buttons */

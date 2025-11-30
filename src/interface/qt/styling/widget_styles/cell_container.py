@@ -55,6 +55,10 @@ def get_qss(
             margin-right: {tokens.margin_right}px;
         }}
 
+        {CELL_SELECTOR}:hover {{
+            border-color: {border.cell_hover};
+        }}
+
         {CELL_SELECTOR}[state="focused"],
         {CELL_SELECTOR}[state="selected"] {{
             border-color: {border.cell_in_focus};
@@ -72,6 +76,8 @@ def get_qss(
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }}
+
+        /* Header inherits border from parent cell container */
         """
     ).strip()
 
@@ -82,6 +88,8 @@ def get_qss(
             color: {text.primary};
             font-size: {metrics.cell_body_font_size}pt;
         }}
+
+        /* Body inherits border from parent cell container */
         """
     ).strip()
 

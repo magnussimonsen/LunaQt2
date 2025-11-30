@@ -53,7 +53,7 @@ def get_qss(
         /* Main sidebar panel containers */
         QWidget#NotebookSidebarPanel,
         QWidget#SettingsSidebarPanel {{
-            background-color: {bg.sidebar_content};
+            background-color: red; /* This has no effect. It uses app bg for some reason */
             border-radius: {spacing.sidebar_container_border_radius}px;
             border-top: {spacing.sidebar_container_border_width_top}px solid {border.subtle};
             border-bottom: {spacing.sidebar_container_border_width_bottom}px solid {border.subtle};
@@ -145,7 +145,7 @@ def get_qss(
         QDockWidget#SettingsDock QComboBox:hover,
         QDockWidget#NotebooksDock QSpinBox:hover,
         QDockWidget#SettingsDock QSpinBox:hover {{
-            border-color: {border.strong};
+            border-color: {border.hover};
         }}
 
         /* SpinBox buttons */

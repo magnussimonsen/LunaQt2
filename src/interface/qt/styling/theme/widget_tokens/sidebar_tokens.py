@@ -108,28 +108,28 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
         sidebar_header_padding_left=metrics.padding_medium,
         sidebar_header_padding_right=metrics.padding_medium,
 
-        sidebar_header_margin_top=metrics.padding_medium,
-        sidebar_header_margin_bottom=metrics.padding_medium,
-        sidebar_header_margin_left=metrics.padding_medium,
-        sidebar_header_margin_right=metrics.padding_medium,
+        sidebar_header_margin_top=0,
+        sidebar_header_margin_bottom=0,
+        sidebar_header_margin_left=0,
+        sidebar_header_margin_right=0,
 
         # Sidebar toolbar tokens
         sidebar_toolbar_border_radius=metrics.radius_zero,
         
-        sidebar_toolbar_border_top_width=metrics.border_width_small,
-        sidebar_toolbar_border_bottom_width=metrics.border_width_small,
-        sidebar_toolbar_border_left_width=metrics.border_width_small,
-        sidebar_toolbar_border_right_width=metrics.border_width_small,
+        sidebar_toolbar_border_top_width=metrics.border_width_zero,
+        sidebar_toolbar_border_bottom_width=metrics.border_width_zero,
+        sidebar_toolbar_border_left_width=metrics.border_width_zero,
+        sidebar_toolbar_border_right_width=metrics.border_width_zero,
 
         sidebar_toolbar_padding_top=metrics.padding_medium,
         sidebar_toolbar_padding_bottom=metrics.padding_medium,
         sidebar_toolbar_padding_left=metrics.padding_medium,
         sidebar_toolbar_padding_right=metrics.padding_medium,
 
-        sidebar_toolbar_margin_top=metrics.padding_medium,
-        sidebar_toolbar_margin_bottom=metrics.padding_medium,
-        sidebar_toolbar_margin_left=metrics.padding_medium,
-        sidebar_toolbar_margin_right=metrics.padding_medium,
+        sidebar_toolbar_margin_top=0,
+        sidebar_toolbar_margin_bottom=0,
+        sidebar_toolbar_margin_left=0,
+        sidebar_toolbar_margin_right=0,
 
         sidebar_toolbar_item_x_spacing=metrics.padding_small,
         sidebar_toolbar_item_padding_top=metrics.padding_small,
@@ -145,10 +145,10 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
         sidebar_content_border_left_width=metrics.border_width_zero,
         sidebar_content_border_right_width=metrics.border_width_zero,
 
-        sidebar_content_margin_top=metrics.padding_medium,
-        sidebar_content_margin_bottom=metrics.padding_medium,
-        sidebar_content_margin_left=metrics.padding_medium,
-        sidebar_content_margin_right=metrics.padding_medium,
+        sidebar_content_margin_top=0,
+        sidebar_content_margin_bottom=0,
+        sidebar_content_margin_left=0,
+        sidebar_content_margin_right=0,
         
         # Sidebar content item tokens (Common for Settings items and "select a notebook" items in the notebook list)
         sidebar_content_item_border_top_width=metrics.border_width_zero,

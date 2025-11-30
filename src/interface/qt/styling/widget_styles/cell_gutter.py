@@ -34,9 +34,14 @@ def get_qss(
             color: {text.muted};
         }}
 
+        {GUTTER_SELECTOR}:hover {{
+            border-color: {border.gutter_hover};
+        }}
+
         {GUTTER_SELECTOR}[state="focused"],
         {GUTTER_SELECTOR}[state="selected"] {{
-            border-color: {border.cell_in_focus};
+            background-color: {bg.selected_gutter};
+            border-color: {border.gutter_in_focus};
         }}
         """
     ).strip()
@@ -44,13 +49,15 @@ def get_qss(
     labels = dedent(
         f"""
         {GUTTER_SELECTOR} > {GUTTER_LABEL_SELECTOR} {{
-            background-color: {bg.cell_gutter};
+            background-color: transparent;
             color: {text.secondary};
             min-width: {spacing.label_min_width}px;
             qproperty-alignment: 'AlignRight | AlignVCenter';
             font-family: {metrics.font_family};
             font-size: {metrics.font_size_small}pt;
         }}
+
+        /* Labels inherit background from parent gutter */
         """
     ).strip()
 
