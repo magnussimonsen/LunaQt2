@@ -27,21 +27,17 @@ def get_qss(
         f"""
         {GUTTER_SELECTOR} {{
             background-color: {bg.cell_gutter};
-            border-right: {spacing.border_width}px solid {bg.cell_gutter};
-            border-radius: {spacing.border_radius}px;
+            border: none;
+            border-right: 1px solid {border.subtle};
+            border-radius: 0px;
             padding: {spacing.padding_top}px {spacing.padding_right}px {spacing.padding_bottom}px {spacing.padding_left}px;
-            margin: {spacing.margin_top}px {spacing.margin_right}px {spacing.margin_bottom}px {spacing.margin_left}px;
+            margin: 0px;
             color: {text.muted};
-        }}
-
-        {GUTTER_SELECTOR}:hover {{
-            border-color: {border.gutter_hover};
         }}
 
         {GUTTER_SELECTOR}[state="focused"],
         {GUTTER_SELECTOR}[state="selected"] {{
             background-color: {bg.selected_gutter};
-            border-color: {border.gutter_in_focus};
         }}
         """
     ).strip()

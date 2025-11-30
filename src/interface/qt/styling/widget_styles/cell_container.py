@@ -7,6 +7,7 @@ from textwrap import dedent
 from interface.qt.styling.theme import Theme, ThemeMode, cell_container_tokens, get_theme
 
 CELL_LIST_SELECTOR = 'QWidget[cellType="list"]'
+CELL_ROW_SELECTOR = 'QFrame[cellType="row"]'
 CELL_SELECTOR = 'QFrame[cellType="container"]'
 CELL_HEADER_SELECTOR = 'QWidget[cellPart="header"]'
 CELL_BODY_SELECTOR = 'QWidget[cellPart="body"]'
@@ -30,6 +31,28 @@ def get_qss(
         f"""
         {CELL_LIST_SELECTOR} {{
             background: transparent;
+        }}
+        """
+    ).strip()
+
+    row_styling = dedent(
+        f"""
+        {CELL_ROW_SELECTOR} {{
+            background: transparent;
+            border: 2px solid {border.subtle};
+            border-radius: {tokens.border_radius}px;
+            margin-top: {tokens.margin_top}px;
+            margin-bottom: {tokens.margin_bottom}px;
+            margin-left: {tokens.margin_left}px;
+            margin-right: {tokens.margin_right}px;
+        }}
+
+        {CELL_ROW_SELECTOR}:hover {{
+            border: 2px solid {border.cell_hover};
+        }}
+
+        {CELL_ROW_SELECTOR}[state="selected"] {{
+            border: 2px solid {border.cell_in_focus};
         }}
         """
     ).strip()
@@ -107,7 +130,7 @@ def get_qss(
         """
     ).strip()
 
-    return "\n\n".join([list_styling, container, header, body, viewport_block])
+    return "\n\n".join([list_styling, row_styling, container, header, body, viewport_block])
 
 
 __all__ = ["get_qss"]

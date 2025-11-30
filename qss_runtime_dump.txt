@@ -220,6 +220,24 @@ QWidget[cellType="list"] {
     background: transparent;
 }
 
+QFrame[cellType="row"] {
+    background: transparent;
+    border: 2px solid #343434;
+    border-radius: 4px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+QFrame[cellType="row"]:hover {
+    border: 2px solid #a3c4e0;
+}
+
+QFrame[cellType="row"][state="selected"] {
+    border: 2px solid #3294d6;
+}
+
 QFrame[cellType="container"] {
     background-color: #dddddd;
     border-top: 1px solid #343434;
@@ -279,21 +297,17 @@ QFrame[cellType="container"] QTableView {
 
 QWidget[cellType="gutter"] {
     background-color: #cccccc;
-    border-right: 1px solid #cccccc;
-    border-radius: 2px;
+    border: none;
+    border-right: 1px solid #343434;
+    border-radius: 0px;
     padding: 4px 6px 4px 6px;
-    margin: 4px 0px 4px 0px;
+    margin: 0px;
     color: #666666;
-}
-
-QWidget[cellType="gutter"]:hover {
-    border-color: #a3c4e0;
 }
 
 QWidget[cellType="gutter"][state="focused"],
 QWidget[cellType="gutter"][state="selected"] {
     background-color: #3294d6;
-    border-color: #3294d6;
 }
 
 QWidget[cellType="gutter"] > QLabel[cellRole="line-number"] {

@@ -34,7 +34,7 @@ from shared.constants import (
 )
 
 
-class CellRow(QWidget):
+class CellRow(QFrame):
     """Row that combines the gutter and the styled cell content."""
 
     def __init__(
@@ -46,12 +46,14 @@ class CellRow(QWidget):
         gutter_callback,
     ) -> None:
         super().__init__()
+        self.setProperty("cellType", "row")
+        self.setFrameStyle(QFrame.NoFrame)
         self._select_callback = select_callback
         self._gutter_callback = gutter_callback
         self._selected = False
 
         row_layout = QHBoxLayout(self)
-        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setContentsMargins(2, 2, 2, 2)
         row_layout.setSpacing(5)
 
         self._gutter = QWidget()
@@ -105,6 +107,7 @@ class CellRow(QWidget):
             return
         self._selected = selected
         state_value = "selected" if selected else ""
+        self._apply_state(self, state_value)
         self._apply_state(self._cell_frame, state_value)
         self._apply_state(self._gutter, state_value)
 
