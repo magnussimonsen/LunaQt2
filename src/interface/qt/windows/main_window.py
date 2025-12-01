@@ -20,6 +20,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from app.state import AppState
+from core import CellManager, DataStore, NotebookManager
+from core.models import Notebook
 from interface.qt.sidebars import NotebookSidebarWidget, SettingsSidebarWidget, TocSidebarWidget
 from interface.qt.styling import apply_global_style
 from interface.qt.styling.theme import Metrics, StylePreferences, ThemeMode
@@ -156,6 +159,10 @@ class LunaQtWindow(QMainWindow):
         self._theme_group.setExclusive(True)
         self._theme_actions: dict[str, Any] = {}
         self._cell_rows: list[CellRow] = []
+        self._app_state = AppState()
+        self._data_store: DataStore | None = None
+        self._cell_manager: CellManager | None = None
+        self._notebook_manager: NotebookManager | None = None
         self._notebooks_panel: NotebookSidebarWidget | None = None
         self._settings_panel: SettingsSidebarWidget | None = None
         self._toc_panel: TocSidebarWidget | None = None
@@ -171,11 +178,13 @@ class LunaQtWindow(QMainWindow):
         self.setWindowTitle("LunaQt2")
         self.resize(900, 600)
 
+        self._setup_core()
         self._build_menubar()
         self._build_toolbar()
         self._build_central()
         self._build_statusbar()
         self._build_sidebars()
+        self._initialize_notebook_sidebar()
         self._apply_current_style()
 
     def _build_menubar(self) -> None:
@@ -195,6 +204,22 @@ class LunaQtWindow(QMainWindow):
         edit_menu.addSeparator()
         edit_menu.addAction("Delete Cell")
         edit_menu.addAction("Delete Notebook")
+
+        insert_menu = menu_bar.addMenu("Insert")
+        insert_menu.setProperty("menuRole", "primary")
+
+        insert_markdown_action = QAction("Insert Markdown Cell", self)
+        insert_markdown_action.triggered.connect(self._on_insert_markdown_cell)
+        insert_menu.addAction(insert_markdown_action)
+
+        insert_python_action = QAction("Insert Python Cell", self)
+        insert_python_action.triggered.connect(self._on_insert_python_cell)
+        insert_menu.addAction(insert_python_action)
+
+        insert_cas_action = QAction("Insert CAS Cell", self)
+        insert_cas_action.setEnabled(False)
+        insert_cas_action.setToolTip("CAS support is not available yet.")
+        insert_menu.addAction(insert_cas_action)
 
         view_menu = menu_bar.addMenu("View")
         view_menu.setProperty("menuRole", "primary")
@@ -399,6 +424,44 @@ class LunaQtWindow(QMainWindow):
         self._settings_panel = settings_panel
         self._toc_panel = toc_panel
 
+    def _setup_core(self) -> None:
+        self._data_store = DataStore()
+        self._cell_manager = CellManager(self._data_store)
+        self._notebook_manager = NotebookManager(self._data_store, self._cell_manager)
+        self._connect_notebook_events()
+
+    def _connect_notebook_events(self) -> None:
+        if not self._notebook_manager:
+            return
+
+        events = self._notebook_manager.events
+        events.notebook_created.connect(self._on_notebook_created)
+        events.notebook_opened.connect(self._on_notebook_opened)
+        events.notebook_renamed.connect(self._on_notebook_renamed)
+        events.notebook_deleted.connect(self._on_notebook_deleted)
+
+    def _initialize_notebook_sidebar(self) -> None:
+        if not (self._notebooks_panel and self._notebook_manager):
+            return
+
+        panel = self._notebooks_panel
+        panel.add_notebook_clicked.connect(self._handle_add_notebook_clicked)
+        panel.move_notebook_up_clicked.connect(self._handle_move_notebook_up_clicked)
+        panel.move_notebook_down_clicked.connect(self._handle_move_notebook_down_clicked)
+        panel.notebook_selected.connect(self._handle_notebook_selected)
+        panel.rename_notebook_requested.connect(self._handle_notebook_rename_requested)
+        panel.delete_notebook_requested.connect(self._handle_notebook_delete_requested)
+
+        existing = self._notebook_manager.list_notebooks()
+        panel.set_notebooks([(nb.notebook_id, nb.title) for nb in existing])
+
+        if existing:
+            first_id = existing[0].notebook_id
+            panel.select_notebook(first_id)
+            self._handle_notebook_selected(first_id)
+        else:
+            self._create_notebook()
+
     def _create_sidebar_dock(self, object_name: str, title: str) -> QDockWidget:
         dock = QDockWidget(title, self)
         dock.setObjectName(object_name)
@@ -422,6 +485,92 @@ class LunaQtWindow(QMainWindow):
             self.resizeDocks([dock], [width], Qt.Orientation.Horizontal)
         except Exception:
             pass
+
+    # ------------------------------------------------------------------
+    # Notebook sidebar event handlers
+    # ------------------------------------------------------------------
+    def _handle_add_notebook_clicked(self) -> None:
+        self._create_notebook()
+
+    def _handle_move_notebook_up_clicked(self) -> None:
+        # TODO: Persist notebook ordering once supported in the core layer.
+        pass
+
+    def _handle_move_notebook_down_clicked(self) -> None:
+        # TODO: Persist notebook ordering once supported in the core layer.
+        pass
+
+    def _handle_notebook_selected(self, notebook_id: str) -> None:
+        if not self._notebook_manager:
+            return
+        state = self._notebook_manager.open_notebook(notebook_id)
+        if state:
+            self._app_state.active_notebook_id = notebook_id
+
+    def _handle_notebook_rename_requested(self, notebook_id: str, new_title: str) -> None:
+        if not self._notebook_manager or not self._notebooks_panel:
+            return
+
+        notebook = self._notebook_manager.rename_notebook(notebook_id, new_title)
+        if not notebook:
+            self._notebooks_panel.restore_notebook_title(notebook_id)
+
+    def _handle_notebook_delete_requested(self, notebook_id: str) -> None:
+        if self._notebook_manager:
+            self._notebook_manager.delete_notebook(notebook_id)
+
+    # ------------------------------------------------------------------
+    # Core notebook event callbacks
+    # ------------------------------------------------------------------
+    def _on_notebook_created(self, notebook: Notebook) -> None:
+        if self._notebooks_panel:
+            self._notebooks_panel.add_notebook(notebook.notebook_id, notebook.title, select=True)
+        self._app_state.active_notebook_id = notebook.notebook_id
+
+    def _on_notebook_opened(self, state) -> None:
+        notebook_id = state.notebook.notebook_id
+        self._app_state.active_notebook_id = notebook_id
+        if self._notebooks_panel:
+            self._notebooks_panel.select_notebook(notebook_id)
+
+    def _on_notebook_renamed(self, notebook: Notebook) -> None:
+        if self._notebooks_panel:
+            self._notebooks_panel.update_notebook_title(notebook.notebook_id, notebook.title)
+
+    def _on_notebook_deleted(self, notebook_id: str) -> None:
+        if not self._notebooks_panel:
+            return
+
+        next_id = self._notebooks_panel.remove_notebook(notebook_id)
+        if next_id:
+            self._notebooks_panel.select_notebook(next_id)
+        else:
+            self._app_state.active_notebook_id = None
+
+    # ------------------------------------------------------------------
+    # Notebook helpers
+    # ------------------------------------------------------------------
+    def _create_notebook(self) -> None:
+        if not self._notebook_manager:
+            return
+        title = self._generate_notebook_title()
+        self._notebook_manager.create_notebook(title)
+
+    def _generate_notebook_title(self) -> str:
+        if not self._notebook_manager:
+            return "Untitled Notebook"
+
+        existing_titles = {nb.title for nb in self._notebook_manager.list_notebooks()}
+        base = "Untitled Notebook"
+        if base not in existing_titles:
+            return base
+
+        suffix = 2
+        while True:
+            candidate = f"{base} {suffix}"
+            if candidate not in existing_titles:
+                return candidate
+            suffix += 1
 
     def _toggle_notebooks_sidebar(self, checked: bool) -> None:
         if not self._notebooks_dock:
@@ -506,6 +655,12 @@ class LunaQtWindow(QMainWindow):
             ui_font_family=normalized_family,
         )
         self._apply_current_style()
+
+    def _on_insert_markdown_cell(self) -> None:
+        pass
+
+    def _on_insert_python_cell(self) -> None:
+        pass
 
     def _on_move_cell_up_clicked(self) -> None:
         pass
