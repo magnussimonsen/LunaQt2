@@ -28,6 +28,8 @@ from interface.qt.styling.theme.widget_tokens import (
     CellRowTokens,
     cell_gutter_tokens,
     cell_row_tokens,
+    CellListTokens,
+    cell_list_tokens,
     SidebarTokens,
     sidebar_tokens,
 )
@@ -294,8 +296,6 @@ class LunaQtWindow(QMainWindow):
         cell_list = QWidget()
         cell_list.setProperty("cellType", "list")
         list_layout = QVBoxLayout(cell_list)
-        list_layout.setContentsMargins(5, 5, 5, 5)
-        list_layout.setSpacing(0)
 
         sample_cells = [
             (
@@ -315,6 +315,15 @@ class LunaQtWindow(QMainWindow):
         metrics = self._current_metrics()
         row_tokens = cell_row_tokens(metrics)
         gutter_tokens = cell_gutter_tokens(metrics)
+        list_tokens = cell_list_tokens(metrics)
+
+        list_layout.setContentsMargins(
+            list_tokens.content_margin_left,
+            list_tokens.content_margin_top,
+            list_tokens.content_margin_right,
+            list_tokens.content_margin_bottom,
+        )
+        list_layout.setSpacing(list_tokens.content_spacing)
 
         for index, (header_text, body_text) in enumerate(sample_cells, start=1):
             row = CellRow(
