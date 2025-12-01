@@ -14,6 +14,8 @@ from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QPushButton,
+    QSpacerItem,
+    QSizePolicy,
     QStatusBar,
     QToolBar,
     QVBoxLayout,
@@ -22,7 +24,7 @@ from PySide6.QtWidgets import (
 
 from app.state import AppState
 from core import CellManager, DataStore, NotebookManager
-from core.models import Notebook
+from core.models import Cell, CellType, Notebook, NotebookState
 from interface.qt.sidebars import NotebookSidebarWidget, SettingsSidebarWidget, TocSidebarWidget
 from interface.qt.styling import apply_global_style
 from interface.qt.styling.theme import Metrics, StylePreferences, ThemeMode
@@ -55,6 +57,7 @@ class CellRow(QFrame):
 
     def __init__(
         self,
+        cell_id: str,
         index: int,
         header_text: str,
         body_text: str,
@@ -68,6 +71,8 @@ class CellRow(QFrame):
         self.setFrameStyle(QFrame.NoFrame)
         self._select_callback = select_callback
         self._gutter_callback = gutter_callback
+        self._cell_id = cell_id
+        self._index = index
         self._selected = False
         self._row_tokens = row_tokens
         self._gutter_tokens = gutter_tokens
@@ -89,12 +94,14 @@ class CellRow(QFrame):
         header.setProperty("cellPart", "header")
         header.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         self._cell_container.add_content_widget(header)
+        self._header_label = header
 
         body = QLabel(body_text, self._cell_container)
         body.setProperty("cellPart", "body")
         body.setWordWrap(True)
         body.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         self._cell_container.add_content_widget(body)
+        self._body_label = body
 
         row_layout.addWidget(self._gutter)
         row_layout.addWidget(self._cell_container, 1)
@@ -123,6 +130,20 @@ class CellRow(QFrame):
 
     def is_selected(self) -> bool:
         return self._selected
+
+    @property
+    def cell_id(self) -> str:
+        return self._cell_id
+
+    def set_index(self, index: int) -> None:
+        if index == self._index:
+            return
+        self._index = index
+        self._gutter.set_index(index)
+
+    def update_text(self, header_text: str, body_text: str) -> None:
+        self._header_label.setText(header_text)
+        self._body_label.setText(body_text)
 
     @staticmethod
     def _apply_state(widget, state):
@@ -159,6 +180,15 @@ class LunaQtWindow(QMainWindow):
         self._theme_group.setExclusive(True)
         self._theme_actions: dict[str, Any] = {}
         self._cell_rows: list[CellRow] = []
+        self._cell_list_widget: QWidget | None = None
+        self._cell_list_layout: QVBoxLayout | None = None
+        self._cell_list_spacer: QSpacerItem | None = None
+        self._empty_state_label: QLabel | None = None
+        self._current_notebook_state: NotebookState | None = None
+        self._move_cell_up_action: QAction | None = None
+        self._move_cell_down_action: QAction | None = None
+        self._delete_cell_action: QAction | None = None
+        self._delete_notebook_action: QAction | None = None
         self._app_state = AppState()
         self._data_store: DataStore | None = None
         self._cell_manager: CellManager | None = None
@@ -199,11 +229,27 @@ class LunaQtWindow(QMainWindow):
 
         edit_menu = menu_bar.addMenu("Edit")
         edit_menu.setProperty("menuRole", "primary")
-        edit_menu.addAction("Move Cell Up")
-        edit_menu.addAction("Move Cell Down")
+        move_cell_up_action = QAction("Move Cell Up", self)
+        move_cell_up_action.triggered.connect(self._on_move_cell_up_clicked)
+        edit_menu.addAction(move_cell_up_action)
+        self._move_cell_up_action = move_cell_up_action
+
+        move_cell_down_action = QAction("Move Cell Down", self)
+        move_cell_down_action.triggered.connect(self._on_move_cell_down_clicked)
+        edit_menu.addAction(move_cell_down_action)
+        self._move_cell_down_action = move_cell_down_action
+
         edit_menu.addSeparator()
-        edit_menu.addAction("Delete Cell")
-        edit_menu.addAction("Delete Notebook")
+
+        delete_cell_action = QAction("Delete Cell", self)
+        delete_cell_action.triggered.connect(self._on_delete_cell_triggered)
+        edit_menu.addAction(delete_cell_action)
+        self._delete_cell_action = delete_cell_action
+
+        delete_notebook_action = QAction("Delete Notebook", self)
+        delete_notebook_action.triggered.connect(self._on_delete_notebook_triggered)
+        edit_menu.addAction(delete_notebook_action)
+        self._delete_notebook_action = delete_notebook_action
 
         insert_menu = menu_bar.addMenu("Insert")
         insert_menu.setProperty("menuRole", "primary")
@@ -236,6 +282,7 @@ class LunaQtWindow(QMainWindow):
 
         self._install_cell_action_buttons(menu_bar)
         self._install_sidebar_corner_buttons(menu_bar)
+        self._update_cell_action_states()
 
     def _install_cell_action_buttons(self, menu_bar) -> None:
         move_up_btn = QPushButton("Move cell up ↑")
@@ -250,6 +297,7 @@ class LunaQtWindow(QMainWindow):
 
         self._move_up_button = move_up_btn
         self._move_down_button = move_down_btn
+        self._update_cell_action_states()
 
     def _install_sidebar_corner_buttons(self, menu_bar) -> None:
         corner = QWidget(menu_bar)
@@ -324,24 +372,7 @@ class LunaQtWindow(QMainWindow):
         cell_list.setProperty("cellType", "list")
         list_layout = QVBoxLayout(cell_list)
 
-        sample_cells = [
-            (
-                "Notebook Cell",
-                "Cells use the container styling, letting you compose editors, tables, or any widget inside.",
-            ),
-            (
-                "Selection Support",
-                "Click the body to focus a cell. Click the gutter again to clear selection and reset the border.",
-            ),
-            (
-                "Custom Content",
-                "Swap these labels for your own widgets; LunaQt2 just showcases layout and styling hooks.",
-            ),
-        ]
-
         metrics = self._current_metrics()
-        row_tokens = cell_row_tokens(metrics)
-        gutter_tokens = cell_gutter_tokens(metrics)
         list_tokens = cell_list_tokens(metrics)
 
         list_layout.setContentsMargins(
@@ -352,8 +383,78 @@ class LunaQtWindow(QMainWindow):
         )
         list_layout.setSpacing(list_tokens.content_spacing)
 
-        for index, (header_text, body_text) in enumerate(sample_cells, start=1):
+        self._cell_list_widget = cell_list
+        self._cell_list_layout = list_layout
+
+        empty_label = QLabel("This notebook has no cells yet. Use the Insert menu to add one.", cell_list)
+        empty_label.setProperty("cellPart", "empty-state")
+        empty_label.setWordWrap(True)
+        empty_label.hide()
+        self._empty_state_label = empty_label
+        list_layout.addWidget(empty_label)
+
+        spacer = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self._cell_list_spacer = spacer
+        list_layout.addItem(spacer)
+
+        layout.addWidget(cell_list)
+
+        self.setCentralWidget(central)
+        self._show_empty_state()
+
+    def _clear_cell_rows(self) -> None:
+        if not self._cell_rows:
+            return
+        if not self._cell_list_layout:
+            self._cell_rows.clear()
+            return
+        for row in self._cell_rows:
+            self._cell_list_layout.removeWidget(row)
+            row.deleteLater()
+        self._cell_rows.clear()
+
+    def _show_empty_state(self) -> None:
+        if self._empty_state_label:
+            self._empty_state_label.show()
+        self._update_cell_action_states()
+
+    def _hide_empty_state(self) -> None:
+        if self._empty_state_label:
+            self._empty_state_label.hide()
+
+    def _render_cells_for_state(self, state: NotebookState) -> None:
+        if not self._cell_list_layout:
+            return
+
+        self._current_notebook_state = state
+        self._clear_cell_rows()
+
+        cells = list(state.iter_cells())
+        if not cells:
+            self._app_state.selected_cell_id = None
+            state.active_cell_id = None
+            self._show_empty_state()
+            return
+
+        available_ids = {cell.cell_id for cell in cells}
+        if self._app_state.selected_cell_id not in available_ids:
+            self._app_state.selected_cell_id = None
+
+        self._hide_empty_state()
+
+        metrics = self._current_metrics()
+        row_tokens = cell_row_tokens(metrics)
+        gutter_tokens = cell_gutter_tokens(metrics)
+
+        insert_at = self._cell_list_layout.count()
+        if self._cell_list_spacer:
+            insert_at = max(0, insert_at - 1)
+
+        for index, cell in enumerate(cells, start=1):
+            header_text = self._format_cell_header(cell, index)
+            body_text = self._format_cell_body(cell)
             row = CellRow(
+                cell_id=cell.cell_id,
                 index=index,
                 header_text=header_text,
                 body_text=body_text,
@@ -363,13 +464,138 @@ class LunaQtWindow(QMainWindow):
                 gutter_tokens=gutter_tokens,
             )
             self._cell_rows.append(row)
-            list_layout.addWidget(row)
+            self._cell_list_layout.insertWidget(insert_at, row)
+            insert_at += 1
+            if cell.cell_id == self._app_state.selected_cell_id:
+                row.set_selected(True)
+            else:
+                row.set_selected(False)
 
-        list_layout.addStretch()
-        layout.addWidget(cell_list)
-        layout.addStretch()
+        state.active_cell_id = self._app_state.selected_cell_id
+        self._update_cell_action_states()
 
-        self.setCentralWidget(central)
+    def _format_cell_header(self, cell: Cell, index: int) -> str:
+        if cell.cell_type == "code":
+            label = "Python"
+        elif cell.cell_type == "markdown":
+            label = "Markdown"
+        else:
+            label = cell.cell_type.title()
+        return f"{index:02d} · {label} Cell"
+
+    def _format_cell_body(self, cell: Cell) -> str:
+        content = cell.content.strip()
+        if not content:
+            return "(empty cell)"
+
+        first_line = content.splitlines()[0]
+        if len(first_line) <= 120:
+            return first_line
+        return f"{first_line[:117]}..."
+
+    def _current_state(self) -> NotebookState | None:
+        if not self._notebook_manager:
+            return None
+
+        notebook_id = self._app_state.active_notebook_id
+        if not notebook_id:
+            return None
+
+        if (
+            self._current_notebook_state
+            and self._current_notebook_state.notebook.notebook_id == notebook_id
+        ):
+            return self._current_notebook_state
+
+        state = self._notebook_manager.get_state(notebook_id)
+        if state:
+            self._current_notebook_state = state
+        return state
+
+    def _update_cell_action_states(self) -> None:
+        state = self._current_state()
+        cell_id = self._app_state.selected_cell_id
+
+        can_move_up = False
+        can_move_down = False
+
+        if state and cell_id and cell_id in state.notebook.cell_ids:
+            order = list(state.notebook.cell_ids)
+            index = order.index(cell_id)
+            can_move_up = index > 0
+            can_move_down = index < len(order) - 1
+
+        has_selection = cell_id is not None
+
+        if self._move_up_button:
+            self._move_up_button.setEnabled(can_move_up)
+        if self._move_down_button:
+            self._move_down_button.setEnabled(can_move_down)
+        if self._move_cell_up_action:
+            self._move_cell_up_action.setEnabled(can_move_up)
+        if self._move_cell_down_action:
+            self._move_cell_down_action.setEnabled(can_move_down)
+        if self._delete_cell_action:
+            self._delete_cell_action.setEnabled(has_selection)
+        if self._delete_notebook_action:
+            self._delete_notebook_action.setEnabled(self._app_state.active_notebook_id is not None)
+
+    def _move_selected_cell(self, step: int) -> None:
+        state = self._current_state()
+        if not state or not self._notebook_manager:
+            return
+
+        cell_id = self._app_state.selected_cell_id
+        if not cell_id or cell_id not in state.notebook.cell_ids:
+            return
+
+        order = list(state.notebook.cell_ids)
+        index = order.index(cell_id)
+        new_index = index + step
+
+        if new_index < 0 or new_index >= len(order):
+            return
+
+        moved = self._notebook_manager.move_cell(state.notebook.notebook_id, cell_id, new_index)
+        if moved:
+            self._app_state.selected_cell_id = cell_id
+            state.active_cell_id = cell_id
+        self._update_cell_action_states()
+
+    def _delete_selected_cell(self) -> None:
+        if not (self._cell_manager and self._notebook_manager):
+            return
+
+        notebook_id = self._app_state.active_notebook_id
+        cell_id = self._app_state.selected_cell_id
+        if not notebook_id or not cell_id:
+            return
+
+        state = self._current_state()
+        if not state or cell_id not in state.notebook.cell_ids:
+            return
+
+        order = list(state.notebook.cell_ids)
+        index = order.index(cell_id)
+
+        next_selection: str | None = None
+        if len(order) > 1:
+            if index + 1 < len(order):
+                next_selection = order[index + 1]
+            elif index - 1 >= 0:
+                next_selection = order[index - 1]
+
+        previous_selection = self._app_state.selected_cell_id
+        self._app_state.selected_cell_id = next_selection
+        state.active_cell_id = next_selection
+
+        removed = self._notebook_manager.remove_cell(notebook_id, cell_id)
+        if removed:
+            self._cell_manager.delete_cell(cell_id)
+        else:
+            self._app_state.selected_cell_id = previous_selection
+            state.active_cell_id = previous_selection
+        self._update_cell_action_states()
 
     def _build_statusbar(self) -> None:
         status = QStatusBar()
@@ -439,6 +665,7 @@ class LunaQtWindow(QMainWindow):
         events.notebook_opened.connect(self._on_notebook_opened)
         events.notebook_renamed.connect(self._on_notebook_renamed)
         events.notebook_deleted.connect(self._on_notebook_deleted)
+        events.state_updated.connect(self._on_notebook_state_updated)
 
     def _initialize_notebook_sidebar(self) -> None:
         if not (self._notebooks_panel and self._notebook_manager):
@@ -527,11 +754,13 @@ class LunaQtWindow(QMainWindow):
             self._notebooks_panel.add_notebook(notebook.notebook_id, notebook.title, select=True)
         self._app_state.active_notebook_id = notebook.notebook_id
 
-    def _on_notebook_opened(self, state) -> None:
+    def _on_notebook_opened(self, state: NotebookState) -> None:
         notebook_id = state.notebook.notebook_id
         self._app_state.active_notebook_id = notebook_id
+        self._app_state.selected_cell_id = state.active_cell_id
         if self._notebooks_panel:
             self._notebooks_panel.select_notebook(notebook_id)
+        self._render_cells_for_state(state)
 
     def _on_notebook_renamed(self, notebook: Notebook) -> None:
         if self._notebooks_panel:
@@ -546,15 +775,25 @@ class LunaQtWindow(QMainWindow):
             self._notebooks_panel.select_notebook(next_id)
         else:
             self._app_state.active_notebook_id = None
+            self._app_state.selected_cell_id = None
+            self._current_notebook_state = None
+            self._clear_cell_rows()
+            self._show_empty_state()
+            self._update_cell_action_states()
+
+    def _on_notebook_state_updated(self, state: NotebookState) -> None:
+        if state.notebook.notebook_id != self._app_state.active_notebook_id:
+            return
+        self._render_cells_for_state(state)
 
     # ------------------------------------------------------------------
     # Notebook helpers
     # ------------------------------------------------------------------
-    def _create_notebook(self) -> None:
+    def _create_notebook(self) -> Notebook | None:
         if not self._notebook_manager:
-            return
+            return None
         title = self._generate_notebook_title()
-        self._notebook_manager.create_notebook(title)
+        return self._notebook_manager.create_notebook(title)
 
     def _generate_notebook_title(self) -> str:
         if not self._notebook_manager:
@@ -628,10 +867,20 @@ class LunaQtWindow(QMainWindow):
     def _handle_cell_selected(self, row: CellRow) -> None:
         for candidate in self._cell_rows:
             candidate.set_selected(candidate is row)
+        self._app_state.selected_cell_id = row.cell_id
+        state = self._current_state()
+        if state:
+            state.active_cell_id = row.cell_id
+        self._update_cell_action_states()
 
     def _handle_gutter_clicked(self, row: CellRow) -> None:
         if row.is_selected():
             row.set_selected(False)
+            self._app_state.selected_cell_id = None
+            state = self._current_state()
+            if state:
+                state.active_cell_id = None
+            self._update_cell_action_states()
         else:
             self._handle_cell_selected(row)
 
@@ -656,17 +905,45 @@ class LunaQtWindow(QMainWindow):
         )
         self._apply_current_style()
 
-    def _on_insert_markdown_cell(self) -> None:
-        pass
+    def _create_and_insert_cell(self, cell_type: CellType) -> None:
+        if not (self._cell_manager and self._notebook_manager):
+            return
 
-    def _on_insert_python_cell(self) -> None:
-        pass
+        notebook_id = self._app_state.active_notebook_id
+        if not notebook_id:
+            notebook = self._create_notebook()
+            if not notebook:
+                return
+            notebook_id = notebook.notebook_id
+            self._app_state.active_notebook_id = notebook_id
 
-    def _on_move_cell_up_clicked(self) -> None:
-        pass
+        default_content = ""
+        cell = self._cell_manager.create_cell(cell_type, content=default_content)
+        self._app_state.selected_cell_id = cell.cell_id
+        state = self._notebook_manager.add_cell(notebook_id, cell)
+        if state:
+            self._app_state.active_notebook_id = notebook_id
+            state.active_cell_id = cell.cell_id
 
-    def _on_move_cell_down_clicked(self) -> None:
-        pass
+    def _on_insert_markdown_cell(self, checked: bool | None = None) -> None:
+        self._create_and_insert_cell("markdown")
+
+    def _on_insert_python_cell(self, checked: bool | None = None) -> None:
+        self._create_and_insert_cell("code")
+
+    def _on_move_cell_up_clicked(self, checked: bool | None = None) -> None:
+        self._move_selected_cell(-1)
+
+    def _on_move_cell_down_clicked(self, checked: bool | None = None) -> None:
+        self._move_selected_cell(1)
+
+    def _on_delete_cell_triggered(self, checked: bool | None = None) -> None:
+        self._delete_selected_cell()
+
+    def _on_delete_notebook_triggered(self, checked: bool | None = None) -> None:
+        notebook_id = self._app_state.active_notebook_id
+        if notebook_id:
+            self._handle_notebook_delete_requested(notebook_id)
 
 
 __all__ = ["LunaQtWindow"]
