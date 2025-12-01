@@ -73,7 +73,7 @@ class SidebarTokens:
     sidebar_content_border_bottom_width: int
     sidebar_content_border_left_width: int
     sidebar_content_border_right_width: int
-    
+
     sidebar_content_margin_top: int
     sidebar_content_margin_bottom: int
     sidebar_content_margin_left: int
@@ -165,6 +165,7 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
         layout_toolbar_margin_left=metrics.padding_medium,
         layout_toolbar_margin_right=metrics.padding_medium,
 
+        # Should we have layout_content_* header, toolbar, content ?
         layout_content_margin_top=metrics.padding_medium,
         layout_content_margin_bottom=metrics.padding_medium,
         layout_content_margin_left=metrics.padding_medium,
@@ -184,6 +185,7 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
         sidebar_content_margin_right=0,
         
         # Sidebar content item tokens (Common for Settings items and "select a notebook" items in the notebook list)
+        # For now this is hardcoded in the src\interface\qt\sidebars-files
         sidebar_content_item_border_top_width=metrics.border_width_zero,
         sidebar_content_item_border_bottom_width=metrics.border_width_zero,
         sidebar_content_item_border_left_width=metrics.border_width_zero,
@@ -215,4 +217,4 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
     )
 
 
-__all__ = ["SidebarTokens", "sidebar_tokens"]
+__all__ = ["SidebarTokens", "sidebar_tokens"]#
