@@ -24,6 +24,8 @@ from interface.qt.sidebars import NotebookSidebarWidget, SettingsSidebarWidget, 
 from interface.qt.styling import apply_global_style
 from interface.qt.styling.theme import Metrics, StylePreferences, ThemeMode
 from interface.qt.styling.theme.widget_tokens import (
+    ButtonTokens,
+    button_tokens,
     CellGutterTokens,
     CellRowTokens,
     cell_gutter_tokens,
@@ -356,10 +358,16 @@ class LunaQtWindow(QMainWindow):
         self.setStatusBar(status)
 
     def _build_sidebars(self) -> None:
-        sidebar_layout_tokens = sidebar_tokens(self._current_metrics())
+        metrics = self._current_metrics()
+        sidebar_layout_tokens = sidebar_tokens(metrics)
+        sidebar_button_tokens = button_tokens(metrics)
 
         notebooks_dock = self._create_sidebar_dock("NotebooksDock", "Notebooks")
-        notebooks_panel = NotebookSidebarWidget(self, tokens=sidebar_layout_tokens)
+        notebooks_panel = NotebookSidebarWidget(
+            self,
+            tokens=sidebar_layout_tokens,
+            button_tokens=sidebar_button_tokens,
+        )
         notebooks_dock.setWidget(notebooks_panel)
         notebooks_dock.hide()
 

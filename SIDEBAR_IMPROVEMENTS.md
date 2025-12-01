@@ -176,7 +176,9 @@ dock = QDockWidget("Notebooks", self)
 dock.setObjectName("NotebooksDock")
 
 # Sidebar widget creates the 3-row layout
-panel = NotebookSidebarWidget(self)
+tokens = sidebar_tokens(metrics)
+btn_tokens = button_tokens(metrics)
+panel = NotebookSidebarWidget(self, tokens=tokens, button_tokens=btn_tokens)
 panel.setObjectName("NotebookSidebarPanel")
 
 # Panel layout (margins: 0, spacing: 0)

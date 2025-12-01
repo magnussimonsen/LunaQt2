@@ -16,21 +16,30 @@ try:  # pragma: no cover - only imported when Qt is available
 except ModuleNotFoundError as exc:  # pragma: no cover - runtime guard
     raise SystemExit("PySide6 must be installed to use the sidebar widgets.") from exc
 
-from interface.qt.styling.theme.widget_tokens import SidebarTokens
+from interface.qt.styling.theme.widget_tokens import ButtonTokens, SidebarTokens
 
 
 class NotebookSidebarWidget(QWidget):
     """Sidebar panel placeholder that will later list notebooks."""
 
     add_notebook_clicked = Signal()
+    move_notebook_up_clicked = Signal()
+    move_notebook_down_clicked = Signal()
     notebook_selected = Signal(str)
     rename_notebook_requested = Signal(str, str)
 
-    def __init__(self, parent: QWidget | None = None, *, tokens: SidebarTokens) -> None:
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+        *,
+        tokens: SidebarTokens,
+        button_tokens: ButtonTokens,
+    ) -> None:
         super().__init__(parent)
         self.setObjectName("NotebookSidebarPanel")
         self.setAutoFillBackground(True)
         self._tokens = tokens
+        self._button_tokens = button_tokens
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -53,7 +62,7 @@ class NotebookSidebarWidget(QWidget):
         layout.addWidget(content)
 
     def _build_toolbar(self) -> QWidget:
-        """Build toolbar with Add Notebook button."""
+        """Build toolbar containing notebook management buttons."""
         toolbar = QWidget(self)
         toolbar.setProperty("sidebarRole", "toolbar")
         toolbar.setAutoFillBackground(True)
@@ -65,14 +74,30 @@ class NotebookSidebarWidget(QWidget):
             self._tokens.layout_toolbar_margin_right,
             self._tokens.layout_toolbar_margin_bottom,
         )
-        toolbar_layout.setSpacing(8)
+        toolbar_layout.setSpacing(self._tokens.sidebar_toolbar_item_x_spacing)
         
         self._add_button = QPushButton("Add Notebook", toolbar)
         self._add_button.clicked.connect(self.add_notebook_clicked)
+        self._configure_toolbar_button(self._add_button)
         toolbar_layout.addWidget(self._add_button)
+
+        self._move_up_button = QPushButton("Move Up", toolbar)
+        self._move_up_button.clicked.connect(self.move_notebook_up_clicked)
+        self._configure_toolbar_button(self._move_up_button)
+        toolbar_layout.addWidget(self._move_up_button)
+
+        self._move_down_button = QPushButton("Move Down", toolbar)
+        self._move_down_button.clicked.connect(self.move_notebook_down_clicked)
+        self._configure_toolbar_button(self._move_down_button)
+        toolbar_layout.addWidget(self._move_down_button)
         toolbar_layout.addStretch()
         
         return toolbar
+
+    def _configure_toolbar_button(self, button: QPushButton) -> None:
+        """Apply shared sidebar toolbar styling hints to a button."""
+        button.setProperty("btnType", "sidebar-toolbar")
+        button.setMinimumHeight(self._button_tokens.sidebar_toolbar_min_height)
 
     def _build_content(self) -> QWidget:
         """Build content area with notebook list."""
