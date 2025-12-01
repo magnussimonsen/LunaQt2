@@ -5,25 +5,29 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from core.models import Cell, CellType
 from core.persistence import DataStore
 from shared.utils.id_generator import generate_cell_id
+
+from .events import CellEvents
 
 
 class CellManager:
     """Create, read, update, and delete notebook cells."""
 
-    def __init__(self, store: DataStore) -> None:
+    def __init__(self, store: DataStore, *, events: CellEvents | None = None) -> None:
         self._store = store
+        self.events = events or CellEvents()
 
     def create_cell(
         self,
-        cell_type: str,
+        cell_type: CellType,
         *,
         content: str = "",
         metadata: dict[str, Any] | None = None,
-    ) -> str:
+    ) -> Cell:
         cell_id = generate_cell_id()
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(timezone.utc)
 
         resolved_metadata: dict[str, Any] = metadata.copy() if metadata else {}
 
@@ -38,22 +42,25 @@ class CellManager:
         resolved_metadata.setdefault("collapsed", False)
         resolved_metadata.setdefault("tags", [])
 
-        cell_data = {
-            "cell_id": cell_id,
-            "cell_type": cell_type,
-            "content": content,
-            "metadata": resolved_metadata,
-            "outputs": [],
-            "created_at": now,
-            "modified_at": now,
-            "schema_version": 1,
-        }
+        cell = Cell.new(
+            cell_id=cell_id,
+            cell_type=cell_type,
+            content=content,
+            metadata=resolved_metadata,
+            created_at=now,
+            modified_at=now,
+            outputs=[],
+        )
 
-        self._store.save_cell(cell_data)
-        return cell_id
+        self._store.save_cell(cell.to_payload())
+        self.events.created.emit(cell)
+        return cell
 
-    def get_cell(self, cell_id: str) -> dict[str, Any] | None:
-        return self._store.load_cell(cell_id)
+    def get_cell(self, cell_id: str) -> Cell | None:
+        payload = self._store.load_cell(cell_id)
+        if not payload:
+            return None
+        return Cell.from_payload(payload)
 
     def update_cell(
         self,
@@ -62,37 +69,43 @@ class CellManager:
         content: str | None = None,
         metadata: dict[str, Any] | None = None,
         outputs: list[dict[str, Any]] | None = None,
-    ) -> bool:
-        cell_data = self._store.load_cell(cell_id)
-        if not cell_data:
-            return False
+    ) -> Cell | None:
+        cell = self.get_cell(cell_id)
+        if not cell:
+            return None
 
-        if content is not None:
-            cell_data["content"] = content
-
+        merged_metadata = cell.metadata.copy()
         if metadata is not None:
-            cell_data["metadata"].update(metadata)
+            merged_metadata.update(metadata)
 
-        if outputs is not None:
-            cell_data["outputs"] = outputs
+        new_outputs = outputs if outputs is not None else cell.outputs
 
-        cell_data["modified_at"] = datetime.now(timezone.utc).isoformat()
-        return self._store.save_cell(cell_data)
+        updated_cell = cell.copy_with(
+            content=content if content is not None else cell.content,
+            metadata=merged_metadata,
+            outputs=new_outputs,
+            modified_at=datetime.now(timezone.utc),
+        )
+
+        self._store.save_cell(updated_cell.to_payload())
+        self.events.updated.emit(updated_cell)
+        return updated_cell
 
     def delete_cell(self, cell_id: str) -> bool:
-        return self._store.delete_cell(cell_id)
+        deleted = self._store.delete_cell(cell_id)
+        if deleted:
+            self.events.deleted.emit(cell_id)
+        return deleted
 
-    def convert_cell_type(self, cell_id: str, new_type: str) -> bool:
-        cell_data = self._store.load_cell(cell_id)
-        if not cell_data:
-            return False
+    def convert_cell_type(self, cell_id: str, new_type: CellType) -> Cell | None:
+        cell = self.get_cell(cell_id)
+        if not cell:
+            return None
 
-        old_type = cell_data["cell_type"]
-        if old_type == new_type:
-            return True
+        if cell.cell_type == new_type:
+            return cell
 
-        cell_data["cell_type"] = new_type
-        metadata = cell_data["metadata"]
+        metadata = cell.metadata.copy()
 
         if new_type == "code":
             metadata["language"] = "python"
@@ -104,22 +117,30 @@ class CellManager:
             metadata["language"] = new_type
             metadata.pop("execution_count", None)
 
-        if old_type == "code" and new_type != "code":
-            cell_data["outputs"] = []
+        outputs = [] if cell.cell_type == "code" and new_type != "code" else cell.outputs
 
-        cell_data["modified_at"] = datetime.now(timezone.utc).isoformat()
-        return self._store.save_cell(cell_data)
+        updated_cell = cell.copy_with(
+            cell_type=new_type,
+            metadata=metadata,
+            outputs=outputs,
+            modified_at=datetime.now(timezone.utc),
+        )
 
-    def duplicate_cell(self, cell_id: str) -> str | None:
-        cell_data = self._store.load_cell(cell_id)
-        if not cell_data:
+        self._store.save_cell(updated_cell.to_payload())
+        self.events.converted.emit(updated_cell)
+        return updated_cell
+
+    def duplicate_cell(self, cell_id: str) -> Cell | None:
+        source = self.get_cell(cell_id)
+        if not source:
             return None
 
-        return self.create_cell(
-            cell_type=cell_data["cell_type"],
-            content=cell_data["content"],
-            metadata=cell_data["metadata"].copy(),
+        duplicate = self.create_cell(
+            source.cell_type,
+            content=source.content,
+            metadata=source.metadata,
         )
+        return duplicate
 
 
 __all__ = ["CellManager"]

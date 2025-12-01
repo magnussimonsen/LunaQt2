@@ -14,6 +14,7 @@ if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
 from core import CellManager, DataStore, NotebookManager
+from core.models import NotebookState
 
 
 class _BaseCoreTestCase(unittest.TestCase):
@@ -23,11 +24,49 @@ class _BaseCoreTestCase(unittest.TestCase):
         root = Path(self._tmp.name)
         self.store = DataStore(root)
         self.cell_manager = CellManager(self.store)
-        self.notebook_manager = NotebookManager(self.store)
+        self.notebook_manager = NotebookManager(self.store, self.cell_manager)
+
+        self.cell_events: list[tuple[str, tuple]] = []
+        self.notebook_events: list[tuple[str, tuple]] = []
+
+        self._connect_event_recorders()
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
         super().tearDown()
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    def _connect_event_recorders(self) -> None:
+        def record_cell(event_name: str):
+            def _handler(*args) -> None:
+                self.cell_events.append((event_name, args))
+
+            return _handler
+
+        def record_notebook(event_name: str):
+            def _handler(*args) -> None:
+                self.notebook_events.append((event_name, args))
+
+            return _handler
+
+        events = self.cell_manager.events
+        events.created.connect(record_cell("created"))
+        events.updated.connect(record_cell("updated"))
+        events.deleted.connect(record_cell("deleted"))
+        events.converted.connect(record_cell("converted"))
+
+        n_events = self.notebook_manager.events
+        n_events.notebook_created.connect(record_notebook("notebook_created"))
+        n_events.notebook_opened.connect(record_notebook("notebook_opened"))
+        n_events.notebook_closed.connect(record_notebook("notebook_closed"))
+        n_events.notebook_renamed.connect(record_notebook("notebook_renamed"))
+        n_events.notebook_deleted.connect(record_notebook("notebook_deleted"))
+        n_events.cell_added.connect(record_notebook("cell_added"))
+        n_events.cell_removed.connect(record_notebook("cell_removed"))
+        n_events.cell_moved.connect(record_notebook("cell_moved"))
+        n_events.state_updated.connect(record_notebook("state_updated"))
 
 
 class TestDataStore(_BaseCoreTestCase):
@@ -61,71 +100,109 @@ class TestDataStore(_BaseCoreTestCase):
         self.assertEqual([item["title"] for item in listed], ["Alpha", "Beta"])
 
 
-class TestManagerIntegration(_BaseCoreTestCase):
-    def test_create_and_update_cell(self) -> None:
-        cell_id = self.cell_manager.create_cell("code", content="print('x')")
-        stored = self.store.load_cell(cell_id)
-        self.assertIsNotNone(stored)
-        assert stored is not None
-        self.assertEqual(stored["cell_type"], "code")
+class TestCellManager(_BaseCoreTestCase):
+    def test_create_update_and_delete_cell(self) -> None:
+        cell = self.cell_manager.create_cell("code", content="print('x')")
+        self.assertEqual(cell.content, "print('x')")
+        self.assertEqual(self.cell_events[0][0], "created")
 
-        self.assertTrue(self.cell_manager.update_cell(cell_id, content="print('y')"))
-        updated = self.store.load_cell(cell_id)
+        updated = self.cell_manager.update_cell(cell.cell_id, content="print('y')")
         assert updated is not None
-        self.assertEqual(updated["content"], "print('y')")
+        self.assertEqual(updated.content, "print('y')")
+        self.assertEqual(self.cell_events[-1][0], "updated")
+
+        deleted = self.cell_manager.delete_cell(cell.cell_id)
+        self.assertTrue(deleted)
+        self.assertEqual(self.cell_events[-1][0], "deleted")
 
     def test_convert_and_duplicate_cell(self) -> None:
-        cell_id = self.cell_manager.create_cell("code")
-        self.assertTrue(self.cell_manager.convert_cell_type(cell_id, "markdown"))
-        converted = self.store.load_cell(cell_id)
+        cell = self.cell_manager.create_cell("code")
+        converted = self.cell_manager.convert_cell_type(cell.cell_id, "markdown")
         assert converted is not None
-        self.assertEqual(converted["cell_type"], "markdown")
-        self.assertNotIn("execution_count", converted["metadata"])
+        self.assertEqual(converted.cell_type, "markdown")
+        self.assertNotIn("execution_count", converted.metadata)
+        self.assertEqual(self.cell_events[-1][0], "converted")
 
-        duplicate_id = self.cell_manager.duplicate_cell(cell_id)
-        self.assertIsNotNone(duplicate_id)
-        assert duplicate_id is not None
-        self.assertNotEqual(duplicate_id, cell_id)
+        duplicate = self.cell_manager.duplicate_cell(cell.cell_id)
+        assert duplicate is not None
+        self.assertNotEqual(duplicate.cell_id, cell.cell_id)
+        self.assertEqual(self.cell_events[-1][0], "created")
 
+
+class TestNotebookManager(_BaseCoreTestCase):
     def test_notebook_lifecycle_and_ordering(self) -> None:
-        notebook_id = self.notebook_manager.create_notebook("My Notebook")
-        notebook_path = self.store.data_root / "notebooks" / f"{notebook_id}.json"
-        self.assertTrue(notebook_path.exists())
+        notebook = self.notebook_manager.create_notebook("My Notebook")
+        self.assertEqual(notebook.title, "My Notebook")
+        self.assertEqual(self.notebook_events[0][0], "notebook_created")
+
+        state = self.notebook_manager.get_state(notebook.notebook_id)
+        assert isinstance(state, NotebookState)
+        self.assertEqual(state.notebook.notebook_id, notebook.notebook_id)
 
         cell_one = self.cell_manager.create_cell("code", content="print(1)")
         cell_two = self.cell_manager.create_cell("markdown", content="# Title")
 
-        self.assertTrue(self.notebook_manager.add_cell(notebook_id, cell_one))
-        self.assertTrue(self.notebook_manager.add_cell(notebook_id, cell_two))
-        self.assertTrue(self.notebook_manager.move_cell(notebook_id, cell_two, 0))
+        self.notebook_manager.add_cell(notebook.notebook_id, cell_one)
+        self.notebook_manager.add_cell(notebook.notebook_id, cell_two, position=0)
+        order = self.notebook_manager.get_cell_order(notebook.notebook_id)
+        self.assertEqual(order, [cell_two.cell_id, cell_one.cell_id])
+        self.assertEqual(self.notebook_events[-1][0], "state_updated")
 
-        order = self.notebook_manager.get_cell_order(notebook_id)
-        self.assertEqual(order, [cell_two, cell_one])
-
-        self.assertTrue(self.notebook_manager.rename_notebook(notebook_id, "Renamed"))
-        reloaded = self.store.load_notebook(notebook_id)
-        assert reloaded is not None
-        self.assertEqual(reloaded["title"], "Renamed")
-
-        self.assertTrue(self.notebook_manager.remove_cell(notebook_id, cell_one))
-        self.assertEqual(self.notebook_manager.get_cell_order(notebook_id), [cell_two])
-
-        self.assertTrue(self.cell_manager.delete_cell(cell_one))
-        self.assertIsNone(self.store.load_cell(cell_one))
-
-        self.assertTrue(self.notebook_manager.delete_notebook(notebook_id))
-        self.assertIsNone(self.store.load_notebook(notebook_id))
-
-    def test_list_notebooks_reflects_new_entries(self) -> None:
-        first = self.notebook_manager.create_notebook("One")
-        second = self.notebook_manager.create_notebook("Two")
-
-        listed = sorted(
-            self.notebook_manager.list_notebooks(),
-            key=lambda item: item["notebook_id"],
+        moved = self.notebook_manager.move_cell(notebook.notebook_id, cell_one.cell_id, 0)
+        self.assertTrue(moved)
+        self.assertEqual(
+            self.notebook_manager.get_cell_order(notebook.notebook_id),
+            [cell_one.cell_id, cell_two.cell_id],
         )
-        self.assertEqual(len(listed), 2)
-        self.assertEqual({item["notebook_id"] for item in listed}, {first, second})
+        self.assertEqual(self.notebook_events[-2][0], "cell_moved")
+
+        renamed = self.notebook_manager.rename_notebook(notebook.notebook_id, "Renamed")
+        assert renamed is not None
+        self.assertEqual(renamed.title, "Renamed")
+        self.assertEqual(self.notebook_events[-2][0], "notebook_renamed")
+
+        removed = self.notebook_manager.remove_cell(notebook.notebook_id, cell_two.cell_id)
+        self.assertTrue(removed)
+        self.assertEqual(self.notebook_manager.get_cell_order(notebook.notebook_id), [cell_one.cell_id])
+        self.assertEqual(self.notebook_events[-2][0], "cell_removed")
+
+        # Cell deletion propagates to the cached state
+        self.cell_manager.delete_cell(cell_one.cell_id)
+        self.assertEqual(self.notebook_manager.get_cell_order(notebook.notebook_id), [])
+        self.assertEqual(self.notebook_events[-2][0], "cell_removed")
+
+        self.assertTrue(self.notebook_manager.delete_notebook(notebook.notebook_id))
+        self.assertEqual(self.notebook_events[-1][0], "notebook_deleted")
+
+    def test_open_close_and_list(self) -> None:
+        notebook = self.notebook_manager.create_notebook("One")
+        other = self.notebook_manager.create_notebook("Two")
+
+        self.notebook_manager.close_notebook(notebook.notebook_id)
+        self.assertEqual(self.notebook_events[-1][0], "notebook_closed")
+
+        reopened = self.notebook_manager.open_notebook(notebook.notebook_id)
+        assert reopened is not None
+        self.assertEqual(self.notebook_events[-1][0], "notebook_opened")
+
+        notebooks = self.notebook_manager.list_notebooks()
+        self.assertEqual({nb.notebook_id for nb in notebooks}, {notebook.notebook_id, other.notebook_id})
+
+    def test_state_updates_when_cells_change(self) -> None:
+        notebook = self.notebook_manager.create_notebook("Notebook")
+        cell = self.cell_manager.create_cell("code", content="print('a')")
+        self.notebook_manager.add_cell(notebook.notebook_id, cell)
+
+        updated = self.cell_manager.update_cell(cell.cell_id, content="print('b')")
+        assert updated is not None
+
+        state = self.notebook_manager.get_state(notebook.notebook_id)
+        assert state is not None
+        cached_cell = state.get_cell(cell.cell_id)
+        assert cached_cell is not None
+        self.assertEqual(cached_cell.content, "print('b')")
+
+
 
 
 if __name__ == "__main__":  # pragma: no cover - convenience for local runs
