@@ -1,3 +1,6 @@
 """Coordinators that orchestrate domain operations."""
 
-__all__: list[str] = []
+from .cell_manager import CellManager
+from .notebook_manager import NotebookManager
+
+__all__ = ["CellManager", "NotebookManager"]

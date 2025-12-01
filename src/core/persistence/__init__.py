@@ -1,3 +1,5 @@
 """Persistence adapters for notebooks, cells, and preferences."""
 
-__all__: list[str] = []
+from .data_store import DataStore
+
+__all__ = ["DataStore"]
