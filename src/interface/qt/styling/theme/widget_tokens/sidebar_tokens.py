@@ -50,12 +50,30 @@ class SidebarTokens:
     sidebar_toolbar_item_padding_left: int
     sidebar_toolbar_item_padding_right: int
 
+    # Layout padding for the root sidebar widget
+    layout_root_margin_top: int
+    layout_root_margin_bottom: int
+    layout_root_margin_left: int
+    layout_root_margin_right: int
+
+    # Layout padding for the toolbar and content sections
+    layout_toolbar_margin_top: int
+    layout_toolbar_margin_bottom: int
+    layout_toolbar_margin_left: int
+    layout_toolbar_margin_right: int
+
+    layout_content_margin_top: int
+    layout_content_margin_bottom: int
+    layout_content_margin_left: int
+    layout_content_margin_right: int
+
     # Sidebar content container tokens
     sidebar_content_border_radius: int
     sidebar_content_border_top_width: int
     sidebar_content_border_bottom_width: int
     sidebar_content_border_left_width: int
     sidebar_content_border_right_width: int
+    
     sidebar_content_margin_top: int
     sidebar_content_margin_bottom: int
     sidebar_content_margin_left: int
@@ -136,6 +154,21 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
         sidebar_toolbar_item_padding_bottom=metrics.padding_small,
         sidebar_toolbar_item_padding_left=metrics.padding_small,
         sidebar_toolbar_item_padding_right=metrics.padding_small,
+
+        layout_root_margin_top=metrics.padding_zero,
+        layout_root_margin_bottom=metrics.padding_zero,
+        layout_root_margin_left=metrics.padding_zero,
+        layout_root_margin_right=metrics.padding_zero,
+
+        layout_toolbar_margin_top=metrics.padding_medium,
+        layout_toolbar_margin_bottom=metrics.padding_medium,
+        layout_toolbar_margin_left=metrics.padding_medium,
+        layout_toolbar_margin_right=metrics.padding_medium,
+
+        layout_content_margin_top=metrics.padding_medium,
+        layout_content_margin_bottom=metrics.padding_medium,
+        layout_content_margin_left=metrics.padding_medium,
+        layout_content_margin_right=metrics.padding_medium,
 
         # Sidebar content container tokens
         sidebar_content_border_radius=metrics.radius_zero,
