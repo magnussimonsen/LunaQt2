@@ -32,8 +32,8 @@ main_menubar_bg_dark = "#2c2c2c"
 main_toolbar_bg_light = "#aaaaaa"
 main_toolbar_bg_dark = "#2c2c2c"
 
-main_dropdown_bg_light = "#dddddd"
-main_dropdown_bg_dark = "#333333"
+main_dropdown_bg_light = "#eeeeee"
+main_dropdown_bg_dark = "#555555"
 
 sidebar_header_bg_light = "#aaaaaa"
 sidebar_header_bg_dark = "#2c2c2c"

@@ -371,7 +371,7 @@ QWidget[widgetRole="menubar-corner"] {
 }
 
 QMenu[menuRole="primary"] {
-    background-color: #dddddd;
+    background-color: #eeeeee;
     border: 0px solid #343434;
     padding-top: 6px;
     padding-bottom: 6px;
