@@ -50,6 +50,7 @@ class CellManager:
             created_at=now,
             modified_at=now,
             outputs=[],
+            deleted_at=None,
         )
 
         self._store.save_cell(cell.to_payload())
@@ -92,10 +93,24 @@ class CellManager:
         return updated_cell
 
     def delete_cell(self, cell_id: str) -> bool:
-        deleted = self._store.delete_cell(cell_id)
-        if deleted:
+        cell = self.get_cell(cell_id)
+        if not cell:
+            return False
+
+        if cell.deleted_at is not None:
+            # Already marked as deleted; still emit so downstream listeners stay in sync.
             self.events.deleted.emit(cell_id)
-        return deleted
+            return True
+
+        timestamp = datetime.now(timezone.utc)
+        tombstone = cell.copy_with(
+            deleted_at=timestamp,
+            modified_at=timestamp,
+        )
+        persisted = self._store.save_cell(tombstone.to_payload())
+        if persisted:
+            self.events.deleted.emit(cell_id)
+        return persisted
 
     def convert_cell_type(self, cell_id: str, new_type: CellType) -> Cell | None:
         cell = self.get_cell(cell_id)

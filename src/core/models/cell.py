@@ -11,6 +11,8 @@ from ._timestamps import format_timestamp, parse_timestamp
 
 CellType = Literal["code", "markdown", "raw"]
 
+_UNSET = object()
+
 
 @dataclass(slots=True, frozen=True)
 class Cell:
@@ -24,9 +26,11 @@ class Cell:
     created_at: datetime = field(default_factory=datetime.utcnow)
     modified_at: datetime = field(default_factory=datetime.utcnow)
     schema_version: int = 1
+    deleted_at: datetime | None = None
 
     @classmethod
     def from_payload(cls, payload: dict[str, Any]) -> "Cell":
+        deleted_at_value = payload.get("deleted_at")
         return cls(
             cell_id=payload["cell_id"],
             cell_type=payload.get("cell_type", "code"),
@@ -36,6 +40,7 @@ class Cell:
             created_at=parse_timestamp(payload.get("created_at")),
             modified_at=parse_timestamp(payload.get("modified_at")),
             schema_version=int(payload.get("schema_version", 1)),
+            deleted_at=parse_timestamp(deleted_at_value) if deleted_at_value else None,
         )
 
     @classmethod
@@ -50,6 +55,7 @@ class Cell:
         modified_at: datetime,
         outputs: list[dict[str, Any]] | None = None,
         schema_version: int = 1,
+        deleted_at: datetime | None = None,
     ) -> "Cell":
         return cls(
             cell_id=cell_id,
@@ -60,6 +66,7 @@ class Cell:
             created_at=created_at,
             modified_at=modified_at,
             schema_version=schema_version,
+            deleted_at=deleted_at,
         )
 
     def to_payload(self) -> dict[str, Any]:
@@ -72,6 +79,7 @@ class Cell:
             "created_at": format_timestamp(self.created_at),
             "modified_at": format_timestamp(self.modified_at),
             "schema_version": self.schema_version,
+            "deleted_at": format_timestamp(self.deleted_at) if self.deleted_at else None,
         }
 
     def copy_with(
@@ -82,6 +90,7 @@ class Cell:
         metadata: dict[str, Any] | None = None,
         outputs: list[dict[str, Any]] | None = None,
         modified_at: datetime | None = None,
+        deleted_at: datetime | None | object = _UNSET,
     ) -> "Cell":
         return Cell(
             cell_id=self.cell_id,
@@ -92,6 +101,7 @@ class Cell:
             created_at=self.created_at,
             modified_at=modified_at or self.modified_at,
             schema_version=self.schema_version,
+            deleted_at=self.deleted_at if deleted_at is _UNSET else deleted_at,
         )
 
 

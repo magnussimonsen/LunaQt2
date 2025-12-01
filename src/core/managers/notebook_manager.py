@@ -245,11 +245,20 @@ class NotebookManager:
             return None
 
         notebook = Notebook.from_payload(payload)
+        valid_cell_ids: list[str] = []
         cells = {}
         for cell_id in notebook.cell_ids:
             cell = self._cell_manager.get_cell(cell_id)
-            if cell:
+            if cell and cell.deleted_at is None:
                 cells[cell_id] = cell
+                valid_cell_ids.append(cell_id)
+
+        if valid_cell_ids != list(notebook.cell_ids):
+            notebook = notebook.copy_with(
+                cell_ids=valid_cell_ids,
+                modified_at=datetime.now(timezone.utc),
+            )
+            self._store.save_notebook(notebook.to_payload())
 
         state = NotebookState(notebook=notebook, cells=cells)
         self._states[notebook_id] = state

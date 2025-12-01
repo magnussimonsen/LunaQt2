@@ -33,6 +33,10 @@ Intent: capture the migration steps needed to port the working features from OLD
    - Emit granular events (cell_moved, cell_deleted) so the UI can update specific rows instead of full reloads.
    - Add deleted_at timestamp field to support future undo without implementing the full undo stack now.
 
+5.5 UI Polish Checkpoint
+   - Review notebook cell rendering so row height stays fixed regardless of window height (match OLD_LUNA_QT behavior).
+   - Ensure the selected notebook is visibly highlighted in the sidebar list for clarity.
+
 6. Notebook Deletion + Cleanup
    - Ensure deleting a notebook cascades through cached cells and orphaned cell files.
    - Reselect a fallback notebook (existing or newly created) after deletion.
