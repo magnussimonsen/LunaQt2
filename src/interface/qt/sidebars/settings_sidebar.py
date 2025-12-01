@@ -18,6 +18,7 @@ try:  # pragma: no cover - only imported when Qt is available
 except ModuleNotFoundError as exc:  # pragma: no cover - runtime guard
     raise SystemExit("PySide6 must be installed to use the sidebar widgets.") from exc
 
+from interface.qt.styling.theme.widget_tokens import SidebarTokens
 
 class SettingsSidebarWidget(QWidget):
     """Lightweight form with reactive typography controls."""
@@ -35,10 +36,12 @@ class SettingsSidebarWidget(QWidget):
         min_font_size: int,
         max_font_size: int,
         step: int = 1,
+        tokens: SidebarTokens,
     ) -> None:
         super().__init__(parent)
         self.setObjectName("SettingsSidebarPanel")
         self.setAutoFillBackground(True)
+        self._tokens = tokens
 
         self._font_choices = list(ui_font_choices)
         self._ui_font_combo = QComboBox(self)
@@ -47,7 +50,12 @@ class SettingsSidebarWidget(QWidget):
         self._configure_font_spin(ui_font_size, min_font_size, max_font_size, step)
 
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setContentsMargins(
+            tokens.layout_root_margin_left,
+            tokens.layout_root_margin_top,
+            tokens.layout_root_margin_right,
+            tokens.layout_root_margin_bottom,
+        )
         main_layout.setSpacing(0)
         
         # Row 2: Toolbar (not used in settings)
@@ -104,7 +112,12 @@ class SettingsSidebarWidget(QWidget):
         container.setProperty("sidebarRole", "content")
         container.setAutoFillBackground(True)
         content_layout = QVBoxLayout(container)
-        content_layout.setContentsMargins(8, 8, 8, 8)
+        content_layout.setContentsMargins(
+            self._tokens.layout_content_margin_left,
+            self._tokens.layout_content_margin_top,
+            self._tokens.layout_content_margin_right,
+            self._tokens.layout_content_margin_bottom,
+        )
         content_layout.setSpacing(12)
 
         #typography_label = QLabel("Typography", container)

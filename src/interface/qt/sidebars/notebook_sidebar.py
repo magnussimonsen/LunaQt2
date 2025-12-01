@@ -16,6 +16,8 @@ try:  # pragma: no cover - only imported when Qt is available
 except ModuleNotFoundError as exc:  # pragma: no cover - runtime guard
     raise SystemExit("PySide6 must be installed to use the sidebar widgets.") from exc
 
+from interface.qt.styling.theme.widget_tokens import SidebarTokens
+
 
 class NotebookSidebarWidget(QWidget):
     """Sidebar panel placeholder that will later list notebooks."""
@@ -24,16 +26,22 @@ class NotebookSidebarWidget(QWidget):
     notebook_selected = Signal(str)
     rename_notebook_requested = Signal(str, str)
 
-    def __init__(self, parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None, *, tokens: SidebarTokens) -> None:
         super().__init__(parent)
         self.setObjectName("NotebookSidebarPanel")
         self.setAutoFillBackground(True)
+        self._tokens = tokens
         self._build_ui()
 
     def _build_ui(self) -> None:
         """Build the 3-row sidebar layout: Header (via dock title) | Toolbar | Content."""
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(
+            self._tokens.layout_root_margin_left,
+            self._tokens.layout_root_margin_top,
+            self._tokens.layout_root_margin_right,
+            self._tokens.layout_root_margin_bottom,
+        )
         layout.setSpacing(0)
 
         # Row 2: Toolbar with action buttons
@@ -51,7 +59,12 @@ class NotebookSidebarWidget(QWidget):
         toolbar.setAutoFillBackground(True)
         
         toolbar_layout = QHBoxLayout(toolbar)
-        toolbar_layout.setContentsMargins(8, 6, 8, 6)
+        toolbar_layout.setContentsMargins(
+            self._tokens.layout_toolbar_margin_left,
+            self._tokens.layout_toolbar_margin_top,
+            self._tokens.layout_toolbar_margin_right,
+            self._tokens.layout_toolbar_margin_bottom,
+        )
         toolbar_layout.setSpacing(8)
         
         self._add_button = QPushButton("Add Notebook", toolbar)
@@ -68,7 +81,12 @@ class NotebookSidebarWidget(QWidget):
         content.setAutoFillBackground(True)
         
         content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(8, 8, 8, 8)
+        content_layout.setContentsMargins(
+            self._tokens.layout_content_margin_left,
+            self._tokens.layout_content_margin_top,
+            self._tokens.layout_content_margin_right,
+            self._tokens.layout_content_margin_bottom,
+        )
         content_layout.setSpacing(8)
         
         # Notebook list

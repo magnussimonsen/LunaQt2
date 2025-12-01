@@ -57,6 +57,11 @@ class SidebarTokens:
     layout_root_margin_right: int
 
     # Layout padding for the toolbar and content sections
+    layout_header_margin_top: int
+    layout_header_margin_bottom: int    
+    layout_header_margin_left: int
+    layout_header_margin_right: int
+
     layout_toolbar_margin_top: int
     layout_toolbar_margin_bottom: int
     layout_toolbar_margin_left: int
@@ -166,6 +171,16 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
         layout_toolbar_margin_right=metrics.padding_medium,
 
         # Should we have layout_content_* header, toolbar, content ?
+        layout_header_margin_top=metrics.padding_medium,
+        layout_header_margin_bottom=metrics.padding_medium,
+        layout_header_margin_left=metrics.padding_medium,
+        layout_header_margin_right=metrics.padding_medium,
+
+        layout_toolbar_margin_top=metrics.padding_medium,
+        layout_toolbar_margin_bottom=metrics.padding_medium,
+        layout_toolbar_margin_left=metrics.padding_medium,
+        layout_toolbar_margin_right=metrics.padding_medium,
+
         layout_content_margin_top=metrics.padding_medium,
         layout_content_margin_bottom=metrics.padding_medium,
         layout_content_margin_left=metrics.padding_medium,

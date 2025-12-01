@@ -28,6 +28,8 @@ from interface.qt.styling.theme.widget_tokens import (
     CellRowTokens,
     cell_gutter_tokens,
     cell_row_tokens,
+    SidebarTokens,
+    sidebar_tokens,
 )
 from interface.qt.widgets import CellContainerWidget, CellGutterWidget, SidebarToggleButton
 from shared.constants import (
@@ -345,8 +347,10 @@ class LunaQtWindow(QMainWindow):
         self.setStatusBar(status)
 
     def _build_sidebars(self) -> None:
+        sidebar_layout_tokens = sidebar_tokens(self._current_metrics())
+
         notebooks_dock = self._create_sidebar_dock("NotebooksDock", "Notebooks")
-        notebooks_panel = NotebookSidebarWidget(self)
+        notebooks_panel = NotebookSidebarWidget(self, tokens=sidebar_layout_tokens)
         notebooks_dock.setWidget(notebooks_panel)
         notebooks_dock.hide()
 
@@ -359,6 +363,7 @@ class LunaQtWindow(QMainWindow):
             min_font_size=MIN_UI_FONT_POINT_SIZE,
             max_font_size=MAX_UI_FONT_POINT_SIZE,
             step=FONT_SIZE_STEP,
+            tokens=sidebar_layout_tokens,
         )
         settings_panel.ui_font_size_changed.connect(self._handle_ui_font_size_changed)
         settings_panel.ui_font_family_changed.connect(self._handle_ui_font_family_changed)
@@ -366,7 +371,7 @@ class LunaQtWindow(QMainWindow):
         settings_dock.hide()
 
         toc_dock = self._create_sidebar_dock("TocDock", "Table of Contents")
-        toc_panel = TocSidebarWidget(self)
+        toc_panel = TocSidebarWidget(self, tokens=sidebar_layout_tokens)
         toc_dock.setWidget(toc_panel)
         toc_dock.hide()
 
