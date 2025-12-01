@@ -224,10 +224,10 @@ QFrame[cellType="row"] {
     background: transparent;
     border: 2px solid #343434;
     border-radius: 2px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 QFrame[cellType="row"]:hover {
@@ -251,10 +251,10 @@ QFrame[cellType="container"] {
     padding-left: 4px;
     padding-right: 4px;
 
-    margin-top: 4px;
-    margin-bottom: 4px;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 QFrame[cellType="container"]:hover {

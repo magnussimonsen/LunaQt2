@@ -56,7 +56,7 @@ def get_qss(
         }}
         """
     ).strip()
-
+    # Container INSIDE the cell row  cell_row(gutter - cell-container)
     container = dedent(
         f"""
         {CELL_SELECTOR} {{

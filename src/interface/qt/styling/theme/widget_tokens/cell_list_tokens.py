@@ -18,11 +18,11 @@ class CellListTokens:
 
 def cell_list_tokens(metrics: Metrics) -> CellListTokens:
     return CellListTokens(
-        content_margin_top=metrics.padding_small,
-        content_margin_bottom=metrics.padding_small,
-        content_margin_left=metrics.padding_small,
-        content_margin_right=metrics.padding_small,
-        content_spacing=metrics.padding_zero,
+        content_margin_top=metrics.padding_zero,
+        content_margin_bottom=metrics.padding_zero,
+        content_margin_left=metrics.padding_zero,
+        content_margin_right=metrics.padding_zero,
+        content_spacing=metrics.padding_large,  # SPACING BETWEEN CELLS
     )
 
 

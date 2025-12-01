@@ -28,12 +28,12 @@ class CellRowTokens:
 
 def cell_row_tokens(metrics: Metrics) -> CellRowTokens:
     return CellRowTokens(
-        gutter_gap=metrics.padding_small,
+        gutter_gap=metrics.padding_zero,
         cell_row_spacing=metrics.padding_zero,
-        cell_row_padding_top=metrics.padding_extra_small,
-        cell_row_padding_bottom=metrics.padding_extra_small,
-        cell_row_padding_left=metrics.padding_extra_small,
-        cell_row_padding_right=metrics.padding_extra_small,
+        cell_row_padding_top=metrics.padding_zero,
+        cell_row_padding_bottom=metrics.padding_zero,
+        cell_row_padding_left=metrics.padding_zero,
+        cell_row_padding_right=metrics.padding_zero,
         cell_row_margin_top=metrics.margin_zero,
         cell_row_margin_bottom=metrics.margin_zero,
         cell_row_margin_left=metrics.margin_zero,

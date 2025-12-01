@@ -29,7 +29,7 @@ class CellContainerTokens:
 def cell_container_tokens(metrics: Metrics) -> CellContainerTokens:
     return CellContainerTokens(
         border_radius=metrics.radius_small,
-        border_width=metrics.border_width,
+        border_width=metrics.border_width_small,
         
         border_width_top=metrics.border_width_small,  
         border_width_bottom=metrics.border_width_small,
@@ -41,10 +41,10 @@ def cell_container_tokens(metrics: Metrics) -> CellContainerTokens:
         padding_left=metrics.padding_small,
         padding_right=metrics.padding_small,
 
-        margin_top=metrics.margin_small,
-        margin_bottom=metrics.margin_small,
-        margin_left=metrics.margin_small,
-        margin_right=metrics.margin_small,
+        margin_top=metrics.margin_zero,    # Do this affect multiple margins?
+        margin_bottom=metrics.margin_zero,
+        margin_left=metrics.margin_zero,
+        margin_right=metrics.margin_zero,
 
         header_margin_bottom=metrics.padding_small,
     )
