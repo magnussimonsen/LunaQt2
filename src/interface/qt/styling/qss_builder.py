@@ -31,8 +31,8 @@ def _base_style(theme: Theme) -> str:
     bg = theme.bg
     text = theme.text
     return f"""
-    QWidget {{
-        background-color: {bg.app};
+        QWidget {{
+            background-color: {bg.app_bg};
         color: {text.primary};
         font-family: {metrics.font_family};
         font-size: {metrics.font_size_medium}pt;
@@ -44,13 +44,13 @@ def _base_style(theme: Theme) -> str:
     QDockWidget#SettingsDock > QWidget,
     QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
     QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {{
-        background-color: {bg.sidebar_content};
+            background-color: {bg.sidebar_content_bg};
         color: {text.primary};
     }}
 
     QDockWidget#NotebooksDock QWidget[sidebarRole="toolbar"],
     QDockWidget#SettingsDock QWidget[sidebarRole="toolbar"] {{
-        background-color: {bg.sidebar_toolbar};
+            background-color: {bg.sidebar_toolbar_bg};
         color: {text.primary};
     }}
 
@@ -60,7 +60,7 @@ def _base_style(theme: Theme) -> str:
     }}
 
     QToolBar {{
-        background-color: {bg.toolbar};
+            background-color: {bg.toolbar_bg};
         spacing: {metrics.padding_small}px;
         padding: 0 {metrics.padding_small}px;
     }}

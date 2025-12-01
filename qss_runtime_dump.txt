@@ -1,5 +1,5 @@
 QWidget {
-        background-color: #dddddd;
+            background-color: #dddddd;
         color: #111111;
         font-family: Inter;
         font-size: 12pt;
@@ -11,13 +11,13 @@ QWidget {
     QDockWidget#SettingsDock > QWidget,
     QDockWidget#NotebooksDock QWidget#NotebookSidebarPanel,
     QDockWidget#SettingsDock QWidget#SettingsSidebarPanel {
-        background-color: #aaaaaa;
+            background-color: #aaaaaa;
         color: #111111;
     }
 
     QDockWidget#NotebooksDock QWidget[sidebarRole="toolbar"],
     QDockWidget#SettingsDock QWidget[sidebarRole="toolbar"] {
-        background-color: #aaaaaa;
+            background-color: #aaaaaa;
         color: #111111;
     }
 
@@ -27,7 +27,7 @@ QWidget {
     }
 
     QToolBar {
-        background-color: #aaaaaa;
+            background-color: #aaaaaa;
         spacing: 4px;
         padding: 0 4px;
     }
@@ -223,7 +223,7 @@ QWidget[cellType="list"] {
 QFrame[cellType="row"] {
     background: transparent;
     border: 2px solid #343434;
-    border-radius: 4px;
+    border-radius: 2px;
     margin-top: 4px;
     margin-bottom: 4px;
     margin-left: 4px;
@@ -244,12 +244,12 @@ QFrame[cellType="container"] {
     border-bottom: 1px solid #343434;
     border-left: 1px solid #343434;
     border-right: 1px solid #343434;
-    border-radius: 4px;
+    border-radius: 2px;
 
-    padding-top: 4px;
-    padding-bottom: 4px;
-    padding-left: 6px;
-    padding-right: 6px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 4px;
+    padding-right: 4px;
 
     margin-top: 4px;
     margin-bottom: 4px;
@@ -297,17 +297,29 @@ QFrame[cellType="container"] QTableView {
 
 QWidget[cellType="gutter"] {
     background-color: #cccccc;
-    border: none;
+    border-top: 0px solid #343434;
+    border-bottom: 0px solid #343434;
+    border-left: 0px solid #343434;
     border-right: 1px solid #343434;
     border-radius: 0px;
-    padding: 4px 6px 4px 6px;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
     margin: 0px;
-    color: #666666;
 }
+/* For focused/selected states */
+/* Add more qss if needed */
 
 QWidget[cellType="gutter"][state="focused"],
 QWidget[cellType="gutter"][state="selected"] {
     background-color: #3294d6;
+}
+
+QWidget[cellType="gutter"]:hover,
+QWidget[cellType="gutter"][state="focused"]:hover,
+QWidget[cellType="gutter"][state="selected"]:hover {
+    background-color: #a3c4e0;
 }
 
 QWidget[cellType="gutter"] > QLabel[cellRole="line-number"] {
@@ -417,7 +429,8 @@ QToolBar#PrimaryToolBar {
 
 /* Dock widget title bar styling (header area) */
 QDockWidget#NotebooksDock::title,
-QDockWidget#SettingsDock::title {
+QDockWidget#SettingsDock::title,
+QDockWidget#TocDock::title {
     background-color: #aaaaaa;
     color: #111111;
     text-align: left;
@@ -433,8 +446,9 @@ QDockWidget#SettingsDock::title {
 
 /* Main sidebar panel containers */
 QWidget#NotebookSidebarPanel,
-QWidget#SettingsSidebarPanel {
-    background-color: red; /* This has no effect. It uses app bg for some reason */
+QWidget#SettingsSidebarPanel,
+QWidget#TocSidebarPanel {
+    background-color: #aaaaaa;
     border-radius: 0px;
     border-top: 0px solid #343434;
     border-bottom: 0px solid #343434;
@@ -444,7 +458,7 @@ QWidget#SettingsSidebarPanel {
 
 /* Toolbar section at top of sidebar */
 QWidget[sidebarRole="toolbar"] {
-    background-color: #aaaaaa;
+      background-color: #aaaaaa;
     border-radius: 0px;
     border-top: 0px solid #343434;
     border-bottom: 0px solid #343434;
@@ -463,7 +477,7 @@ QWidget[sidebarRole="toolbar"] {
 
 /* Content section below toolbar */
 QWidget[sidebarRole="content"] {
-    background-color: #aaaaaa;
+      background-color: #aaaaaa;
     border-radius: 0px;
     border-top: 0px solid #343434;
     border-bottom: 0px solid #343434;
@@ -477,84 +491,109 @@ QWidget[sidebarRole="content"] {
 
 /* List widgets */
 QDockWidget#NotebooksDock QListWidget,
-QDockWidget#SettingsDock QListWidget {
+QDockWidget#SettingsDock QListWidget,
+QDockWidget#TocDock QListWidget {
     background-color: transparent;
     border: none;
     color: #111111;
 }
 
 QDockWidget#NotebooksDock QListWidget::item,
-QDockWidget#SettingsDock QListWidget::item {
+QDockWidget#SettingsDock QListWidget::item,
+QDockWidget#TocDock QListWidget::item {
     background-color: transparent;
     color: #111111;
 }
 
 QDockWidget#NotebooksDock QListWidget::item:selected,
-QDockWidget#SettingsDock QListWidget::item:selected {
-    background-color: #aaaaaa;
+QDockWidget#SettingsDock QListWidget::item:selected,
+QDockWidget#TocDock QListWidget::item:selected {
+        background-color: #aaaaaa;
     color: #111111;
 }
 
 /* Input widgets (ComboBox, SpinBox) */
 QDockWidget#NotebooksDock QComboBox,
 QDockWidget#SettingsDock QComboBox,
+QDockWidget#TocDock QComboBox,
 QDockWidget#NotebooksDock QSpinBox,
-QDockWidget#SettingsDock QSpinBox {
-    background-color: #aaaaaa;
-    border: 1px solid #343434;
+QDockWidget#SettingsDock QSpinBox,
+QDockWidget#TocDock QSpinBox {
+        background-color: #aaaaaa;
+    border: 1px solid #dadada;
     padding: 4px;
     border-radius: 2px;
 }
 
 QDockWidget#NotebooksDock QComboBox:hover,
 QDockWidget#SettingsDock QComboBox:hover,
+QDockWidget#TocDock QComboBox:hover,
 QDockWidget#NotebooksDock QSpinBox:hover,
-QDockWidget#SettingsDock QSpinBox:hover {
-    border-color: #a3c4e0;
+QDockWidget#SettingsDock QSpinBox:hover,
+QDockWidget#TocDock QSpinBox:hover {
+    border-color: #3294d6;
 }
 
 /* SpinBox buttons */
 QDockWidget#NotebooksDock QSpinBox::up-button,
 QDockWidget#SettingsDock QSpinBox::up-button,
+QDockWidget#TocDock QSpinBox::up-button,
 QDockWidget#NotebooksDock QSpinBox::down-button,
-QDockWidget#SettingsDock QSpinBox::down-button {
-    background-color: #343434;
-    border: none;
+QDockWidget#SettingsDock QSpinBox::down-button,
+QDockWidget#TocDock QSpinBox::down-button {
+    background-color: #f0f0f0;
+    border: 1px solid #dadada;
     width: 16px;
     border-radius: 2px;
 }
 
 QDockWidget#NotebooksDock QSpinBox::up-button:hover,
 QDockWidget#SettingsDock QSpinBox::up-button:hover,
+QDockWidget#TocDock QSpinBox::up-button:hover,
 QDockWidget#NotebooksDock QSpinBox::down-button:hover,
-QDockWidget#SettingsDock QSpinBox::down-button:hover {
-    background-color: #ffcccc;
+QDockWidget#SettingsDock QSpinBox::down-button:hover,
+QDockWidget#TocDock QSpinBox::down-button:hover {
+    background-color: #a3c4e0;
+    border-color: #3294d6;
+}
+
+QDockWidget#NotebooksDock QSpinBox::up-button:pressed,
+QDockWidget#SettingsDock QSpinBox::up-button:pressed,
+QDockWidget#TocDock QSpinBox::up-button:pressed,
+QDockWidget#NotebooksDock QSpinBox::down-button:pressed,
+QDockWidget#SettingsDock QSpinBox::down-button:pressed,
+QDockWidget#TocDock QSpinBox::down-button:pressed {
+    background-color: #6da9d9;
+    border-color: #3294d6;
 }
 
 /* SpinBox arrows */
 QDockWidget#NotebooksDock QSpinBox::up-arrow,
-QDockWidget#SettingsDock QSpinBox::up-arrow {
+QDockWidget#SettingsDock QSpinBox::up-arrow,
+QDockWidget#TocDock QSpinBox::up-arrow {
     width: 0;
     height: 0;
     border-left: 3px solid transparent;
     border-right: 3px solid transparent;
-    border-bottom: 4px solid #111111;
+    border-bottom: 4px solid #333333;
     margin: 0px;
 }
 
 QDockWidget#NotebooksDock QSpinBox::down-arrow,
-QDockWidget#SettingsDock QSpinBox::down-arrow {
+QDockWidget#SettingsDock QSpinBox::down-arrow,
+QDockWidget#TocDock QSpinBox::down-arrow {
     width: 0;
     height: 0;
     border-left: 3px solid transparent;
     border-right: 3px solid transparent;
-    border-top: 4px solid #111111;
+    border-top: 4px solid #333333;
     margin: 0px;
 }
 
 /* Labels */
 QDockWidget#NotebooksDock QLabel,
-QDockWidget#SettingsDock QLabel {
+QDockWidget#SettingsDock QLabel,
+QDockWidget#TocDock QLabel {
     background-color: transparent;
     color: #111111;
 }

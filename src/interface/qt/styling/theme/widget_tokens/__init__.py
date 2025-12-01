@@ -8,6 +8,7 @@ and a factory function to construct it from Metrics.
 from .button_tokens import ButtonTokens, button_tokens
 from .cell_container_tokens import CellContainerTokens, cell_container_tokens
 from .cell_gutter_tokens import CellGutterTokens, cell_gutter_tokens
+from .cell_row_tokens import CellRowTokens, cell_row_tokens
 from .main_menubar_tokens import MenuBarTokens, menubar_tokens
 from .main_toolbar_tokens import MainToolbarTokens, main_toolbar_tokens
 from .sidebar_tokens import SidebarTokens, sidebar_tokens
@@ -19,6 +20,7 @@ __all__ = [
     "CellContainerTokens",
     "CellGutterTokens",
     "MenuBarTokens",
+    "CellRowTokens",
     "MainToolbarTokens",
     "SidebarTokens",
     "StatusBarTokens",
@@ -26,6 +28,7 @@ __all__ = [
     "button_tokens",
     "cell_container_tokens",
     "cell_gutter_tokens",
+    "cell_row_tokens",
     "menubar_tokens",
     "main_toolbar_tokens",
     "sidebar_tokens",

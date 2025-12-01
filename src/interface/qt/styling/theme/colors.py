@@ -44,15 +44,6 @@ sidebar_toolbar_bg_dark = "#2c2c2c"
 sidebar_content_bg_light = "#aaaaaa"
 sidebar_content_bg_dark = "#2c2c2c"
 
-cell_bg_light = "#dddddd"
-cell_bg_dark = "#2c2c2c"
-
-cell_selected_bg_light = "#e6e6e6"
-cell_selected_bg_dark = "#2a2a2a"
-
-cell_gutter_bg_light = "#cccccc"
-cell_gutter_bg_dark = "#2c2c2c"
-
 # Button colors
 button_bg_light = "#f0f0f0"
 button_bg_dark = "#3a3a3a"
@@ -82,6 +73,9 @@ cell_bg_dark = "#2c2c2c"
 
 cell_gutter_bg_light = "#cccccc"
 cell_gutter_bg_dark = "#2c2c2c"
+
+cell_gutter_hover_bg_light = hover_item_bg_light
+cell_gutter_hover_bg_dark = hover_item_bg_dark
 
 hover_cell_border_light = "#a3c4e0"
 hover_cell_border_dark = "#4a4a4a" 
@@ -255,20 +249,20 @@ class _StatusBarTokens:
 
 @dataclass(frozen=True)
 class BackgroundPalette:
-    app: str
-    menubar: str
-    statusbar: str
-    dropdown: str
-    cell: str
-    cell_selected: str
-    cell_gutter: str
-    selected_gutter: str
-    toolbar: str
+    app_bg: str
+    menubar_bg: str
+    statusbar_bg: str
+    dropdown_bg: str
+    cell_bg: str
+    cell_selected_bg: str
+    cell_gutter_bg: str
+    selected_gutter_bg: str
+    toolbar_bg: str
     sidebar_bg: str
-    sidebar_header: str
-    sidebar_toolbar: str
-    sidebar_content: str
-    hover: str
+    sidebar_header_bg: str
+    sidebar_toolbar_bg: str
+    sidebar_content_bg: str
+    hover_bg: str
 
 
 @dataclass(frozen=True)
@@ -357,20 +351,20 @@ class Theme:
 def _resolve_bg(mode: ThemeMode) -> BackgroundPalette:
     tokens = _BGTokens
     return BackgroundPalette(
-        app=tokens.app_bg.value_for(mode),
-        menubar=tokens.menubar_bg.value_for(mode),
-        statusbar=tokens.statusbar_bg.value_for(mode),
-        dropdown=tokens.dropdown_bg.value_for(mode),
-        cell=tokens.cell_bg.value_for(mode),
-        cell_selected=tokens.cell_selected_bg.value_for(mode),
-        cell_gutter=tokens.cell_gutter_bg.value_for(mode),
-        selected_gutter=tokens.selected_gutter_bg.value_for(mode),
-        toolbar=tokens.toolbar_bg.value_for(mode),
+        app_bg=tokens.app_bg.value_for(mode),
+        menubar_bg=tokens.menubar_bg.value_for(mode),
+        statusbar_bg=tokens.statusbar_bg.value_for(mode),
+        dropdown_bg=tokens.dropdown_bg.value_for(mode),
+        cell_bg=tokens.cell_bg.value_for(mode),
+        cell_selected_bg=tokens.cell_selected_bg.value_for(mode),
+        cell_gutter_bg=tokens.cell_gutter_bg.value_for(mode),
+        selected_gutter_bg=tokens.selected_gutter_bg.value_for(mode),
+        toolbar_bg=tokens.toolbar_bg.value_for(mode),
         sidebar_bg=tokens.sidebar_bg.value_for(mode),
-        sidebar_header=tokens.sidebar_header_bg.value_for(mode),
-        sidebar_content=tokens.sidebar_content_bg.value_for(mode),
-        sidebar_toolbar=tokens.sidebar_toolbar_bg.value_for(mode),
-        hover=tokens.hover_bg.value_for(mode),
+        sidebar_header_bg=tokens.sidebar_header_bg.value_for(mode),
+        sidebar_content_bg=tokens.sidebar_content_bg.value_for(mode),
+        sidebar_toolbar_bg=tokens.sidebar_toolbar_bg.value_for(mode),
+        hover_bg=tokens.hover_bg.value_for(mode),
     )
 
 

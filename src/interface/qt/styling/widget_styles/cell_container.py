@@ -60,7 +60,7 @@ def get_qss(
     container = dedent(
         f"""
         {CELL_SELECTOR} {{
-            background-color: {bg.cell};
+            background-color: {bg.cell_bg};
             border-top: {tokens.border_width_top}px solid {border.cell};
             border-bottom: {tokens.border_width_bottom}px solid {border.cell};
             border-left: {tokens.border_width_left}px solid {border.cell};
@@ -92,7 +92,7 @@ def get_qss(
     header = dedent(
         f"""
         {CELL_SELECTOR} > {CELL_HEADER_SELECTOR} {{
-            background-color: {bg.cell};
+            background-color: {bg.cell_bg};
             margin-bottom: {tokens.header_margin_bottom}px;
             color: {text.secondary};
             font-size: {metrics.font_size_small}pt;
@@ -107,7 +107,7 @@ def get_qss(
     body = dedent(
         f"""
         {CELL_SELECTOR} > {CELL_BODY_SELECTOR} {{
-            background-color: {bg.cell};
+            background-color: {bg.cell_bg};
             color: {text.primary};
             font-size: {metrics.cell_body_font_size}pt;
         }}

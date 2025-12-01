@@ -34,8 +34,8 @@ def get_qss(
             spacing: {menubar_tokens.spacing}px;
             padding: {menubar_tokens.padding_top}px {menubar_tokens.padding_right}px {menubar_tokens.padding_bottom}px {menubar_tokens.padding_left}px;
             margin: {menubar_tokens.margin_top}px {menubar_tokens.margin_right}px {menubar_tokens.margin_bottom}px {menubar_tokens.margin_left}px;
-            border-bottom: {menubar_tokens.border_width}px solid {theme.bg.app};
-            border-top: {menubar_tokens.border_width}px solid {theme.bg.app};
+            border-bottom: {menubar_tokens.border_width}px solid {theme.bg.app_bg};
+            border-top: {menubar_tokens.border_width}px solid {theme.bg.app_bg};
             min-height: {menubar_tokens.min_height}px;
             font-family: {metrics.font_family};
             font-size: {metrics.font_size_medium}pt;
@@ -70,7 +70,7 @@ def get_qss(
     menu_panel_qss = dedent(
         f"""
         {MENU_SELECTOR} {{
-            background-color: {theme.bg.dropdown};
+            background-color: {theme.bg.dropdown_bg};
             border: {menubar_tokens.border_width}px solid {menu_palette.separator};
             padding-top: {menubar_tokens.dropdown_menu_padding_top}px;
             padding-bottom: {menubar_tokens.dropdown_menu_padding_bottom}px;

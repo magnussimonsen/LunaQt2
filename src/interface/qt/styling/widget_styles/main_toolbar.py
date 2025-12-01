@@ -29,7 +29,7 @@ def get_qss(
     toolbar_qss = dedent(
         f"""
         {TOOLBAR_SELECTOR} {{
-            background-color: {bg.toolbar};
+            background-color: {bg.toolbar_bg};
             color: {theme.text.primary};
             spacing: {tokens.spacing}px;
 

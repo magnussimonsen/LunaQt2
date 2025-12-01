@@ -20,9 +20,16 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from interface.qt.sidebars import NotebookSidebarWidget, SettingsSidebarWidget
+from interface.qt.sidebars import NotebookSidebarWidget, SettingsSidebarWidget, TocSidebarWidget
 from interface.qt.styling import apply_global_style
 from interface.qt.styling.theme import Metrics, StylePreferences, ThemeMode
+from interface.qt.styling.theme.widget_tokens import (
+    CellGutterTokens,
+    CellRowTokens,
+    cell_gutter_tokens,
+    cell_row_tokens,
+)
+from interface.qt.widgets import CellContainerWidget, CellGutterWidget, SidebarToggleButton
 from shared.constants import (
     DEFAULT_SIDEBAR_WIDTH,
     MAX_SIDEBAR_WIDTH,
@@ -44,6 +51,8 @@ class CellRow(QFrame):
         body_text: str,
         select_callback,
         gutter_callback,
+        row_tokens: CellRowTokens,
+        gutter_tokens: CellGutterTokens,
     ) -> None:
         super().__init__()
         self.setProperty("cellType", "row")
@@ -51,50 +60,42 @@ class CellRow(QFrame):
         self._select_callback = select_callback
         self._gutter_callback = gutter_callback
         self._selected = False
+        self._row_tokens = row_tokens
+        self._gutter_tokens = gutter_tokens
 
         row_layout = QHBoxLayout(self)
-        row_layout.setContentsMargins(2, 2, 2, 2)
-        row_layout.setSpacing(5)
+        row_layout.setContentsMargins(
+            row_tokens.cell_row_margin_left,
+            row_tokens.cell_row_margin_top,
+            row_tokens.cell_row_margin_right,
+            row_tokens.cell_row_margin_bottom,
+        )
+        row_layout.setSpacing(row_tokens.gutter_gap)
 
-        self._gutter = QWidget()
-        self._gutter.setProperty("cellType", "gutter")
-        gutter_layout = QVBoxLayout(self._gutter)
-        gutter_layout.setContentsMargins(5, 0, 5, 0)
-        gutter_layout.setSpacing(0)
+        self._gutter = CellGutterWidget(index=index, tokens=gutter_tokens)
 
-        gutter_label = QLabel(f"{index:02d}")
-        gutter_label.setProperty("cellRole", "line-number")
-        gutter_label.setAttribute(Qt.WA_TransparentForMouseEvents, True)
-        gutter_layout.addStretch()
-        gutter_layout.addWidget(gutter_label)
-        gutter_layout.addStretch()
+        self._cell_container = CellContainerWidget(tokens=row_tokens)
 
-        self._cell_frame = QFrame()
-        self._cell_frame.setProperty("cellType", "container")
-        cell_layout = QVBoxLayout(self._cell_frame)
-        cell_layout.setContentsMargins(0, 0, 0, 0)
-        cell_layout.setSpacing(5)
-
-        header = QLabel(header_text)
+        header = QLabel(header_text, self._cell_container)
         header.setProperty("cellPart", "header")
         header.setAttribute(Qt.WA_TransparentForMouseEvents, True)
-        cell_layout.addWidget(header)
+        self._cell_container.add_content_widget(header)
 
-        body = QLabel(body_text)
+        body = QLabel(body_text, self._cell_container)
         body.setProperty("cellPart", "body")
         body.setWordWrap(True)
         body.setAttribute(Qt.WA_TransparentForMouseEvents, True)
-        cell_layout.addWidget(body)
+        self._cell_container.add_content_widget(body)
 
         row_layout.addWidget(self._gutter)
-        row_layout.addWidget(self._cell_frame, 1)
+        row_layout.addWidget(self._cell_container, 1)
 
         self._gutter.installEventFilter(self)
-        self._cell_frame.installEventFilter(self)
+        self._cell_container.installEventFilter(self)
 
     def eventFilter(self, watched, event):
         if event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton:
-            if watched is self._cell_frame:
+            if watched is self._cell_container:
                 self._select_callback(self)
                 return True
             if watched is self._gutter:
@@ -108,7 +109,7 @@ class CellRow(QFrame):
         self._selected = selected
         state_value = "selected" if selected else ""
         self._apply_state(self, state_value)
-        self._apply_state(self._cell_frame, state_value)
+        self._apply_state(self._cell_container, state_value)
         self._apply_state(self._gutter, state_value)
 
     def is_selected(self) -> bool:
@@ -151,10 +152,13 @@ class LunaQtWindow(QMainWindow):
         self._cell_rows: list[CellRow] = []
         self._notebooks_panel: NotebookSidebarWidget | None = None
         self._settings_panel: SettingsSidebarWidget | None = None
+        self._toc_panel: TocSidebarWidget | None = None
         self._notebooks_dock: QDockWidget | None = None
         self._settings_dock: QDockWidget | None = None
-        self._notebooks_button: QPushButton | None = None
-        self._settings_button: QPushButton | None = None
+        self._toc_dock: QDockWidget | None = None
+        self._notebooks_button: SidebarToggleButton | None = None
+        self._settings_button: SidebarToggleButton | None = None
+        self._toc_button: SidebarToggleButton | None = None
         self._move_up_button: QPushButton | None = None
         self._move_down_button: QPushButton | None = None
 
@@ -226,32 +230,37 @@ class LunaQtWindow(QMainWindow):
         if self._move_up_button and self._move_down_button:
             layout.addWidget(self._move_up_button)
             layout.addWidget(self._move_down_button)
+        
+        
+        toc_button = SidebarToggleButton(
+            "Table of Contents",
+            on_toggle=self._toggle_toc_sidebar,
+            parent=corner,
+            tooltip="Show or hide the Table of Contents sidebar",
+        )
+        layout.addWidget(toc_button)
 
-        notebooks_button = QPushButton("Notebooks", corner)
-        notebooks_button.setCheckable(True)
-        notebooks_button.setProperty("btnType", "menubar")
-        notebooks_button.toggled.connect(
-            lambda checked: (
-                self._toggle_notebooks_sidebar(checked),
-                self._refresh_button_style(notebooks_button),
-            )
+        notebooks_button = SidebarToggleButton(
+            "Notebooks",
+            on_toggle=self._toggle_notebooks_sidebar,
+            parent=corner,
+            tooltip="Show or hide the Notebooks sidebar",
         )
         layout.addWidget(notebooks_button)
 
-        settings_button = QPushButton("Settings", corner)
-        settings_button.setCheckable(True)
-        settings_button.setProperty("btnType", "menubar")
-        settings_button.toggled.connect(
-            lambda checked: (
-                self._toggle_settings_sidebar(checked),
-                self._refresh_button_style(settings_button),
-            )
+        settings_button = SidebarToggleButton(
+            "Settings",
+            on_toggle=self._toggle_settings_sidebar,
+            parent=corner,
+            tooltip="Show or hide the Settings sidebar",
         )
         layout.addWidget(settings_button)
+
 
         layout.addStretch(1)
         menu_bar.setCornerWidget(corner, Qt.Corner.TopRightCorner)
 
+        self._toc_button = toc_button
         self._notebooks_button = notebooks_button
         self._settings_button = settings_button
 
@@ -301,6 +310,10 @@ class LunaQtWindow(QMainWindow):
             ),
         ]
 
+        metrics = self._current_metrics()
+        row_tokens = cell_row_tokens(metrics)
+        gutter_tokens = cell_gutter_tokens(metrics)
+
         for index, (header_text, body_text) in enumerate(sample_cells, start=1):
             row = CellRow(
                 index=index,
@@ -308,6 +321,8 @@ class LunaQtWindow(QMainWindow):
                 body_text=body_text,
                 select_callback=self._handle_cell_selected,
                 gutter_callback=self._handle_gutter_clicked,
+                row_tokens=row_tokens,
+                gutter_tokens=gutter_tokens,
             )
             self._cell_rows.append(row)
             list_layout.addWidget(row)
@@ -350,10 +365,17 @@ class LunaQtWindow(QMainWindow):
         settings_dock.setWidget(settings_panel)
         settings_dock.hide()
 
+        toc_dock = self._create_sidebar_dock("TocDock", "Table of Contents")
+        toc_panel = TocSidebarWidget(self)
+        toc_dock.setWidget(toc_panel)
+        toc_dock.hide()
+
         self._notebooks_dock = notebooks_dock
         self._settings_dock = settings_dock
+        self._toc_dock = toc_dock
         self._notebooks_panel = notebooks_panel
         self._settings_panel = settings_panel
+        self._toc_panel = toc_panel
 
     def _create_sidebar_dock(self, object_name: str, title: str) -> QDockWidget:
         dock = QDockWidget(title, self)
@@ -379,17 +401,14 @@ class LunaQtWindow(QMainWindow):
         except Exception:
             pass
 
-    def _refresh_button_style(self, button: QPushButton) -> None:
-        button.style().unpolish(button)
-        button.style().polish(button)
-        button.update()
-
     def _toggle_notebooks_sidebar(self, checked: bool) -> None:
         if not self._notebooks_dock:
             return
         if checked:
             if self._settings_button:
                 self._settings_button.setChecked(False)
+            if self._toc_button:
+                self._toc_button.setChecked(False)
             self._notebooks_dock.show()
             self._apply_sidebar_width(self._notebooks_dock)
         else:
@@ -401,10 +420,25 @@ class LunaQtWindow(QMainWindow):
         if checked:
             if self._notebooks_button:
                 self._notebooks_button.setChecked(False)
+            if self._toc_button:
+                self._toc_button.setChecked(False)
             self._settings_dock.show()
             self._apply_sidebar_width(self._settings_dock)
         else:
             self._settings_dock.hide()
+
+    def _toggle_toc_sidebar(self, checked: bool) -> None:
+        if not self._toc_dock:
+            return
+        if checked:
+            if self._notebooks_button:
+                self._notebooks_button.setChecked(False)
+            if self._settings_button:
+                self._settings_button.setChecked(False)
+            self._toc_dock.show()
+            self._apply_sidebar_width(self._toc_dock)
+        else:
+            self._toc_dock.hide()
 
     def _current_metrics(self) -> Metrics:
         return self._style_preferences.build_metrics()

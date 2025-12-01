@@ -14,11 +14,16 @@ def get_qss(
     mode: ThemeMode = ThemeMode.DARK,
     theme: Theme | None = None,
 ) -> str:
-    """Return QSS for cell gutter areas (line numbers, icons, etc.)."""
+    """Return QSS for cell gutter areas (line numbers, icons, etc.).
+
+    Widget code handles layout-only concerns (layout insets, label configuration)
+    while this module focuses on paint-time styling such as background, borders,
+    and typography.
+    """
 
     theme = theme or get_theme(mode)
     metrics = theme.metrics
-    spacing = cell_gutter_tokens(metrics)
+    tokens = cell_gutter_tokens(metrics)
     bg = theme.bg
     border = theme.border
     text = theme.text
@@ -26,28 +31,41 @@ def get_qss(
     gutter = dedent(
         f"""
         {GUTTER_SELECTOR} {{
-            background-color: {bg.cell_gutter};
-            border: none;
-            border-right: 1px solid {border.subtle};
-            border-radius: 0px;
-            padding: {spacing.padding_top}px {spacing.padding_right}px {spacing.padding_bottom}px {spacing.padding_left}px;
+            background-color: {bg.cell_gutter_bg};
+            border-top: {tokens.border_width_top}px solid {border.subtle};
+            border-bottom: {tokens.border_width_bottom}px solid {border.subtle};
+            border-left: {tokens.border_width_left}px solid {border.subtle};
+            border-right: {tokens.border_width_right}px solid {border.subtle};
+            border-radius: {metrics.radius_zero}px;
+            padding-top: {tokens.paint_padding_top}px;
+            padding-right: {tokens.paint_padding_right}px;
+            padding-bottom: {tokens.paint_padding_bottom}px;
+            padding-left: {tokens.paint_padding_left}px;
             margin: 0px;
-            color: {text.muted};
         }}
+        /* For focused/selected states */
+        /* Add more qss if needed */
 
         {GUTTER_SELECTOR}[state="focused"],
         {GUTTER_SELECTOR}[state="selected"] {{
-            background-color: {bg.selected_gutter};
+            background-color: {bg.selected_gutter_bg};
+        }}
+
+        {GUTTER_SELECTOR}:hover,
+        {GUTTER_SELECTOR}[state="focused"]:hover,
+        {GUTTER_SELECTOR}[state="selected"]:hover {{
+            background-color: {bg.hover_bg};
         }}
         """
     ).strip()
-
+     
+    # The index number 
     labels = dedent(
         f"""
         {GUTTER_SELECTOR} > {GUTTER_LABEL_SELECTOR} {{
             background-color: transparent;
             color: {text.secondary};
-            min-width: {spacing.label_min_width}px;
+            min-width: {tokens.label_min_width}px;
             qproperty-alignment: 'AlignRight | AlignVCenter';
             font-family: {metrics.font_family};
             font-size: {metrics.font_size_small}pt;

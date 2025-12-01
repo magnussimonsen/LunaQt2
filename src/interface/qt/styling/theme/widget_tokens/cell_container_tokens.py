@@ -28,18 +28,18 @@ class CellContainerTokens:
 
 def cell_container_tokens(metrics: Metrics) -> CellContainerTokens:
     return CellContainerTokens(
-        border_radius=metrics.radius_medium,
+        border_radius=metrics.radius_small,
         border_width=metrics.border_width,
         
-        border_width_top=metrics.border_width_small,
+        border_width_top=metrics.border_width_small,  
         border_width_bottom=metrics.border_width_small,
         border_width_left=metrics.border_width_small,
         border_width_right=metrics.border_width_small,
 
-        padding_top=metrics.padding_small,
-        padding_bottom=metrics.padding_small,
-        padding_left=metrics.padding_medium,
-        padding_right=metrics.padding_medium,
+        padding_top=metrics.padding_zero,
+        padding_bottom=metrics.padding_zero,
+        padding_left=metrics.padding_small,
+        padding_right=metrics.padding_small,
 
         margin_top=metrics.margin_small,
         margin_bottom=metrics.margin_small,
