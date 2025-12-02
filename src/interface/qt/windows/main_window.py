@@ -95,7 +95,7 @@ class CellRow(QFrame):
             + gutter_tokens.layout_inset_right
         )
         self._gutter.setFixedWidth(gutter_width)
-        self._gutter.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Maximum)
+        self._gutter.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
 
         self._cell_container = CellContainerWidget(tokens=row_tokens)
         self._cell_container.setMinimumHeight(row_tokens.cell_row_min_height)

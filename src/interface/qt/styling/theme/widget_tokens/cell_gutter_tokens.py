@@ -48,7 +48,7 @@ def cell_gutter_tokens(metrics: Metrics) -> CellGutterTokens:
         border_width_left=metrics.border_width_zero,
         border_width_right=metrics.border_width_small,
 
-        paint_padding_top=metrics.padding_zero,
+        paint_padding_top=metrics.padding_small,
         paint_padding_bottom=metrics.padding_zero,
         paint_padding_left=metrics.padding_zero,
         paint_padding_right=metrics.padding_zero,

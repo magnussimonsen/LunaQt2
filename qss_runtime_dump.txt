@@ -302,7 +302,7 @@ QWidget[cellType="gutter"] {
     border-left: 0px solid #343434;
     border-right: 1px solid #343434;
     border-radius: 0px;
-    padding-top: 0px;
+    padding-top: 4px;
     padding-right: 0px;
     padding-bottom: 0px;
     padding-left: 0px;
