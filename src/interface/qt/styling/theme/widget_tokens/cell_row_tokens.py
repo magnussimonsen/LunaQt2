@@ -15,6 +15,8 @@ class CellRowTokens:
     gutter_gap: int
 
     cell_row_spacing: int
+
+    cell_row_min_height: int
     
     cell_row_padding_top: int
     cell_row_padding_bottom: int
@@ -30,6 +32,7 @@ def cell_row_tokens(metrics: Metrics) -> CellRowTokens:
     return CellRowTokens(
         gutter_gap=metrics.padding_zero,
         cell_row_spacing=metrics.padding_zero,
+        cell_row_min_height=metrics.cell_row_min_height,
         cell_row_padding_top=metrics.padding_zero,
         cell_row_padding_bottom=metrics.padding_zero,
         cell_row_padding_left=metrics.padding_zero,

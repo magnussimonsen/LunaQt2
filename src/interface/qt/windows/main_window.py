@@ -40,7 +40,7 @@ from interface.qt.styling.theme.widget_tokens import (
     SidebarTokens,
     sidebar_tokens,
 )
-from interface.qt.widgets import CellContainerWidget, CellGutterWidget, SidebarToggleButton
+from interface.qt.widgets import CellContainerWidget, CellGutterWidget, SidebarToggleButton, CellListWidget
 from shared.constants import (
     DEFAULT_SIDEBAR_WIDTH,
     MAX_SIDEBAR_WIDTH,
@@ -76,6 +76,8 @@ class CellRow(QFrame):
         self._selected = False
         self._row_tokens = row_tokens
         self._gutter_tokens = gutter_tokens
+        self.setMinimumHeight(row_tokens.cell_row_min_height)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
 
         row_layout = QHBoxLayout(self)
         row_layout.setContentsMargins(
@@ -87,8 +89,17 @@ class CellRow(QFrame):
         row_layout.setSpacing(row_tokens.gutter_gap)
 
         self._gutter = CellGutterWidget(index=index, tokens=gutter_tokens)
+        gutter_width = (
+            gutter_tokens.label_min_width
+            + gutter_tokens.layout_inset_left
+            + gutter_tokens.layout_inset_right
+        )
+        self._gutter.setFixedWidth(gutter_width)
+        self._gutter.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Maximum)
 
         self._cell_container = CellContainerWidget(tokens=row_tokens)
+        self._cell_container.setMinimumHeight(row_tokens.cell_row_min_height)
+        self._cell_container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
 
         header = QLabel(header_text, self._cell_container)
         header.setProperty("cellPart", "header")
@@ -104,7 +115,7 @@ class CellRow(QFrame):
         self._body_label = body
 
         row_layout.addWidget(self._gutter)
-        row_layout.addWidget(self._cell_container, 1)
+        row_layout.addWidget(self._cell_container)
 
         self._gutter.installEventFilter(self)
         self._cell_container.installEventFilter(self)
@@ -180,7 +191,7 @@ class LunaQtWindow(QMainWindow):
         self._theme_group.setExclusive(True)
         self._theme_actions: dict[str, Any] = {}
         self._cell_rows: list[CellRow] = []
-        self._cell_list_widget: QWidget | None = None
+        self._cell_list_widget: CellListWidget | None = None
         self._cell_list_layout: QVBoxLayout | None = None
         self._cell_list_spacer: QSpacerItem | None = None
         self._empty_state_label: QLabel | None = None
@@ -343,7 +354,7 @@ class LunaQtWindow(QMainWindow):
         self._notebooks_button = notebooks_button
         self._settings_button = settings_button
 
-    def _build_toolbar(self) -> None:
+    def _build_toolbar(self) -> None: # Should be renamed to _build_main_toolbar
         toolbar = QToolBar("Main Toolbar")
         toolbar.setObjectName("PrimaryToolBar")
         toolbar.setMovable(False)
@@ -368,9 +379,10 @@ class LunaQtWindow(QMainWindow):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        cell_list = QWidget()
-        cell_list.setProperty("cellType", "list")
-        list_layout = QVBoxLayout(cell_list)
+        cell_list = CellListWidget()
+        viewport = cell_list.container_widget()
+        viewport.setProperty("cellType", "list")
+        list_layout = cell_list.content_layout()
 
         metrics = self._current_metrics()
         list_tokens = cell_list_tokens(metrics)
@@ -386,7 +398,7 @@ class LunaQtWindow(QMainWindow):
         self._cell_list_widget = cell_list
         self._cell_list_layout = list_layout
 
-        empty_label = QLabel("This notebook has no cells yet. Use the Insert menu to add one.", cell_list)
+        empty_label = QLabel("This notebook has no cells yet. Use the Insert menu to add one.", viewport)
         empty_label.setProperty("cellPart", "empty-state")
         empty_label.setWordWrap(True)
         empty_label.hide()
@@ -609,6 +621,7 @@ class LunaQtWindow(QMainWindow):
         self.setStatusBar(status)
 
     def _build_sidebars(self) -> None:
+        # Sidebar panel should be renamed to sidebar toolbar
         metrics = self._current_metrics()
         sidebar_layout_tokens = sidebar_tokens(metrics)
         sidebar_button_tokens = button_tokens(metrics)
@@ -670,12 +683,13 @@ class LunaQtWindow(QMainWindow):
     def _initialize_notebook_sidebar(self) -> None:
         if not (self._notebooks_panel and self._notebook_manager):
             return
-
+        # Sidebar panel is the sidebar toolbar. Must be renamed. 
         panel = self._notebooks_panel
         panel.add_notebook_clicked.connect(self._handle_add_notebook_clicked)
         panel.move_notebook_up_clicked.connect(self._handle_move_notebook_up_clicked)
         panel.move_notebook_down_clicked.connect(self._handle_move_notebook_down_clicked)
         panel.notebook_selected.connect(self._handle_notebook_selected)
+        # Is this the list of notebooks? What is this?
         panel.rename_notebook_requested.connect(self._handle_notebook_rename_requested)
         panel.delete_notebook_requested.connect(self._handle_notebook_delete_requested)
 

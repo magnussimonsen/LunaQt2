@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 try:  # pragma: no cover - only imported when Qt is available
-    from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
+    from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget, QSizePolicy
 except ModuleNotFoundError as exc:  # pragma: no cover - runtime guard
     raise SystemExit("PySide6 must be installed to use the sidebar widgets.") from exc
 
@@ -39,6 +39,8 @@ class TocSidebarWidget(QWidget):
         toolbar = QWidget(self)
         toolbar.setProperty("sidebarRole", "toolbar")
         toolbar.setAutoFillBackground(True)
+        toolbar.setMinimumHeight(self._tokens.sidebar_toolbar_min_height)
+        toolbar.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
 
         toolbar_layout = QHBoxLayout(toolbar)
         toolbar_layout.setContentsMargins(

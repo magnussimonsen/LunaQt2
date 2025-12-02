@@ -11,6 +11,7 @@ try:  # pragma: no cover - only imported when Qt is available
         QListWidget,
         QListWidgetItem,
         QPushButton,
+        QSizePolicy,
         QVBoxLayout,
         QWidget,
     )
@@ -70,6 +71,8 @@ class NotebookSidebarWidget(QWidget):
         toolbar = QWidget(self)
         toolbar.setProperty("sidebarRole", "toolbar")
         toolbar.setAutoFillBackground(True)
+        toolbar.setMinimumHeight(self._tokens.sidebar_toolbar_min_height)
+        toolbar.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         
         toolbar_layout = QHBoxLayout(toolbar)
         toolbar_layout.setContentsMargins(

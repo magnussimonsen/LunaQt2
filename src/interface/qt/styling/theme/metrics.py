@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
+from .sizing import cell_row_min_height_for_font, toolbar_min_height_for_font
+
 
 @dataclass(frozen=True)
 class Metrics:
@@ -37,9 +39,14 @@ class Metrics:
     # min_toolbar_height: int = 5 (Deprecated)
     # min_menubar_height: int = 5 (Deprecated)
 
-    min_main_menubar_height: int = 5
-    min_main_toolbar_height: int = 5 
-    min_sidebar_toolbar_height: int = 5
+    # These defaults are recalculated in build_metrics_for_ui_font using
+    # toolbar_min_height_for_font so toolbars/menubars scale with the UI font.
+    min_main_menubar_height: int = 28
+    min_main_toolbar_height: int = 28
+    min_sidebar_toolbar_height: int = 28
+
+    # Cell layout metrics
+    cell_row_min_height: int = 48
 
     min_statusbar_height: int = 32
 
@@ -71,11 +78,17 @@ def build_metrics_for_ui_font(
     base = template or Metrics()
     adjusted_small = max(ui_point_size - small_offset, 6)
     adjusted_large = ui_point_size + large_offset
+    toolbar_min_height = toolbar_min_height_for_font(ui_point_size)
+    cell_row_min_height = cell_row_min_height_for_font(base.cell_body_font_size)
     return replace(
         base,
         font_size_small=adjusted_small,
         font_size_medium=ui_point_size,
         font_size_large=adjusted_large,
+        min_main_menubar_height=toolbar_min_height,
+        min_main_toolbar_height=toolbar_min_height,
+        min_sidebar_toolbar_height=toolbar_min_height,
+        cell_row_min_height=cell_row_min_height,
     )
 
 

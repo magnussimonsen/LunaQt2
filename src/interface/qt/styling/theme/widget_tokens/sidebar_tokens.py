@@ -32,6 +32,7 @@ class SidebarTokens:
 
     # Sidebar toolbar tokens
     sidebar_toolbar_border_radius: int
+    sidebar_toolbar_min_height: int
     sidebar_toolbar_border_top_width: int
     sidebar_toolbar_border_bottom_width: int
     sidebar_toolbar_border_left_width: int
@@ -138,6 +139,7 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
 
         # Sidebar toolbar tokens
         sidebar_toolbar_border_radius=metrics.radius_zero,
+        sidebar_toolbar_min_height=metrics.min_sidebar_toolbar_height,
         
         sidebar_toolbar_border_top_width=metrics.border_width_zero,
         sidebar_toolbar_border_bottom_width=metrics.border_width_zero,
