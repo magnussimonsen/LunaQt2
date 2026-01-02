@@ -39,7 +39,7 @@ def get_qss(
         f"""
         {CELL_ROW_SELECTOR} {{
             background: transparent;
-            border: 2px solid {border.subtle};
+            border: 1px solid transparent;
             border-radius: {tokens.border_radius}px;
             margin-top: {tokens.margin_top}px;
             margin-bottom: {tokens.margin_bottom}px;
@@ -61,10 +61,10 @@ def get_qss(
         f"""
         {CELL_SELECTOR} {{
             background-color: {bg.cell_bg};
-            border-top: {tokens.border_width_top}px solid {border.cell};
-            border-bottom: {tokens.border_width_bottom}px solid {border.cell};
-            border-left: {tokens.border_width_left}px solid {border.cell};
-            border-right: {tokens.border_width_right}px solid {border.cell};
+            border-top: {tokens.border_width_top}px solid transparent;
+            border-bottom: {tokens.border_width_bottom}px solid transparent;
+            border-left: {tokens.border_width_left}px solid transparent;
+            border-right: {tokens.border_width_right}px solid transparent;
             border-radius: {tokens.border_radius}px;
 
             padding-top: {tokens.padding_top}px;

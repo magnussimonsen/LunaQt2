@@ -35,7 +35,7 @@ class Metrics:
     margin_large: int = 8
     margin_extra_large: int = 12
 
-    gutter_width: int = 12
+    gutter_width: int = 10
     # min_toolbar_height: int = 5 (Deprecated)
     # min_menubar_height: int = 5 (Deprecated)
 

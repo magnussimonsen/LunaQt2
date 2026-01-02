@@ -222,7 +222,7 @@ QWidget[cellType="list"] {
 
 QFrame[cellType="row"] {
     background: transparent;
-    border: 2px solid #343434;
+    border: 1px solid transparent;
     border-radius: 2px;
     margin-top: 0px;
     margin-bottom: 0px;
@@ -240,10 +240,10 @@ QFrame[cellType="row"][state="selected"] {
 
 QFrame[cellType="container"] {
     background-color: #dddddd;
-    border-top: 1px solid #343434;
-    border-bottom: 1px solid #343434;
-    border-left: 1px solid #343434;
-    border-right: 1px solid #343434;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
     border-radius: 2px;
 
     padding-top: 0px;
@@ -458,7 +458,7 @@ QWidget#TocSidebarPanel {
 
 /* Toolbar section at top of sidebar */
 QWidget[sidebarRole="toolbar"] {
-      background-color: #aaaaaa;
+    background-color: #aaaaaa;
     border-radius: 0px;
     border-top: 0px solid #343434;
     border-bottom: 0px solid #343434;
@@ -519,7 +519,7 @@ QDockWidget#TocDock QComboBox,
 QDockWidget#NotebooksDock QSpinBox,
 QDockWidget#SettingsDock QSpinBox,
 QDockWidget#TocDock QSpinBox {
-        background-color: #aaaaaa;
+    background-color: #aaaaaa;
     border: 1px solid #dadada;
     padding: 4px;
     border-radius: 2px;

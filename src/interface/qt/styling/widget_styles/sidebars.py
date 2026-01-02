@@ -74,7 +74,7 @@ def get_qss(
         f"""
         /* Toolbar section at top of sidebar */
         QWidget[sidebarRole="toolbar"] {{
-              background-color: {bg.sidebar_toolbar_bg};
+            background-color: {bg.sidebar_toolbar_bg};
             border-radius: {spacing.sidebar_toolbar_border_radius}px;
             border-top: {spacing.sidebar_toolbar_border_top_width}px solid {border.subtle};
             border-bottom: {spacing.sidebar_toolbar_border_bottom_width}px solid {border.subtle};
@@ -143,7 +143,7 @@ def get_qss(
         QDockWidget#NotebooksDock QSpinBox,
         QDockWidget#SettingsDock QSpinBox,
         QDockWidget#TocDock QSpinBox {{
-                background-color: {bg.sidebar_content_bg};
+            background-color: {bg.sidebar_content_bg};
             border: {spacing.input_border_width}px solid {buttons.border};
             padding: {spacing.input_padding}px;
             border-radius: 2px;
