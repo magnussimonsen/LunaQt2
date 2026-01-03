@@ -48,7 +48,14 @@ QApplication.setStyleSheet()
   - Settings (toggle sidebar)
 
 ## Toolbar
+The toolbar buttons must change depending on witch cell typs user has selected.
+If user has  python cell selected, the buttons should be: 
+- "Run" If pressed, the code in python cell is run. When python code is running, this button is disabled
+- "Stop" If pressed, the python running is stoped. Button is disabled iff Run button is disabled
+If user has markdown cell selected, the buttons should be:
+- "Preview" Toogle on/off button. If on, shows preview of rendered markdown and latex. If off, shows markdown and $latex$ code
 
+Current implementation only has theese buttons for all cell types. I do not think logic for automatic swiching of toolbar type to match user selected cell type is implemented. It is implemented in OLD_LUNA_QT, so we may look there for tips on how to implement it
 - **Primary** button (`btnType="primary"`)
 - **Toolbar** button (`btnType="toolbar"`)
 - **Warn** button (`btnType="warning"`)

@@ -40,7 +40,13 @@ from interface.qt.styling.theme.widget_tokens import (
     SidebarTokens,
     sidebar_tokens,
 )
-from interface.qt.widgets import CellContainerWidget, CellGutterWidget, SidebarToggleButton, CellListWidget
+from interface.qt.widgets import (
+    CellContainerWidget,
+    CellGutterWidget,
+    SidebarToggleButton,
+    CellListWidget,
+    DynamicToolbar,
+)
 from shared.constants import (
     DEFAULT_SIDEBAR_WIDTH,
     MAX_SIDEBAR_WIDTH,
@@ -204,9 +210,13 @@ class LunaQtWindow(QMainWindow):
         self._data_store: DataStore | None = None
         self._cell_manager: CellManager | None = None
         self._notebook_manager: NotebookManager | None = None
-        self._notebooks_panel: NotebookSidebarWidget | None = None
-        self._settings_panel: SettingsSidebarWidget | None = None
-        self._toc_panel: TocSidebarWidget | None = None
+        #self._notebooks_panel: NotebookSidebarWidget | None = None
+        self._notebooks_toolbar: NotebookSidebarWidget | None = None
+        self._settings_toolbar: SettingsSidebarWidget | None = None 
+        #self._settings_panel: SettingsSidebarWidget | None = None # DEPRECATED
+        #self._toc_panel: TocSidebarWidget | None = None # DEPRECATED
+        self._toc_toolbar: TocSidebarWidget | None = None 
+
         self._notebooks_dock: QDockWidget | None = None
         self._settings_dock: QDockWidget | None = None
         self._toc_dock: QDockWidget | None = None
@@ -215,6 +225,7 @@ class LunaQtWindow(QMainWindow):
         self._toc_button: SidebarToggleButton | None = None
         self._move_up_button: QPushButton | None = None
         self._move_down_button: QPushButton | None = None
+        self._dynamic_toolbar: DynamicToolbar | None = None
 
         self.setWindowTitle("LunaQt2")
         self.resize(900, 600)
@@ -354,23 +365,17 @@ class LunaQtWindow(QMainWindow):
         self._notebooks_button = notebooks_button
         self._settings_button = settings_button
 
-    def _build_toolbar(self) -> None: # Should be renamed to _build_main_toolbar
+    def _build_toolbar(self) -> None:
         toolbar = QToolBar("Main Toolbar")
         toolbar.setObjectName("PrimaryToolBar")
         toolbar.setMovable(False)
-        primary_btn = QPushButton("Primary")
-        primary_btn.setProperty("btnType", "primary")
 
-        toolbar_btn = QPushButton("Toolbar")
-        toolbar_btn.setProperty("btnType", "toolbar")
+        self._dynamic_toolbar = DynamicToolbar()
+        self._dynamic_toolbar.run_requested.connect(self._on_run_code)
+        self._dynamic_toolbar.stop_requested.connect(self._on_stop_code)
+        self._dynamic_toolbar.preview_toggled.connect(self._on_preview_toggled)
 
-        warn_btn = QPushButton("Warn")
-        warn_btn.setProperty("btnType", "warning")
-
-        toolbar.addWidget(primary_btn)
-        toolbar.addWidget(toolbar_btn)
-        toolbar.addWidget(warn_btn)
-
+        toolbar.addWidget(self._dynamic_toolbar)
         self.addToolBar(toolbar)
 
     def _build_central(self) -> None:
@@ -428,6 +433,7 @@ class LunaQtWindow(QMainWindow):
     def _show_empty_state(self) -> None:
         if self._empty_state_label:
             self._empty_state_label.show()
+        self._dynamic_toolbar.set_cell_type(None)
         self._update_cell_action_states()
 
     def _hide_empty_state(self) -> None:
@@ -604,6 +610,15 @@ class LunaQtWindow(QMainWindow):
         removed = self._notebook_manager.remove_cell(notebook_id, cell_id)
         if removed:
             self._cell_manager.delete_cell(cell_id)
+            # Update toolbar to reflect new selection (or lack thereof)
+            if next_selection and state:
+                cell = state.get_cell(next_selection)
+                if cell:
+                    self._dynamic_toolbar.set_cell_type(cell.cell_type)
+                else:
+                    self._dynamic_toolbar.set_cell_type(None)
+            else:
+                self._dynamic_toolbar.set_cell_type(None)
         else:
             self._app_state.selected_cell_id = previous_selection
             state.active_cell_id = previous_selection
@@ -627,16 +642,16 @@ class LunaQtWindow(QMainWindow):
         sidebar_button_tokens = button_tokens(metrics)
 
         notebooks_dock = self._create_sidebar_dock("NotebooksDock", "Notebooks")
-        notebooks_panel = NotebookSidebarWidget(
+        notebooks_toolbar = NotebookSidebarWidget(
             self,
             tokens=sidebar_layout_tokens,
             button_tokens=sidebar_button_tokens,
         )
-        notebooks_dock.setWidget(notebooks_panel)
+        notebooks_dock.setWidget(notebooks_toolbar)
         notebooks_dock.hide()
 
         settings_dock = self._create_sidebar_dock("SettingsDock", "Settings")
-        settings_panel = SettingsSidebarWidget(
+        settings_toolbar = SettingsSidebarWidget(
             self,
             ui_font_size=self._style_preferences.ui_font_size,
             ui_font_family=self._style_preferences.ui_font_family,
@@ -646,22 +661,22 @@ class LunaQtWindow(QMainWindow):
             step=FONT_SIZE_STEP,
             tokens=sidebar_layout_tokens,
         )
-        settings_panel.ui_font_size_changed.connect(self._handle_ui_font_size_changed)
-        settings_panel.ui_font_family_changed.connect(self._handle_ui_font_family_changed)
-        settings_dock.setWidget(settings_panel)
+        settings_toolbar.ui_font_size_changed.connect(self._handle_ui_font_size_changed)
+        settings_toolbar.ui_font_family_changed.connect(self._handle_ui_font_family_changed)
+        settings_dock.setWidget(settings_toolbar)
         settings_dock.hide()
 
         toc_dock = self._create_sidebar_dock("TocDock", "Table of Contents")
-        toc_panel = TocSidebarWidget(self, tokens=sidebar_layout_tokens)
-        toc_dock.setWidget(toc_panel)
+        toc_toolbar = TocSidebarWidget(self, tokens=sidebar_layout_tokens)
+        toc_dock.setWidget(toc_toolbar)
         toc_dock.hide()
 
         self._notebooks_dock = notebooks_dock
         self._settings_dock = settings_dock
         self._toc_dock = toc_dock
-        self._notebooks_panel = notebooks_panel
-        self._settings_panel = settings_panel
-        self._toc_panel = toc_panel
+        self._notebooks_toolbar = notebooks_toolbar
+        self._settings_toolbar = settings_toolbar
+        self._toc_toolbar = toc_toolbar
 
     def _setup_core(self) -> None:
         self._data_store = DataStore()
@@ -681,24 +696,21 @@ class LunaQtWindow(QMainWindow):
         events.state_updated.connect(self._on_notebook_state_updated)
 
     def _initialize_notebook_sidebar(self) -> None:
-        if not (self._notebooks_panel and self._notebook_manager):
+        if not (self._notebooks_toolbar and self._notebook_manager):
             return
-        # Sidebar panel is the sidebar toolbar. Must be renamed. 
-        panel = self._notebooks_panel
-        panel.add_notebook_clicked.connect(self._handle_add_notebook_clicked)
-        panel.move_notebook_up_clicked.connect(self._handle_move_notebook_up_clicked)
-        panel.move_notebook_down_clicked.connect(self._handle_move_notebook_down_clicked)
-        panel.notebook_selected.connect(self._handle_notebook_selected)
-        # Is this the list of notebooks? What is this?
-        panel.rename_notebook_requested.connect(self._handle_notebook_rename_requested)
-        panel.delete_notebook_requested.connect(self._handle_notebook_delete_requested)
+        toolbar = self._notebooks_toolbar
+        toolbar.add_notebook_clicked.connect(self._handle_add_notebook_clicked)
+        toolbar.move_notebook_up_clicked.connect(self._handle_move_notebook_up_clicked)
+        toolbar.move_notebook_down_clicked.connect(self._handle_move_notebook_down_clicked)
+        toolbar.notebook_selected.connect(self._handle_notebook_selected)
+        toolbar.rename_notebook_requested.connect(self._handle_notebook_rename_requested)
+        toolbar.delete_notebook_requested.connect(self._handle_notebook_delete_requested)
 
         existing = self._notebook_manager.list_notebooks()
-        panel.set_notebooks([(nb.notebook_id, nb.title) for nb in existing])
-
+        toolbar.set_notebooks([(nb.notebook_id, nb.title) for nb in existing])
         if existing:
             first_id = existing[0].notebook_id
-            panel.select_notebook(first_id)
+            toolbar.select_notebook(first_id)
             self._handle_notebook_selected(first_id)
         else:
             self._create_notebook()
@@ -749,12 +761,12 @@ class LunaQtWindow(QMainWindow):
             self._app_state.active_notebook_id = notebook_id
 
     def _handle_notebook_rename_requested(self, notebook_id: str, new_title: str) -> None:
-        if not self._notebook_manager or not self._notebooks_panel:
+        if not self._notebook_manager or not self._notebooks_toolbar:
             return
 
         notebook = self._notebook_manager.rename_notebook(notebook_id, new_title)
         if not notebook:
-            self._notebooks_panel.restore_notebook_title(notebook_id)
+            self._notebooks_toolbar.restore_notebook_title(notebook_id)
 
     def _handle_notebook_delete_requested(self, notebook_id: str) -> None:
         if self._notebook_manager:
@@ -764,29 +776,38 @@ class LunaQtWindow(QMainWindow):
     # Core notebook event callbacks
     # ------------------------------------------------------------------
     def _on_notebook_created(self, notebook: Notebook) -> None:
-        if self._notebooks_panel:
-            self._notebooks_panel.add_notebook(notebook.notebook_id, notebook.title, select=True)
+        if self._notebooks_toolbar:
+            self._notebooks_toolbar.add_notebook(notebook.notebook_id, notebook.title, select=True)
         self._app_state.active_notebook_id = notebook.notebook_id
 
     def _on_notebook_opened(self, state: NotebookState) -> None:
         notebook_id = state.notebook.notebook_id
         self._app_state.active_notebook_id = notebook_id
         self._app_state.selected_cell_id = state.active_cell_id
-        if self._notebooks_panel:
-            self._notebooks_panel.select_notebook(notebook_id)
+        if self._notebooks_toolbar:
+            self._notebooks_toolbar.select_notebook(notebook_id)
         self._render_cells_for_state(state)
 
+        if state.active_cell_id:
+            cell = state.get_cell(state.active_cell_id)
+            if cell:
+                self._dynamic_toolbar.set_cell_type(cell.cell_type)
+            else:
+                self._dynamic_toolbar.set_cell_type(None)
+        else:
+            self._dynamic_toolbar.set_cell_type(None)
+
     def _on_notebook_renamed(self, notebook: Notebook) -> None:
-        if self._notebooks_panel:
-            self._notebooks_panel.update_notebook_title(notebook.notebook_id, notebook.title)
+        if self._notebooks_toolbar:
+            self._notebooks_toolbar.update_notebook_title(notebook.notebook_id, notebook.title)
 
     def _on_notebook_deleted(self, notebook_id: str) -> None:
-        if not self._notebooks_panel:
+        if not self._notebooks_toolbar:
             return
 
-        next_id = self._notebooks_panel.remove_notebook(notebook_id)
+        next_id = self._notebooks_toolbar.remove_notebook(notebook_id)
         if next_id:
-            self._notebooks_panel.select_notebook(next_id)
+            self._notebooks_toolbar.select_notebook(next_id)
         else:
             self._app_state.active_notebook_id = None
             self._app_state.selected_cell_id = None
@@ -885,6 +906,13 @@ class LunaQtWindow(QMainWindow):
         state = self._current_state()
         if state:
             state.active_cell_id = row.cell_id
+            cell = state.get_cell(row.cell_id)
+            if cell:
+                self._dynamic_toolbar.set_cell_type(cell.cell_type)
+            else:
+                self._dynamic_toolbar.set_cell_type(None)
+        else:
+            self._dynamic_toolbar.set_cell_type(None)
         self._update_cell_action_states()
 
     def _handle_gutter_clicked(self, row: CellRow) -> None:
@@ -894,6 +922,7 @@ class LunaQtWindow(QMainWindow):
             state = self._current_state()
             if state:
                 state.active_cell_id = None
+            self._dynamic_toolbar.set_cell_type(None)
             self._update_cell_action_states()
         else:
             self._handle_cell_selected(row)
@@ -958,6 +987,20 @@ class LunaQtWindow(QMainWindow):
         notebook_id = self._app_state.active_notebook_id
         if notebook_id:
             self._handle_notebook_delete_requested(notebook_id)
+
+    def _on_run_code(self) -> None:
+        self._dynamic_toolbar.set_code_running(True)
+        # TODO: Implement actual execution logic
+        print("Run code requested")
+
+    def _on_stop_code(self) -> None:
+        self._dynamic_toolbar.set_code_running(False)
+        # TODO: Implement actual stop logic
+        print("Stop code requested")
+
+    def _on_preview_toggled(self, checked: bool) -> None:
+        # TODO: Implement actual preview logic
+        print(f"Preview toggled: {checked}")
 
 
 __all__ = ["LunaQtWindow"]

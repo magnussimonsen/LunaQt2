@@ -162,10 +162,10 @@ def sidebar_tokens(metrics: Metrics) -> SidebarTokens:
         sidebar_toolbar_item_padding_left=metrics.padding_small,
         sidebar_toolbar_item_padding_right=metrics.padding_small,
 
-        layout_root_margin_top=metrics.padding_zero,
-        layout_root_margin_bottom=metrics.padding_zero,
+        layout_root_margin_top=metrics.padding_medium,
+        layout_root_margin_bottom=metrics.padding_medium,
         layout_root_margin_left=metrics.padding_zero,
-        layout_root_margin_right=metrics.padding_zero,
+        layout_root_margin_right=metrics.padding_medium,
 
         layout_header_margin_top=metrics.padding_medium,
         layout_header_margin_bottom=metrics.padding_medium,

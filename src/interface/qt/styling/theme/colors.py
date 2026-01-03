@@ -48,6 +48,16 @@ sidebar_content_bg_dark = "#2c2c2c"
 button_bg_light = "#f0f0f0"
 button_bg_dark = "#3a3a3a"
 
+button_disabled_bg_light = "#cfcfcf"
+button_disabled_bg_dark = "#2a2a2a"
+
+# Special button colors
+main_toolbar_run_button_bg_light = "#3294d6" # Green button for light mode
+main_toolbar_run_button_bg_dark = "#264DE4" # Green button for dark mode
+
+main_toolbar_stop_button_bg_light = "#d63232" # Red button for light mode
+main_toolbar_stop_button_bg_dark = "#E42626" # Red button for dark mode
+
 # Hover/Selected/pressed item colors
 hover_item_bg_light = "#a3c4e0" # OBS: Do not change bg on hover for cells (border only)
 hover_item_bg_dark = "#4a4a4a" # OBS: Do not change bg on hover for cells (border only)
@@ -188,7 +198,7 @@ class _ButtonTokens:
         normal=ModeAwareColor(light="#e0e0e0", dark="#404040"),
         hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
         pressed=ModeAwareColor(light="#c0c0c0", dark="#303030"),
-        disabled=ModeAwareColor(light="#f0f0f0", dark="#292929"),
+        disabled=ModeAwareColor(light=button_disabled_bg_light, dark=button_disabled_bg_dark),
         border=ModeAwareColor(light=button_border_light, dark=button_border_dark),
         text=_TextTokens.primary,
         focus=_BorderTokens.selected_border,
@@ -197,7 +207,7 @@ class _ButtonTokens:
         normal=ModeAwareColor(light=button_bg_light, dark=button_bg_dark),
         hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
         pressed=ModeAwareColor(light=item_pressed_bg_light, dark=item_pressed_bg_dark),
-        disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
+        disabled=ModeAwareColor(light=button_disabled_bg_light, dark=button_disabled_bg_dark),
         border=ModeAwareColor(light="#dadada", dark="#404040"),
         text=_TextTokens.secondary,
         focus=_BorderTokens.selected_border,
@@ -207,7 +217,7 @@ class _ButtonTokens:
         normal=ModeAwareColor(light=button_bg_light, dark=button_bg_dark),
         hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
         pressed=ModeAwareColor(light=item_pressed_bg_light, dark=item_pressed_bg_dark),
-        disabled=ModeAwareColor(light="#f8f8f8", dark="#1a1a1a"),
+        disabled=ModeAwareColor(light=button_disabled_bg_light, dark=button_disabled_bg_dark),
         border=ModeAwareColor(light="#dadada", dark="#404040"),
         text=_TextTokens.secondary,
         focus=_BorderTokens.selected_border,
@@ -217,16 +227,34 @@ class _ButtonTokens:
         normal=ModeAwareColor(light="#fbe2c5", dark="#6a381f"),
         hover=ModeAwareColor(light="#f8d4a3", dark="#7c4225"),
         pressed=ModeAwareColor(light="#f4c07e", dark="#4d2817"),
-        disabled=ModeAwareColor(light="#fdf0df", dark="#3a1c10"),
+        disabled=ModeAwareColor(light=button_disabled_bg_light, dark=button_disabled_bg_dark),
         border=ModeAwareColor(light="#f2a25d", dark="#c4672e"),
         text=_TextTokens.primary,
         focus=ModeAwareColor(light="#ff8800", dark="#ffa45c"),
+    )
+    run = ButtonPaletteTokens(
+        normal=ModeAwareColor(light="#28a745", dark="#4ade80"),
+        hover=ModeAwareColor(light="#34c759", dark="#5ef58a"),
+        pressed=ModeAwareColor(light="#1e7e34", dark="#36b05e"),
+        disabled=ModeAwareColor(light=button_disabled_bg_light, dark=button_disabled_bg_dark),
+        border=ModeAwareColor(light="#1e7e34", dark="#36b05e"),
+        text=_TextTokens.primary,
+        focus=ModeAwareColor(light="#1e7e34", dark="#5ef58a"),
+    )
+    stop = ButtonPaletteTokens(
+        normal=ModeAwareColor(light=main_toolbar_stop_button_bg_light, dark=main_toolbar_stop_button_bg_dark),
+        hover=ModeAwareColor(light="#e84d4d", dark="#f53d3d"),
+        pressed=ModeAwareColor(light="#b02525", dark="#c01a1a"),
+        disabled=ModeAwareColor(light=button_disabled_bg_light, dark=button_disabled_bg_dark),
+        border=ModeAwareColor(light="#b02525", dark="#c01a1a"),
+        text=_TextTokens.primary,
+        focus=ModeAwareColor(light="#b02525", dark="#f53d3d"),
     )
     menubar = ButtonPaletteTokens(
         normal=ModeAwareColor(light=button_bg_light, dark=button_bg_dark),
         hover=ModeAwareColor(light=hover_item_bg_light, dark=hover_item_bg_dark),
         pressed=ModeAwareColor(light=selected_item_bg_light, dark=selected_item_bg_dark),
-        disabled=ModeAwareColor(light="#f8f8f8", dark="#1f1f1f"),
+        disabled=ModeAwareColor(light=button_disabled_bg_light, dark=button_disabled_bg_dark),
         border=ModeAwareColor(light=button_border_light, dark="#5a5a5a"),
         text=_TextTokens.primary,
         focus=_BorderTokens.selected_border,
@@ -317,6 +345,8 @@ class ButtonPalettes:
     sidebar_toolbar: ButtonPalette
     menubar: ButtonPalette
     warning: ButtonPalette
+    run: ButtonPalette
+    stop: ButtonPalette
 
 
 @dataclass(frozen=True)
@@ -416,6 +446,8 @@ def _resolve_buttons(mode: ThemeMode) -> ButtonPalettes:
         sidebar_toolbar=tokens.sidebar_toolbar.resolve(mode),
         menubar=tokens.menubar.resolve(mode),
         warning=tokens.warning.resolve(mode),
+        run=tokens.run.resolve(mode),
+        stop=tokens.stop.resolve(mode),
     )
 
 

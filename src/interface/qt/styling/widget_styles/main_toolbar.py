@@ -53,6 +53,14 @@ def get_qss(
             font-family: {metrics.font_family};
             font-size: {metrics.font_size_medium}pt;
         }}
+        
+        {TOOLBAR_SELECTOR} > QWidget {{
+            background-color: transparent;
+        }}
+        
+        {TOOLBAR_SELECTOR} QStackedWidget {{
+            background-color: transparent;
+        }}
         """
     ).strip()
 

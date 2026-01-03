@@ -70,6 +70,8 @@ def get_qss(
     sections = [
         _button_block('QPushButton[btnType="primary"]', palettes.primary, metrics),
         _button_block('QPushButton[btnType="warning"]', palettes.warning, metrics),
+        _button_block('QPushButton[btnType="run"]', palettes.run, metrics),
+        _button_block('QPushButton[btnType="stop"]', palettes.stop, metrics),
     ]
 
     menubar_overrides = dedent(

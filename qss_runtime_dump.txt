@@ -56,9 +56,9 @@ QPushButton[btnType="primary"]:checked {
 }
 
 QPushButton[btnType="primary"]:disabled {
-    background-color: #f0f0f0;
+    background-color: #cfcfcf;
     color: rgba(17, 17, 17, 0.600);
-    border-color: #f0f0f0;
+    border-color: #cfcfcf;
 }
 
 QPushButton[btnType="primary"]:focus-visible {
@@ -90,14 +90,82 @@ QPushButton[btnType="warning"]:checked {
 }
 
 QPushButton[btnType="warning"]:disabled {
-    background-color: #fdf0df;
+    background-color: #cfcfcf;
     color: rgba(17, 17, 17, 0.600);
-    border-color: #fdf0df;
+    border-color: #cfcfcf;
 }
 
 QPushButton[btnType="warning"]:focus-visible {
     outline: none;
     border-color: #ff8800;
+}
+
+QPushButton[btnType="run"] {
+    background-color: #28a745;
+    color: #111111;
+    border: 1px solid #1e7e34;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-family: Inter;
+    font-size: 12pt;
+}
+
+QPushButton[btnType="run"]:hover {
+    background-color: #34c759;
+}
+
+QPushButton[btnType="run"]:pressed {
+    background-color: #1e7e34;
+}
+
+QPushButton[btnType="run"]:checked {
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+}
+
+QPushButton[btnType="run"]:disabled {
+    background-color: #cfcfcf;
+    color: rgba(17, 17, 17, 0.600);
+    border-color: #cfcfcf;
+}
+
+QPushButton[btnType="run"]:focus-visible {
+    outline: none;
+    border-color: #1e7e34;
+}
+
+QPushButton[btnType="stop"] {
+    background-color: #d63232;
+    color: #111111;
+    border: 1px solid #b02525;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-family: Inter;
+    font-size: 12pt;
+}
+
+QPushButton[btnType="stop"]:hover {
+    background-color: #e84d4d;
+}
+
+QPushButton[btnType="stop"]:pressed {
+    background-color: #b02525;
+}
+
+QPushButton[btnType="stop"]:checked {
+    background-color: #b02525;
+    border-color: #b02525;
+}
+
+QPushButton[btnType="stop"]:disabled {
+    background-color: #cfcfcf;
+    color: rgba(17, 17, 17, 0.600);
+    border-color: #cfcfcf;
+}
+
+QPushButton[btnType="stop"]:focus-visible {
+    outline: none;
+    border-color: #b02525;
 }
 
 QPushButton[btnType="menubar"] {
@@ -129,7 +197,7 @@ QPushButton[btnType="menubar"]:checked {
 }
 
 QPushButton[btnType="menubar"]:disabled {
-    background-color: #f8f8f8;
+    background-color: #cfcfcf;
     color: rgba(17, 17, 17, 0.600);
 }
 
@@ -166,7 +234,7 @@ QPushButton[btnType="toolbar"]:checked {
 }
 
 QPushButton[btnType="toolbar"]:disabled {
-    background-color: #f8f8f8;
+    background-color: #cfcfcf;
     color: rgba(51, 51, 51, 0.600);
 }
 
@@ -203,7 +271,7 @@ QPushButton[btnType="sidebar-toolbar"]:checked {
 }
 
 QPushButton[btnType="sidebar-toolbar"]:disabled {
-    background-color: #f8f8f8;
+    background-color: #cfcfcf;
     color: rgba(51, 51, 51, 0.600);
 }
 
@@ -425,6 +493,14 @@ QToolBar#PrimaryToolBar {
     min-height: 28px;
     font-family: Inter;
     font-size: 12pt;
+}
+
+QToolBar#PrimaryToolBar > QWidget {
+    background-color: transparent;
+}
+
+QToolBar#PrimaryToolBar QStackedWidget {
+    background-color: transparent;
 }
 
 /* Dock widget title bar styling (header area) */
