@@ -11,6 +11,8 @@ CELL_ROW_SELECTOR = 'QFrame[cellType="row"]'
 CELL_SELECTOR = 'QFrame[cellType="container"]'
 CELL_HEADER_SELECTOR = 'QWidget[cellPart="header"]'
 CELL_BODY_SELECTOR = 'QWidget[cellPart="body"]'
+CELL_EDITOR_SELECTOR = 'QPlainTextEdit[cellPart="editor"]'
+CELL_OUTPUT_SELECTOR = 'QPlainTextEdit[cellPart="output"]'
 
 
 def get_qss(
@@ -39,7 +41,7 @@ def get_qss(
         f"""
         {CELL_ROW_SELECTOR} {{
             background: transparent;
-            border: 1px solid transparent;
+            border: 2px solid transparent;
             border-radius: {tokens.border_radius}px;
             margin-top: {tokens.margin_top}px;
             margin-bottom: {tokens.margin_bottom}px;
@@ -130,7 +132,39 @@ def get_qss(
         """
     ).strip()
 
-    return "\n\n".join([list_styling, row_styling, container, header, body, viewport_block])
+    # Python code editor styling
+    editor_block = dedent(
+        f"""
+        {CELL_EDITOR_SELECTOR} {{
+            background-color: {bg.cell_bg};
+            color: {text.primary};
+            selection-background-color: {viewport.selection};
+            selection-color: {viewport.selection_text};
+            border: none;
+            border-radius: {tokens.border_radius}px;
+            padding: 4px;
+        }}
+        """
+    ).strip()
+
+    # Output area styling
+    output_block = dedent(
+        f"""
+        {CELL_OUTPUT_SELECTOR} {{
+            background-color: {bg.app_bg};
+            color: {text.primary};
+            selection-background-color: {viewport.selection};
+            selection-color: {viewport.selection_text};
+            border: 1px solid {border.subtle};
+            border-radius: {tokens.border_radius}px;
+            padding: 8px;
+            font-family: "Fira Code", monospace;
+            font-size: {metrics.font_size_small}pt;
+        }}
+        """
+    ).strip()
+
+    return "\n\n".join([list_styling, row_styling, container, header, body, viewport_block, editor_block, output_block])
 
 
 __all__ = ["get_qss"]

@@ -70,6 +70,7 @@ class CellManager:
         content: str | None = None,
         metadata: dict[str, Any] | None = None,
         outputs: list[dict[str, Any]] | None = None,
+        execution_count: int | None | object = None,
     ) -> Cell | None:
         cell = self.get_cell(cell_id)
         if not cell:
@@ -80,11 +81,17 @@ class CellManager:
             merged_metadata.update(metadata)
 
         new_outputs = outputs if outputs is not None else cell.outputs
+        
+        # Handle execution_count separately from metadata
+        # Use a sentinel to distinguish between "not provided" and "set to None"
+        _UNSET = object()
+        new_execution_count = cell.execution_count if execution_count is None else execution_count
 
         updated_cell = cell.copy_with(
             content=content if content is not None else cell.content,
             metadata=merged_metadata,
             outputs=new_outputs,
+            execution_count=new_execution_count,
             modified_at=datetime.now(timezone.utc),
         )
 

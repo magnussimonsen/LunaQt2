@@ -127,13 +127,22 @@ def get_qss(
         QDockWidget#TocDock QListWidget::item {{
             background-color: transparent;
             color: {text.primary};
+            padding: 6px 8px;
+            border-radius: 4px;
         }}
 
         QDockWidget#NotebooksDock QListWidget::item:selected,
         QDockWidget#SettingsDock QListWidget::item:selected,
         QDockWidget#TocDock QListWidget::item:selected {{
-                background-color: {bg.sidebar_toolbar_bg};
-            color: {text.primary};
+            background-color: {buttons.pressed};
+            color: {buttons.text};
+        }}
+        
+        QDockWidget#NotebooksDock QListWidget::item:hover,
+        QDockWidget#SettingsDock QListWidget::item:hover,
+        QDockWidget#TocDock QListWidget::item:hover {{
+            background-color: {buttons.hover};
+            color: {buttons.text};
         }}
 
         /* Input widgets (ComboBox, SpinBox) */

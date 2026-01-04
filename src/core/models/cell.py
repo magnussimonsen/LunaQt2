@@ -23,6 +23,7 @@ class Cell:
     content: str
     metadata: dict[str, Any] = field(default_factory=dict)
     outputs: list[dict[str, Any]] = field(default_factory=list)
+    execution_count: int | None = None
     created_at: datetime = field(default_factory=datetime.utcnow)
     modified_at: datetime = field(default_factory=datetime.utcnow)
     schema_version: int = 1
@@ -37,6 +38,7 @@ class Cell:
             content=payload.get("content", ""),
             metadata=deepcopy(payload.get("metadata", {})),
             outputs=deepcopy(payload.get("outputs", [])),
+            execution_count=payload.get("execution_count"),
             created_at=parse_timestamp(payload.get("created_at")),
             modified_at=parse_timestamp(payload.get("modified_at")),
             schema_version=int(payload.get("schema_version", 1)),
@@ -54,6 +56,7 @@ class Cell:
         created_at: datetime,
         modified_at: datetime,
         outputs: list[dict[str, Any]] | None = None,
+        execution_count: int | None = None,
         schema_version: int = 1,
         deleted_at: datetime | None = None,
     ) -> "Cell":
@@ -63,6 +66,7 @@ class Cell:
             content=content,
             metadata=deepcopy(metadata),
             outputs=deepcopy(outputs) if outputs else [],
+            execution_count=execution_count,
             created_at=created_at,
             modified_at=modified_at,
             schema_version=schema_version,
@@ -76,6 +80,7 @@ class Cell:
             "content": self.content,
             "metadata": deepcopy(self.metadata),
             "outputs": deepcopy(self.outputs),
+            "execution_count": self.execution_count,
             "created_at": format_timestamp(self.created_at),
             "modified_at": format_timestamp(self.modified_at),
             "schema_version": self.schema_version,
@@ -89,6 +94,7 @@ class Cell:
         content: str | None = None,
         metadata: dict[str, Any] | None = None,
         outputs: list[dict[str, Any]] | None = None,
+        execution_count: int | None | object = _UNSET,
         modified_at: datetime | None = None,
         deleted_at: datetime | None | object = _UNSET,
     ) -> "Cell":
@@ -98,6 +104,7 @@ class Cell:
             content=content if content is not None else self.content,
             metadata=deepcopy(metadata) if metadata is not None else deepcopy(self.metadata),
             outputs=deepcopy(outputs) if outputs is not None else deepcopy(self.outputs),
+            execution_count=self.execution_count if execution_count is _UNSET else execution_count,
             created_at=self.created_at,
             modified_at=modified_at or self.modified_at,
             schema_version=self.schema_version,

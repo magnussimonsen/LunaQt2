@@ -1,3 +1,12 @@
-"""Notebook execution pipeline scaffolding."""
+"""Code execution engine for notebook cells."""
 
-__all__: list[str] = []
+from .manager import ExecutionManager
+from .messages import ExecutionRequest, ExecutionResult
+from .worker import ExecutionWorker
+
+__all__ = [
+    "ExecutionManager",
+    "ExecutionRequest",
+    "ExecutionResult",
+    "ExecutionWorker",
+]

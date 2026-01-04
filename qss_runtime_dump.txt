@@ -290,7 +290,7 @@ QWidget[cellType="list"] {
 
 QFrame[cellType="row"] {
     background: transparent;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     border-radius: 2px;
     margin-top: 0px;
     margin-bottom: 0px;
@@ -361,6 +361,28 @@ QFrame[cellType="container"] QTableView {
     selection-background-color: #cfe1ff;
     selection-color: #111111;
     border: none;
+}
+
+QPlainTextEdit[cellPart="editor"] {
+    background-color: #dddddd;
+    color: #111111;
+    selection-background-color: #cfe1ff;
+    selection-color: #111111;
+    border: none;
+    border-radius: 2px;
+    padding: 4px;
+}
+
+QPlainTextEdit[cellPart="output"] {
+    background-color: #dddddd;
+    color: #111111;
+    selection-background-color: #cfe1ff;
+    selection-color: #111111;
+    border: 1px solid #343434;
+    border-radius: 2px;
+    padding: 8px;
+    font-family: "Fira Code", monospace;
+    font-size: 10pt;
 }
 
 QWidget[cellType="gutter"] {
@@ -579,13 +601,22 @@ QDockWidget#SettingsDock QListWidget::item,
 QDockWidget#TocDock QListWidget::item {
     background-color: transparent;
     color: #111111;
+    padding: 6px 8px;
+    border-radius: 4px;
 }
 
 QDockWidget#NotebooksDock QListWidget::item:selected,
 QDockWidget#SettingsDock QListWidget::item:selected,
 QDockWidget#TocDock QListWidget::item:selected {
-        background-color: #aaaaaa;
-    color: #111111;
+    background-color: #6da9d9;
+    color: #333333;
+}
+
+QDockWidget#NotebooksDock QListWidget::item:hover,
+QDockWidget#SettingsDock QListWidget::item:hover,
+QDockWidget#TocDock QListWidget::item:hover {
+    background-color: #a3c4e0;
+    color: #333333;
 }
 
 /* Input widgets (ComboBox, SpinBox) */

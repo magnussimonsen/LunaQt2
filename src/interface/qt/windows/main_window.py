@@ -23,11 +23,12 @@ from PySide6.QtWidgets import (
 )
 
 from app.state import AppState
-from core import CellManager, DataStore, NotebookManager
+from core import CellManager, DataStore, ExecutionManager, NotebookManager
 from core.models import Cell, CellType, Notebook, NotebookState
 from interface.qt.sidebars import NotebookSidebarWidget, SettingsSidebarWidget, TocSidebarWidget
 from interface.qt.styling import apply_global_style
 from interface.qt.styling.theme import Metrics, StylePreferences, ThemeMode
+from shared.constants import get_matplotlib_style
 from interface.qt.styling.theme.widget_tokens import (
     ButtonTokens,
     button_tokens,
@@ -43,9 +44,10 @@ from interface.qt.styling.theme.widget_tokens import (
 from interface.qt.widgets import (
     CellContainerWidget,
     CellGutterWidget,
-    SidebarToggleButton,
     CellListWidget,
     DynamicToolbar,
+    PythonEditor,
+    SidebarToggleButton,
 )
 from shared.constants import (
     DEFAULT_SIDEBAR_WIDTH,
@@ -64,20 +66,27 @@ class CellRow(QFrame):
     def __init__(
         self,
         cell_id: str,
+        cell_type: str,
         index: int,
         header_text: str,
         body_text: str,
         select_callback,
         gutter_callback,
+        run_callback,
+        content_changed_callback,
         row_tokens: CellRowTokens,
         gutter_tokens: CellGutterTokens,
+        is_dark_mode: bool = False,
     ) -> None:
         super().__init__()
         self.setProperty("cellType", "row")
         self.setFrameStyle(QFrame.NoFrame)
         self._select_callback = select_callback
         self._gutter_callback = gutter_callback
+        self._run_callback = run_callback
+        self._content_changed_callback = content_changed_callback
         self._cell_id = cell_id
+        self._cell_type = cell_type
         self._index = index
         self._selected = False
         self._row_tokens = row_tokens
@@ -107,18 +116,59 @@ class CellRow(QFrame):
         self._cell_container.setMinimumHeight(row_tokens.cell_row_min_height)
         self._cell_container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
 
+        # Execution count label (for code cells)
+        self._exec_count_label = QLabel("", self._cell_container)
+        self._exec_count_label.setProperty("cellPart", "execCount")
+        self._exec_count_label.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self._exec_count_label.setVisible(False)
+        self._cell_container.add_content_widget(self._exec_count_label)
+
         header = QLabel(header_text, self._cell_container)
         header.setProperty("cellPart", "header")
         header.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        header.setVisible(False)  # Hide the header text
         self._cell_container.add_content_widget(header)
         self._header_label = header
 
-        body = QLabel(body_text, self._cell_container)
-        body.setProperty("cellPart", "body")
-        body.setWordWrap(True)
-        body.setAttribute(Qt.WA_TransparentForMouseEvents, True)
-        self._cell_container.add_content_widget(body)
-        self._body_label = body
+        # Use PythonEditor for code cells, QLabel for others
+        self._editor = None
+        self._body_label = None
+        
+        if cell_type == "code":
+            self._editor = PythonEditor(self._cell_container, is_dark_mode=is_dark_mode)
+            self._editor.setPlainText(body_text)
+            self._editor.setProperty("cellPart", "editor")
+            # Wire up signals
+            self._editor.textChanged.connect(self._on_editor_text_changed)
+            self._editor.execute_requested.connect(self._on_editor_execute_requested)
+            self._editor.focus_changed.connect(self._on_editor_focus_changed)
+            self._cell_container.add_content_widget(self._editor)
+        else:
+            body = QLabel(body_text, self._cell_container)
+            body.setProperty("cellPart", "body")
+            body.setWordWrap(True)
+            body.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+            self._cell_container.add_content_widget(body)
+            self._body_label = body
+        
+        # Output area (stdout/stderr)
+        from PySide6.QtWidgets import QPlainTextEdit
+        self._output_area = QPlainTextEdit(self._cell_container)
+        self._output_area.setProperty("cellPart", "output")
+        self._output_area.setReadOnly(True)
+        self._output_area.setVisible(False)
+        self._output_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self._output_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self._output_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        self._cell_container.add_content_widget(self._output_area)
+        
+        # Plot display area
+        self._plot_label = QLabel(self._cell_container)
+        self._plot_label.setProperty("cellPart", "plot")
+        self._plot_label.setVisible(False)
+        self._plot_label.setScaledContents(False)
+        self._plot_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        self._cell_container.add_content_widget(self._plot_label)
 
         row_layout.addWidget(self._gutter)
         row_layout.addWidget(self._cell_container)
@@ -160,7 +210,112 @@ class CellRow(QFrame):
 
     def update_text(self, header_text: str, body_text: str) -> None:
         self._header_label.setText(header_text)
-        self._body_label.setText(body_text)
+        if self._editor:
+            self._editor.setPlainText(body_text)
+        elif self._body_label:
+            self._body_label.setText(body_text)
+    
+    def _on_editor_text_changed(self) -> None:
+        """Handle text changes in the editor."""
+        if self._editor:
+            new_content = self._editor.toPlainText()
+            self._content_changed_callback(self._cell_id, new_content)
+    
+    def _on_editor_execute_requested(self) -> None:
+        """Handle Shift+Enter in editor."""
+        self._run_callback(self)
+    
+    def _on_editor_focus_changed(self, has_focus: bool) -> None:
+        """Handle editor focus changes."""
+        if has_focus:
+            self._select_callback(self)
+    
+    def set_execution_count(self, count: int | None) -> None:
+        """Update the execution count display."""
+        if count is None:
+            self._exec_count_label.setText("")
+            self._exec_count_label.setVisible(False)
+        else:
+            self._exec_count_label.setText(f"[{count}]")
+            self._exec_count_label.setVisible(True)
+    
+    def set_output(self, stdout: str, stderr: str, error: str | None) -> None:
+        """Display execution output."""
+        output_text = ""
+        if stdout:
+            output_text += stdout
+        if stderr:
+            if output_text:
+                output_text += "\n"
+            output_text += stderr
+        if error:
+            if output_text:
+                output_text += "\n"
+            output_text += f"Error:\n{error}"
+        
+        if output_text:
+            self._output_area.setPlainText(output_text)
+            self._output_area.setVisible(True)
+            
+            # Auto-adjust height based on line count (like OLD_LUNA_QT and PythonEditor)
+            doc = self._output_area.document()
+            block_count = max(1, doc.blockCount())
+            line_height = self._output_area.fontMetrics().lineSpacing()
+            doc_height = line_height * block_count
+            
+            # Add margins, frame, and document margin
+            margins = self._output_area.contentsMargins()
+            frame_width = self._output_area.frameWidth() * 2
+            doc_margin = int(doc.documentMargin() * 2)
+            padding = margins.top() + margins.bottom() + frame_width + doc_margin + 8
+            
+            total_height = int(doc_height + padding)
+            
+            # Set minimum height
+            min_height = line_height * 2 + padding
+            total_height = max(total_height, min_height, 40)
+            
+            self._output_area.setFixedHeight(total_height)
+            self._output_area.updateGeometry()
+            
+            # Force parent container to update layout
+            if self._cell_container:
+                self._cell_container.updateGeometry()
+        else:
+            self._output_area.setPlainText("")
+            self._output_area.setVisible(False)
+    
+    def set_plot(self, image_bytes: bytes | None) -> None:
+        """Display a plot from PNG bytes."""
+        if not image_bytes:
+            self._plot_label.setVisible(False)
+            self._plot_label.clear()
+            return
+        
+        from PySide6.QtGui import QPixmap
+        pixmap = QPixmap()
+        if pixmap.loadFromData(image_bytes):
+            # Scale to reasonable size while maintaining aspect ratio
+            max_width = 600
+            if pixmap.width() > max_width:
+                pixmap = pixmap.scaledToWidth(max_width, Qt.TransformationMode.SmoothTransformation)
+            self._plot_label.setPixmap(pixmap)
+            self._plot_label.setVisible(True)
+        else:
+            self._plot_label.setVisible(False)
+    
+    def clear_output(self) -> None:
+        """Clear all execution output and plots."""
+        self._output_area.setPlainText("")
+        self._output_area.setVisible(False)
+        self._plot_label.clear()
+        self._plot_label.setVisible(False)
+    
+    def get_plot_pixmap(self) -> Any | None:
+        """Get the current plot pixmap for export."""
+        if self._plot_label.pixmap() and not self._plot_label.pixmap().isNull():
+            return self._plot_label.pixmap()
+        return None
 
     @staticmethod
     def _apply_state(widget, state):
@@ -226,6 +381,7 @@ class LunaQtWindow(QMainWindow):
         self._move_up_button: QPushButton | None = None
         self._move_down_button: QPushButton | None = None
         self._dynamic_toolbar: DynamicToolbar | None = None
+        self._execution_manager: ExecutionManager | None = None
 
         self.setWindowTitle("LunaQt2")
         self.resize(900, 600)
@@ -238,6 +394,28 @@ class LunaQtWindow(QMainWindow):
         self._build_sidebars()
         self._initialize_notebook_sidebar()
         self._apply_current_style()
+    
+    def keyPressEvent(self, event) -> None:
+        """Handle keyboard shortcuts."""
+        from PySide6.QtCore import Qt
+        from PySide6.QtGui import QKeySequence
+        
+        # Shift+Enter: Execute current cell
+        if event.key() == Qt.Key.Key_Return and event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+            state = self._current_state()
+            if state and state.active_cell_id:
+                cell = state.get_cell(state.active_cell_id)
+                if cell and cell.cell_type == "python":
+                    self._on_run_code()
+                    event.accept()
+                    return
+        
+        super().keyPressEvent(event)
+    
+    def __del__(self) -> None:
+        """Cleanup execution workers on destruction."""
+        if hasattr(self, '_execution_manager') and self._execution_manager:
+            self._execution_manager.shutdown()
 
     def _build_menubar(self) -> None:
         menu_bar = self.menuBar()
@@ -272,6 +450,18 @@ class LunaQtWindow(QMainWindow):
         delete_notebook_action.triggered.connect(self._on_delete_notebook_triggered)
         edit_menu.addAction(delete_notebook_action)
         self._delete_notebook_action = delete_notebook_action
+        
+        edit_menu.addSeparator()
+        
+        clear_output_action = QAction("Clear Cell Output", self)
+        clear_output_action.triggered.connect(self._on_clear_output_triggered)
+        edit_menu.addAction(clear_output_action)
+        self._clear_output_action = clear_output_action
+        
+        export_plot_action = QAction("Export Plot...", self)
+        export_plot_action.triggered.connect(self._on_export_plot_triggered)
+        edit_menu.addAction(export_plot_action)
+        self._export_plot_action = export_plot_action
 
         insert_menu = menu_bar.addMenu("Insert")
         insert_menu.setProperty("menuRole", "primary")
@@ -445,6 +635,18 @@ class LunaQtWindow(QMainWindow):
             return
 
         self._current_notebook_state = state
+        
+        # Preserve outputs and editor content before clearing
+        preserved_data = {}
+        for row in self._cell_rows:
+            preserved_data[row.cell_id] = {
+                'has_output': row._output_area.isVisible() if hasattr(row, '_output_area') else False,
+                'output_text': row._output_area.toPlainText() if hasattr(row, '_output_area') else "",
+                'has_plot': row._plot_label.isVisible() if hasattr(row, '_plot_label') else False,
+                'plot_pixmap': row._plot_label.pixmap() if hasattr(row, '_plot_label') else None,
+                'editor_content': row._editor.toPlainText() if row._editor else None,
+            }
+        
         self._clear_cell_rows()
 
         cells = list(state.iter_cells())
@@ -480,7 +682,63 @@ class LunaQtWindow(QMainWindow):
                 gutter_callback=self._handle_gutter_clicked,
                 row_tokens=row_tokens,
                 gutter_tokens=gutter_tokens,
+                cell_type=cell.cell_type,
+                run_callback=self._on_run_code,
+                content_changed_callback=self._on_cell_content_changed,
+                is_dark_mode=(self._mode == ThemeMode.DARK),
             )
+            
+            # Set execution count for code cells
+            if cell.cell_type == "code" and cell.execution_count is not None:
+                row.set_execution_count(cell.execution_count)
+            
+            # Restore outputs for code cells
+            if cell.cell_type == "code" and cell.outputs:
+                stdout_parts = []
+                stderr_parts = []
+                figures = []
+                
+                for output in cell.outputs:
+                    output_type = output.get("output_type", "")
+                    if output_type == "stream":
+                        stream_name = output.get("name", "stdout")
+                        text = output.get("text", "")
+                        if stream_name == "stdout":
+                            stdout_parts.append(text)
+                        elif stream_name == "stderr":
+                            stderr_parts.append(text)
+                    elif output_type == "display_data":
+                        data = output.get("data", {})
+                        if "image/png" in data:
+                            import base64
+                            png_base64 = data["image/png"]
+                            figures.append(base64.b64decode(png_base64))
+                
+                # Set output text
+                stdout = "".join(stdout_parts)
+                stderr = "".join(stderr_parts)
+                if stdout or stderr:
+                    row.set_output(stdout, stderr, None)
+                
+                # Set first plot
+                if figures:
+                    row.set_plot(figures[0])
+            
+            # Restore preserved in-memory outputs (overrides database)
+            if cell.cell_id in preserved_data:
+                data = preserved_data[cell.cell_id]
+                # Restore editor content if it was edited
+                if data['editor_content'] is not None and row._editor:
+                    row._editor.setPlainText(data['editor_content'])
+                # Restore output if it was visible
+                if data['has_output']:
+                    row._output_area.setPlainText(data['output_text'])
+                    row._output_area.setVisible(True)
+                # Restore plot if it was visible
+                if data['has_plot'] and data['plot_pixmap']:
+                    row._plot_label.setPixmap(data['plot_pixmap'])
+                    row._plot_label.setVisible(True)
+            
             self._cell_rows.append(row)
             self._cell_list_layout.insertWidget(insert_at, row)
             insert_at += 1
@@ -505,7 +763,12 @@ class LunaQtWindow(QMainWindow):
         content = cell.content.strip()
         if not content:
             return "(empty cell)"
-
+        
+        # For code cells, return full content (editors need all lines)
+        if cell.cell_type == "code":
+            return cell.content
+        
+        # For other cell types, show abbreviated first line
         first_line = content.splitlines()[0]
         if len(first_line) <= 120:
             return first_line
@@ -557,6 +820,23 @@ class LunaQtWindow(QMainWindow):
             self._delete_cell_action.setEnabled(has_selection)
         if self._delete_notebook_action:
             self._delete_notebook_action.setEnabled(self._app_state.active_notebook_id is not None)
+        
+        # Enable clear/export actions only if cell has output/plot
+        has_output_or_plot = False
+        has_plot = False
+        if has_selection and state:
+            cell_row = self._find_cell_row(cell_id)
+            if cell_row:
+                has_output_or_plot = bool(
+                    (cell_row._output_area.isVisible() and cell_row._output_area.toPlainText()) or
+                    cell_row.get_plot_pixmap() is not None
+                )
+                has_plot = cell_row.get_plot_pixmap() is not None
+        
+        if hasattr(self, '_clear_output_action') and self._clear_output_action:
+            self._clear_output_action.setEnabled(has_output_or_plot)
+        if hasattr(self, '_export_plot_action') and self._export_plot_action:
+            self._export_plot_action.setEnabled(has_plot)
 
     def _move_selected_cell(self, step: int) -> None:
         state = self._current_state()
@@ -682,6 +962,17 @@ class LunaQtWindow(QMainWindow):
         self._data_store = DataStore()
         self._cell_manager = CellManager(self._data_store)
         self._notebook_manager = NotebookManager(self._data_store, self._cell_manager)
+        
+        # Initialize execution manager
+        self._execution_manager = ExecutionManager(parent=self)
+        self._execution_manager.cell_started.connect(self._on_cell_execution_started)
+        self._execution_manager.cell_finished.connect(self._on_cell_execution_finished)
+        self._execution_manager.cell_failed.connect(self._on_cell_execution_failed)
+        
+        # Set initial matplotlib style based on theme
+        is_dark = self._mode == ThemeMode.DARK
+        self._execution_manager.set_plot_style(get_matplotlib_style(is_dark))
+        
         self._connect_notebook_events()
 
     def _connect_notebook_events(self) -> None:
@@ -746,12 +1037,44 @@ class LunaQtWindow(QMainWindow):
         self._create_notebook()
 
     def _handle_move_notebook_up_clicked(self) -> None:
-        # TODO: Persist notebook ordering once supported in the core layer.
-        pass
+        """Move the selected notebook up in the sidebar list."""
+        if not self._notebooks_toolbar:
+            return
+        
+        # Get current selection
+        current_row = self._notebooks_toolbar._list.currentRow()
+        if current_row <= 0:
+            return  # Already at top or no selection
+        
+        # Get the item data
+        item = self._notebooks_toolbar._list.takeItem(current_row)
+        
+        # Reinsert at previous position
+        self._notebooks_toolbar._list.insertItem(current_row - 1, item)
+        self._notebooks_toolbar._list.setCurrentRow(current_row - 1)
+        
+        # Update button states
+        self._notebooks_toolbar._update_move_buttons()
 
     def _handle_move_notebook_down_clicked(self) -> None:
-        # TODO: Persist notebook ordering once supported in the core layer.
-        pass
+        """Move the selected notebook down in the sidebar list."""
+        if not self._notebooks_toolbar:
+            return
+        
+        # Get current selection
+        current_row = self._notebooks_toolbar._list.currentRow()
+        if current_row < 0 or current_row >= self._notebooks_toolbar._list.count() - 1:
+            return  # Already at bottom or no selection
+        
+        # Get the item data
+        item = self._notebooks_toolbar._list.takeItem(current_row)
+        
+        # Reinsert at next position
+        self._notebooks_toolbar._list.insertItem(current_row + 1, item)
+        self._notebooks_toolbar._list.setCurrentRow(current_row + 1)
+        
+        # Update button states
+        self._notebooks_toolbar._update_move_buttons()
 
     def _handle_notebook_selected(self, notebook_id: str) -> None:
         if not self._notebook_manager:
@@ -782,6 +1105,12 @@ class LunaQtWindow(QMainWindow):
 
     def _on_notebook_opened(self, state: NotebookState) -> None:
         notebook_id = state.notebook.notebook_id
+        
+        # Shutdown worker for previous notebook when switching
+        if self._app_state.active_notebook_id and self._app_state.active_notebook_id != notebook_id:
+            if self._execution_manager:
+                self._execution_manager.shutdown_notebook(self._app_state.active_notebook_id)
+        
         self._app_state.active_notebook_id = notebook_id
         self._app_state.selected_cell_id = state.active_cell_id
         if self._notebooks_toolbar:
@@ -802,6 +1131,10 @@ class LunaQtWindow(QMainWindow):
             self._notebooks_toolbar.update_notebook_title(notebook.notebook_id, notebook.title)
 
     def _on_notebook_deleted(self, notebook_id: str) -> None:
+        # Shutdown execution worker for this notebook
+        if self._execution_manager:
+            self._execution_manager.shutdown_notebook(notebook_id)
+        
         if not self._notebooks_toolbar:
             return
 
@@ -898,6 +1231,16 @@ class LunaQtWindow(QMainWindow):
             return
         self._mode = mode
         self._apply_current_style()
+        
+        # Update matplotlib style for execution manager
+        if self._execution_manager:
+            is_dark = self._mode == ThemeMode.DARK
+            self._execution_manager.set_plot_style(get_matplotlib_style(is_dark))
+        
+        # Update matplotlib style for execution manager
+        if self._execution_manager:
+            is_dark = self._mode == ThemeMode.DARK
+            self._execution_manager.set_plot_style(get_matplotlib_style(is_dark))
 
     def _handle_cell_selected(self, row: CellRow) -> None:
         for candidate in self._cell_rows:
@@ -987,20 +1330,258 @@ class LunaQtWindow(QMainWindow):
         notebook_id = self._app_state.active_notebook_id
         if notebook_id:
             self._handle_notebook_delete_requested(notebook_id)
+    
+    def _on_clear_output_triggered(self) -> None:
+        """Clear output for the selected cell."""
+        state = self._current_state()
+        if not state or not state.active_cell_id:
+            return
+        
+        # Find and clear the cell row
+        cell_row = self._find_cell_row(state.active_cell_id)
+        if cell_row:
+            cell_row.clear_output()
+            print(f"[DEBUG] Cleared output for cell {state.active_cell_id}")
+    
+    def _on_export_plot_triggered(self) -> None:
+        """Export the current cell's plot to a file."""
+        from PySide6.QtWidgets import QFileDialog
+        
+        state = self._current_state()
+        if not state or not state.active_cell_id:
+            return
+        
+        # Find the cell row and get its plot
+        cell_row = self._find_cell_row(state.active_cell_id)
+        if not cell_row:
+            return
+        
+        pixmap = cell_row.get_plot_pixmap()
+        if not pixmap:
+            print("[DEBUG] No plot to export")
+            return
+        
+        # Open save dialog
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Export Plot",
+            "",
+            "PNG Image (*.png);;JPEG Image (*.jpg *.jpeg);;All Files (*)"
+        )
+        
+        if file_path:
+            # Save the pixmap
+            if pixmap.save(file_path):
+                print(f"[DEBUG] Plot exported to {file_path}")
+            else:
+                print(f"[DEBUG] Failed to export plot to {file_path}")
 
-    def _on_run_code(self) -> None:
+    def _on_run_code(self, cell_row: CellRow | None = None) -> None:
+        """Handle Run button click or Shift+Enter in editor.
+        
+        Args:
+            cell_row: The CellRow that triggered the run (for Shift+Enter)
+        """
         self._dynamic_toolbar.set_code_running(True)
-        # TODO: Implement actual execution logic
-        print("Run code requested")
+        
+        if not self._execution_manager or not self._cell_manager:
+            print("[DEBUG] No execution manager or cell manager")
+            return
+            
+        state = self._current_state()
+        if not state or not state.active_cell_id:
+            print("[DEBUG] No active cell")
+            return
+            
+        cell = state.get_cell(state.active_cell_id)
+        if not cell or cell.cell_type != "code":
+            print("[DEBUG] Not a code cell")
+            return
+        
+        # Get current content from the editor (if available)
+        # DON'T save to database - just get the text to run
+        code_to_run = cell.content
+        if cell_row and cell_row._editor:
+            code_to_run = cell_row._editor.toPlainText()
+        elif cell_row is None:
+            # Find the active cell row to get editor content
+            for row in self._cell_rows:
+                if row.cell_id == state.active_cell_id and row._editor:
+                    code_to_run = row._editor.toPlainText()
+                    break
+            
+        # Get or increment execution count
+        execution_count = (cell.execution_count or 0) + 1
+        
+        # Run the cell
+        self._execution_manager.run_cell(
+            notebook_id=state.notebook.notebook_id,
+            cell_id=cell.cell_id,
+            code=code_to_run,
+            execution_count=execution_count,
+        )
+        
+        print(f"[DEBUG] Executing cell {cell.cell_id} (count: {execution_count})")
+
+    def _on_cell_content_changed(self, cell_id: str, new_content: str) -> None:
+        """Handle cell content changes from the editor.
+        
+        Saves content on every keystroke, like OLD_LUNA_QT.
+        We disconnect state_updated to prevent rebuilds during save.
+        """
+        if not self._cell_manager or not self._notebook_manager:
+            return
+        
+        # Disconnect state_updated to prevent rebuilds
+        try:
+            self._notebook_manager.events.state_updated.disconnect(self._on_notebook_state_updated)
+        except:
+            pass
+        
+        # Save the content
+        try:
+            self._cell_manager.update_cell(cell_id, content=new_content)
+        except Exception as e:
+            print(f"[DEBUG] Failed to save cell content: {e}")
+        
+        # Reconnect state_updated
+        if self._notebook_manager:
+            try:
+                self._notebook_manager.events.state_updated.connect(self._on_notebook_state_updated)
+            except:
+                pass
 
     def _on_stop_code(self) -> None:
+        """Handle Stop button click."""
         self._dynamic_toolbar.set_code_running(False)
-        # TODO: Implement actual stop logic
-        print("Stop code requested")
+        
+        if not self._execution_manager:
+            return
+        
+        state = self._current_state()
+        if not state:
+            return
+        
+        # Interrupt execution by restarting the worker
+        interrupted = self._execution_manager.interrupt_notebook(state.notebook.notebook_id)
+        if interrupted:
+            print(f"[DEBUG] Interrupted execution for notebook {state.notebook.notebook_id}")
+        else:
+            print("[DEBUG] No active execution to stop")
 
     def _on_preview_toggled(self, checked: bool) -> None:
+        """Handle Preview toggle."""
         # TODO: Implement actual preview logic
         print(f"Preview toggled: {checked}")
+    
+    def _on_cell_execution_started(self, request) -> None:
+        """Handle cell execution started signal."""
+        print(f"[DEBUG] Cell execution started: {request.cell_id}")
+        # TODO: Update UI to show running state
+        
+    def _on_cell_execution_finished(self, result) -> None:
+        """Handle cell execution finished signal.
+        
+        Save outputs to database so they persist across notebook switches.
+        """
+        self._dynamic_toolbar.set_code_running(False)
+        print(f"[DEBUG] Cell execution finished: {result.cell_id}")
+        print(f"[DEBUG] Stdout: {result.stdout}")
+        print(f"[DEBUG] Stderr: {result.stderr}")
+        print(f"[DEBUG] Figures: {len(result.figures)}")
+        
+        # Build outputs in Jupyter notebook format
+        outputs = []
+        if result.stdout:
+            outputs.append({
+                "output_type": "stream",
+                "name": "stdout",
+                "text": result.stdout
+            })
+        if result.stderr:
+            outputs.append({
+                "output_type": "stream",
+                "name": "stderr",
+                "text": result.stderr
+            })
+        if result.figures:
+            import base64
+            for fig_bytes in result.figures:
+                outputs.append({
+                    "output_type": "display_data",
+                    "data": {
+                        "image/png": base64.b64encode(fig_bytes).decode('utf-8')
+                    },
+                    "metadata": {}
+                })
+        
+        # Save outputs to database (disconnect state_updated to prevent rebuild)
+        if self._cell_manager and self._notebook_manager:
+            try:
+                self._notebook_manager.events.state_updated.disconnect(self._on_notebook_state_updated)
+            except:
+                pass
+            
+            try:
+                self._cell_manager.update_cell(
+                    result.cell_id,
+                    outputs=outputs,
+                    execution_count=result.execution_count
+                )
+                print(f"[DEBUG] Saved {len(outputs)} outputs to database for cell {result.cell_id}")
+            except Exception as e:
+                print(f"[DEBUG] Failed to save outputs: {e}")
+            
+            # Reconnect state_updated
+            if self._notebook_manager:
+                try:
+                    self._notebook_manager.events.state_updated.connect(self._on_notebook_state_updated)
+                except:
+                    pass
+        
+        # Update UI
+        cell_row = self._find_cell_row(result.cell_id)
+        if cell_row:
+            print(f"[DEBUG] Found cell row for {result.cell_id}")
+            # Update execution count
+            cell_row.set_execution_count(result.execution_count)
+            
+            # Display output
+            print(f"[DEBUG] Setting output, visible={bool(result.stdout or result.stderr)}")
+            cell_row.set_output(result.stdout, result.stderr, None)
+            
+            # Display first plot if available
+            if result.figures:
+                cell_row.set_plot(result.figures[0])
+            else:
+                cell_row.set_plot(None)
+        else:
+            print(f"[DEBUG] Could not find cell row for {result.cell_id}")
+        
+    def _on_cell_execution_failed(self, result) -> None:
+        """Handle cell execution failed signal."""
+        self._dynamic_toolbar.set_code_running(False)
+        print(f"[DEBUG] Cell execution failed: {result.cell_id}")
+        print(f"[DEBUG] Error: {result.error}")
+        
+        # Find the cell row and display error
+        cell_row = self._find_cell_row(result.cell_id)
+        if cell_row:
+            cell_row.set_execution_count(result.execution_count)
+            cell_row.set_output(result.stdout, result.stderr, result.error)
+            
+            # Display plots even if there was an error
+            if result.figures:
+                cell_row.set_plot(result.figures[0])
+            else:
+                cell_row.set_plot(None)
+    
+    def _find_cell_row(self, cell_id: str) -> CellRow | None:
+        """Find a CellRow widget by cell ID."""
+        for row in self._cell_rows:
+            if row.cell_id == cell_id:
+                return row
+        return None
 
 
 __all__ = ["LunaQtWindow"]

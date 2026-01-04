@@ -1,5 +1,10 @@
 """Central location for shared configuration constants."""
 
+from .matplotlib_styles import (
+	MATPLOTLIB_DARK_STYLE,
+	MATPLOTLIB_LIGHT_STYLE,
+	get_matplotlib_style,
+)
 from .theme_startup_mode import DEFAULT_THEME_MODE
 from .typography import (
 	DEFAULT_UI_FONT_POINT_SIZE,
@@ -28,4 +33,7 @@ __all__ = [
 	"clamp_ui_font_point_size",
 	"BUNDLED_FONTS",
 	"DEFAULT_UI_FONT",
+	"MATPLOTLIB_LIGHT_STYLE",
+	"MATPLOTLIB_DARK_STYLE",
+	"get_matplotlib_style",
 ]
