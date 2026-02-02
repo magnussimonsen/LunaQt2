@@ -156,6 +156,7 @@ class CellRow(QFrame):
         self._output_area = QPlainTextEdit(self._cell_container)
         self._output_area.setProperty("cellPart", "output")
         self._output_area.setReadOnly(True)
+        self._output_area.setFrameShape(QFrame.Shape.NoFrame)
         self._output_area.setVisible(False)
         self._output_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self._output_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -232,12 +233,9 @@ class CellRow(QFrame):
     
     def set_execution_count(self, count: int | None) -> None:
         """Update the execution count display."""
-        if count is None:
-            self._exec_count_label.setText("")
-            self._exec_count_label.setVisible(False)
-        else:
-            self._exec_count_label.setText(f"[{count}]")
-            self._exec_count_label.setVisible(True)
+        # Always hide execution count per user request
+        self._exec_count_label.setText("")
+        self._exec_count_label.setVisible(False)
     
     def set_output(self, stdout: str, stderr: str, error: str | None) -> None:
         """Display execution output."""
@@ -253,6 +251,9 @@ class CellRow(QFrame):
                 output_text += "\n"
             output_text += f"Error:\n{error}"
         
+        # Trim trailing whitespace to prevent empty lines at the end
+        output_text = output_text.rstrip()
+
         if output_text:
             self._output_area.setPlainText(output_text)
             self._output_area.setVisible(True)
@@ -267,13 +268,13 @@ class CellRow(QFrame):
             margins = self._output_area.contentsMargins()
             frame_width = self._output_area.frameWidth() * 2
             doc_margin = int(doc.documentMargin() * 2)
-            padding = margins.top() + margins.bottom() + frame_width + doc_margin + 8
+            padding = margins.top() + margins.bottom() + frame_width + doc_margin
             
             total_height = int(doc_height + padding)
             
             # Set minimum height
-            min_height = line_height * 2 + padding
-            total_height = max(total_height, min_height, 40)
+            min_height = line_height * 1 + padding
+            total_height = max(total_height, min_height, 20)
             
             self._output_area.setFixedHeight(total_height)
             self._output_area.updateGeometry()

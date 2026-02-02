@@ -495,7 +495,7 @@ class PythonEditor(QPlainTextEdit):
         """
         # Calculate height based on line count (more reliable than document size)
         doc = self.document()
-        block_count = max(1, doc.blockCount())
+        block_count = max(2, doc.blockCount())
         line_height = self.fontMetrics().lineSpacing()
         doc_height = line_height * block_count
         
@@ -503,7 +503,7 @@ class PythonEditor(QPlainTextEdit):
         margins = self.contentsMargins()
         frame_width = self.frameWidth() * 2
         doc_margin = int(doc.documentMargin() * 2)
-        padding = margins.top() + margins.bottom() + frame_width + doc_margin + 4
+        padding = margins.top() + margins.bottom() + frame_width + doc_margin
         
         total_height = int(doc_height + padding)
         
