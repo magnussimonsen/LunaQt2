@@ -6,7 +6,7 @@ from dataclasses import replace
 from typing import Any, Sequence
 
 from PySide6.QtCore import QEvent, Qt
-from PySide6.QtGui import QAction, QActionGroup
+from PySide6.QtGui import QAction, QActionGroup, QPalette
 from PySide6.QtWidgets import (
     QDockWidget,
     QFrame,
@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QSpacerItem,
     QSizePolicy,
     QStatusBar,
+    QTextBrowser,
     QToolBar,
     QVBoxLayout,
     QWidget,
@@ -25,6 +26,7 @@ from PySide6.QtWidgets import (
 from app.state import AppState
 from core import CellManager, DataStore, ExecutionManager, NotebookManager
 from core.models import Cell, CellType, Notebook, NotebookState
+from core.rendering import get_markdown_renderer
 from interface.qt.sidebars import NotebookSidebarWidget, SettingsSidebarWidget, TocSidebarWidget
 from interface.qt.styling import apply_global_style
 from interface.qt.styling.theme import Metrics, StylePreferences, ThemeMode
@@ -130,9 +132,10 @@ class CellRow(QFrame):
         self._cell_container.add_content_widget(header)
         self._header_label = header
 
-        # Use PythonEditor for code cells, QLabel for others
+        # Use PythonEditor for code cells, QTextBrowser for markdown cells, QLabel for raw cells
         self._editor = None
         self._body_label = None
+        self._markdown_browser = None
         
         if cell_type == "code":
             self._editor = PythonEditor(self._cell_container, is_dark_mode=is_dark_mode)
@@ -143,7 +146,22 @@ class CellRow(QFrame):
             self._editor.execute_requested.connect(self._on_editor_execute_requested)
             self._editor.focus_changed.connect(self._on_editor_focus_changed)
             self._cell_container.add_content_widget(self._editor)
+        elif cell_type == "markdown":
+            # Use QTextBrowser for rendered markdown
+            self._markdown_browser = QTextBrowser(self._cell_container)
+            self._markdown_browser.setProperty("cellPart", "markdown")
+            self._markdown_browser.setOpenExternalLinks(True)
+            self._markdown_browser.setFrameShape(QFrame.Shape.NoFrame)
+            self._markdown_browser.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self._markdown_browser.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+            self._markdown_browser.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+            
+            # Render the markdown content with theme colors
+            self._render_markdown(body_text)
+            
+            self._cell_container.add_content_widget(self._markdown_browser)
         else:
+            # Raw cell - plain text label
             body = QLabel(body_text, self._cell_container)
             body.setProperty("cellPart", "body")
             body.setWordWrap(True)
@@ -213,8 +231,39 @@ class CellRow(QFrame):
         self._header_label.setText(header_text)
         if self._editor:
             self._editor.setPlainText(body_text)
+        elif self._markdown_browser:
+            self._render_markdown(body_text)
         elif self._body_label:
             self._body_label.setText(body_text)
+    
+    def _render_markdown(self, text: str) -> None:
+        """Render markdown text with theme colors."""
+        if not self._markdown_browser:
+            return
+        
+        # Get theme colors from palette
+        palette = self._markdown_browser.palette()
+        bg_color = palette.base().color().name()
+        text_color = palette.text().color().name()
+        code_bg = palette.alternateBase().color().name()
+        border_color = palette.mid().color().name()
+        link_color = palette.link().color().name()
+        
+        # Render markdown to HTML
+        renderer = get_markdown_renderer()
+        html = renderer.render(
+            text,
+            bg_color=bg_color,
+            text_color=text_color,
+            code_bg=code_bg,
+            link_color=link_color,
+            border_color=border_color,
+            font_family="sans-serif",
+            font_size=11,
+            code_font="'Fira Code', 'Consolas', monospace"
+        )
+        
+        self._markdown_browser.setHtml(html)
     
     def _on_editor_text_changed(self) -> None:
         """Handle text changes in the editor."""

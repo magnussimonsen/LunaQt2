@@ -1,2 +1,7 @@
 # Runtime dependencies for the LunaQt2 app
 PySide6>=6.7
+
+# Markdown rendering with math support
+markdown>=3.5           # Core markdown parsing
+pykatex>=0.1.1          # Math rendering (KaTeX wrapper) - latest available version
+Pygments>=2.15          # Syntax highlighting for code blocks

@@ -385,6 +385,16 @@ QPlainTextEdit[cellPart="output"] {
     font-size: 10pt;
 }
 
+QTextBrowser[cellPart="markdown"] {
+    background-color: #dddddd;
+    color: #111111;
+    selection-background-color: #cfe1ff;
+    selection-color: #111111;
+    border: none;
+    border-radius: 2px;
+    padding: 4px;
+}
+
 QWidget[cellType="gutter"] {
     background-color: #cccccc;
     border-top: 0px solid #343434;

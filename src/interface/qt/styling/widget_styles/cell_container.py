@@ -13,6 +13,7 @@ CELL_HEADER_SELECTOR = 'QWidget[cellPart="header"]'
 CELL_BODY_SELECTOR = 'QWidget[cellPart="body"]'
 CELL_EDITOR_SELECTOR = 'QPlainTextEdit[cellPart="editor"]'
 CELL_OUTPUT_SELECTOR = 'QPlainTextEdit[cellPart="output"]'
+CELL_MARKDOWN_SELECTOR = 'QTextBrowser[cellPart="markdown"]'
 
 
 def get_qss(
@@ -164,7 +165,22 @@ def get_qss(
         """
     ).strip()
 
-    return "\n\n".join([list_styling, row_styling, container, header, body, viewport_block, editor_block, output_block])
+    # Markdown browser styling
+    markdown_block = dedent(
+        f"""
+        {CELL_MARKDOWN_SELECTOR} {{
+            background-color: {bg.cell_bg};
+            color: {text.primary};
+            selection-background-color: {viewport.selection};
+            selection-color: {viewport.selection_text};
+            border: none;
+            border-radius: {tokens.border_radius}px;
+            padding: 4px;
+        }}
+        """
+    ).strip()
+
+    return "\n\n".join([list_styling, row_styling, container, header, body, viewport_block, editor_block, output_block, markdown_block])
 
 
 __all__ = ["get_qss"]
